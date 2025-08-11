@@ -34,7 +34,7 @@ export default function ConfirmedPage() {
         </CardHeader>
         <CardContent className="text-center space-y-4">
           <p className="text-gray-600">
-            Welcome to L'oge Arts! You'll be redirected to your dashboard shortly.
+            Welcome to L&apos;oge Arts! You&apos;ll be redirected to your dashboard shortly.
           </p>
           <Link href={next}>
             <Button className="w-full bg-orange-500 hover:bg-orange-600">

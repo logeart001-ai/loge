@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     const supabase = await createServerClient()
 
     const { error } = await supabase.auth.verifyOtp({
-      type: type as any,
+      type: type as 'signup' | 'recovery' | 'invite' | 'magiclink',
       token_hash,
     })
     if (!error) {
