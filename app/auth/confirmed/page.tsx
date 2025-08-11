@@ -1,13 +1,13 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { CheckCircle } from 'lucide-react'
+import { CheckCircle, Loader2 } from 'lucide-react'
 
-export default function ConfirmedPage() {
+function ConfirmedContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const next = searchParams.get('next') || '/dashboard'
@@ -44,5 +44,26 @@ export default function ConfirmedPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-50">
+      <Card className="w-full max-w-md">
+        <CardContent className="p-8 text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p>Loading...</p>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+export default function ConfirmedPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <ConfirmedContent />
+    </Suspense>
   )
 }

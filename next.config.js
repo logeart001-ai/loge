@@ -10,6 +10,9 @@ const nextConfig = {
     // your project has type errors.
     ignoreBuildErrors: true,
   },
+  experimental: {
+    missingSuspenseWithCSRBailout: false,
+  },
 }
 
 module.exports = nextConfig
