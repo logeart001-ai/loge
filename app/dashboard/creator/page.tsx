@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Upload, DollarSign, Eye, TrendingUp, Settings, LogOut, Plus, Package, BarChart3 } from 'lucide-react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import Image from 'next/image'
 
 async function getCreatorStats(userId: string) {
   const supabase = await createServerClient()
@@ -71,10 +72,8 @@ export default async function CreatorDashboard() {
       <header className="bg-white border-b border-gray-200 px-4 py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-sm">L</span>
-            </div>
-            <span className="font-bold text-lg">L'oge Arts</span>
+            <Image src="/image/logelogo.png" alt="L'oge Arts logo" width={32} height={32} />
+            <span className="font-bold text-lg">L&apos;oge Arts</span>
           </Link>
           
           <div className="flex items-center space-x-4">
@@ -96,9 +95,9 @@ export default async function CreatorDashboard() {
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center space-x-3 mb-6">
-                  <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                  <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
                     {user.user_metadata?.avatar_url ? (
-                      <img src={user.user_metadata.avatar_url || "/placeholder.svg"} alt={user.user_metadata?.full_name} className="w-12 h-12 rounded-full" />
+                      <Image src={user.user_metadata.avatar_url || "/placeholder.svg"} alt={user.user_metadata?.full_name || 'Profile avatar'} width={48} height={48} className="rounded-full object-cover" />
                     ) : (
                       <Upload className="w-6 h-6 text-gray-600" />
                     )}
@@ -258,16 +257,15 @@ export default async function CreatorDashboard() {
               <CardContent>
                 {stats.recentArtworks.length > 0 ? (
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {stats.recentArtworks.map((artwork: any) => (
+                    {stats.recentArtworks.map((artwork: { id: string; image_urls?: string[]; title: string; category: string; price: number; is_available: boolean }) => (
                       <div key={artwork.id} className="border rounded-lg p-4">
-                        <div className="w-full h-32 bg-gray-200 rounded-lg mb-3">
-                          {artwork.image_urls?.[0] && (
-                            <img 
-                              src={artwork.image_urls[0] || "/placeholder.svg"} 
-                              alt={artwork.title}
-                              className="w-full h-32 object-cover rounded-lg"
-                            />
-                          )}
+                        <div className="relative w-full h-32 bg-gray-200 rounded-lg mb-3 overflow-hidden">
+                          <Image
+                            src={artwork.image_urls?.[0] || "/placeholder.svg"}
+                            alt={artwork.title}
+                            fill
+                            className="object-cover rounded-lg"
+                          />
                         </div>
                         <h4 className="font-medium text-sm">{artwork.title}</h4>
                         <p className="text-xs text-gray-600 mb-2">{artwork.category}</p>

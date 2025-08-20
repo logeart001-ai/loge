@@ -604,9 +604,7 @@ export default async function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="md:col-span-1">
               <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">L</span>
-                </div>
+                <Image src="/image/logelogo.png" alt="L&apos;oge Arts logo" width={32} height={32} />
                 <span className="font-semibold text-lg">L&apos;oge Arts</span>
               </div>
               <p className="text-gray-400 text-sm mb-6">
