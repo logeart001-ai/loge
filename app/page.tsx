@@ -4,11 +4,12 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Navbar } from '@/components/navbar'
-import { 
-  getFeaturedArtworks, 
-  getFeaturedCreators, 
-  getUpcomingEvents, 
-  getBlogPosts 
+import { BackgroundVideo } from '@/components/background-video'
+import {
+  getFeaturedArtworks,
+  getFeaturedCreators,
+  getUpcomingEvents,
+  getBlogPosts
 } from '@/lib/supabase-queries'
 import { Users, BookOpen, Shirt, Calendar, Upload, MessageCircle, FileText, Instagram, Facebook, Twitter, Star, Heart, MapPin, Clock, ArrowRight, TrendingUp, Award, Globe } from 'lucide-react'
 
@@ -30,22 +31,35 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      
-      {/* Hero Section with Rotating Banner */}
+
+      {/* Hero Section with Video Background */}
       <section className="relative bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 py-12 md:py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/placeholder.svg?height=800&width=1200&text=African+Art+Pattern')] opacity-5"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Background Video */}
+        <div className="absolute inset-0 w-full h-full">
+          <BackgroundVideo
+            src="/video/Nigerian_Art_Gallery_Video_Backdrop.mp4"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          {/* Video Overlay for better text readability */}
+          <div className="absolute inset-0 bg-black/50"></div>
+        </div>
+
+        {/* Pattern overlay (optional - you can remove this if you prefer just the video) */}
+        <div className="absolute inset-0 bg-[url('/placeholder.svg?height=800&width=1200&text=African+Art+Pattern')] opacity-5 z-10"></div>
+
+        {/* Content - positioned above the video */}
+        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 md:mb-6">
-              <span className="text-orange-500">African Creativity</span>{" "}
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6 drop-shadow-lg">
+              <span className="text-orange-400">African Creativity</span>{" "}
               <br className="hidden sm:block" />
-              <span className="text-gray-900">Across All Mediums</span>
+              <span className="text-white">Across All Mediums</span>
             </h1>
-            <p className="text-lg md:text-xl text-gray-600 mb-8 md:mb-12 max-w-3xl mx-auto">
-              Discover authentic art, fashion, and literature from Africa's most talented creators. 
+            <p className="text-lg md:text-xl text-gray-100 mb-8 md:mb-12 max-w-3xl mx-auto drop-shadow-md">
+              Discover authentic art, fashion, and literature from Africa&apos;s most talented creators.
               Support artists while building your collection of unique cultural treasures.
             </p>
-            
+
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Link href="/art">
@@ -54,12 +68,12 @@ export default async function HomePage() {
                 </Button>
               </Link>
               <Link href="/auth/signup?type=creator">
-                <Button variant="outline" className="w-full sm:w-auto border-orange-500 text-orange-500 hover:bg-orange-50 px-6 md:px-8 py-3 text-base md:text-lg">
+                <Button variant="outline" className="w-full sm:w-auto border-white text-white hover:bg-white hover:text-orange-500 px-6 md:px-8 py-3 text-base md:text-lg backdrop-blur-sm">
                   Join as Artist
                 </Button>
               </Link>
               <Link href="/events">
-                <Button variant="outline" className="w-full sm:w-auto border-gray-300 text-gray-700 hover:bg-gray-50 px-6 md:px-8 py-3 text-base md:text-lg">
+                <Button variant="outline" className="w-full sm:w-auto border-white text-white hover:bg-white hover:text-gray-700 px-6 md:px-8 py-3 text-base md:text-lg backdrop-blur-sm">
                   Attend Events
                 </Button>
               </Link>
@@ -75,9 +89,9 @@ export default async function HomePage() {
                 { name: 'Fashion', href: '/fashion', icon: '👗' }
               ].map((category) => (
                 <Link key={category.name} href={category.href}>
-                  <Badge 
-                    variant="secondary" 
-                    className="px-3 md:px-4 py-2 text-sm md:text-base hover:bg-orange-100 hover:text-orange-700 cursor-pointer transition-colors"
+                  <Badge
+                    variant="secondary"
+                    className="px-3 md:px-4 py-2 text-sm md:text-base bg-white bg-opacity-20 text-white hover:bg-orange-500 hover:text-white cursor-pointer transition-colors backdrop-blur-sm"
                   >
                     <span className="mr-2">{category.icon}</span>
                     {category.name}
@@ -125,7 +139,7 @@ export default async function HomePage() {
               </Button>
             </Link>
           </div>
-          
+
           {artworks.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
               {artworks.map((artwork) => (
@@ -148,7 +162,7 @@ export default async function HomePage() {
                         </Badge>
                       )}
                     </div>
-                    
+
                     <div className="p-4 md:p-6">
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1">
@@ -161,17 +175,16 @@ export default async function HomePage() {
                           {artwork.category.replace('_', ' ')}
                         </Badge>
                       </div>
-                      
+
                       <div className="flex items-center mb-3">
                         <div className="flex items-center">
                           {[...Array(5)].map((_, i) => (
                             <Star
                               key={i}
-                              className={`w-4 h-4 ${
-                                i < Math.floor(artwork.creator?.rating || 0)
-                                  ? 'text-yellow-400 fill-current'
-                                  : 'text-gray-300'
-                              }`}
+                              className={`w-4 h-4 ${i < Math.floor(artwork.creator?.rating || 0)
+                                ? 'text-yellow-400 fill-current'
+                                : 'text-gray-300'
+                                }`}
                             />
                           ))}
                           <span className="ml-2 text-sm text-gray-600">
@@ -179,7 +192,7 @@ export default async function HomePage() {
                           </span>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <span className="text-xl md:text-2xl font-bold text-gray-900">
@@ -221,7 +234,7 @@ export default async function HomePage() {
               Meet the talented artists who are shaping the future of African creativity
             </p>
           </div>
-          
+
           {creators.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               {creators.map((creator) => (
@@ -239,20 +252,20 @@ export default async function HomePage() {
                         </div>
                       )}
                     </div>
-                    
+
                     <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">
                       {creator.full_name}
                     </h3>
-                    
+
                     <div className="flex items-center justify-center gap-1 mb-2">
                       <MapPin className="w-4 h-4 text-gray-400" />
                       <span className="text-sm text-gray-600">{creator.location}</span>
                     </div>
-                    
+
                     <p className="text-gray-600 text-sm mb-4 line-clamp-2">
                       {creator.bio || creator.discipline}
                     </p>
-                    
+
                     <div className="flex items-center justify-center gap-4 mb-6">
                       <div className="text-center">
                         <div className="font-bold text-gray-900">{creator.artworks?.length || 0}</div>
@@ -266,7 +279,7 @@ export default async function HomePage() {
                         <div className="text-xs text-gray-600">Rating</div>
                       </div>
                     </div>
-                    
+
                     <Link href={`/creators/${creator.id}`}>
                       <Button variant="outline" className="w-full text-orange-500 border-orange-500 hover:bg-orange-50">
                         View Profile
@@ -297,7 +310,7 @@ export default async function HomePage() {
               Join exhibitions, workshops, and cultural celebrations
             </p>
           </div>
-          
+
           {events.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               {events.map((event) => (
@@ -311,17 +324,17 @@ export default async function HomePage() {
                         {new Date(event.start_date).toLocaleDateString('en-US', { month: 'short' })}
                       </div>
                     </div>
-                    
+
                     <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
                       {event.title}
                     </h3>
-                    
+
                     <div className="space-y-2 mb-4">
                       <div className="flex items-center gap-2 text-sm text-gray-600">
                         <Clock className="w-4 h-4" />
-                        {new Date(event.start_date).toLocaleTimeString('en-US', { 
-                          hour: 'numeric', 
-                          minute: '2-digit' 
+                        {new Date(event.start_date).toLocaleTimeString('en-US', {
+                          hour: 'numeric',
+                          minute: '2-digit'
                         })}
                       </div>
                       <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -329,7 +342,7 @@ export default async function HomePage() {
                         {event.event_type === 'virtual' ? 'Virtual Event' : `${event.city}, ${event.country}`}
                       </div>
                     </div>
-                    
+
                     <div className="flex justify-between items-center">
                       <span className="font-semibold text-gray-900">
                         {event.is_free ? 'Free' : `₦${event.ticket_price?.toLocaleString()}`}
@@ -351,7 +364,7 @@ export default async function HomePage() {
               </div>
             </div>
           )}
-          
+
           <div className="text-center mt-8">
             <Link href="/events">
               <Button variant="secondary" className="bg-white text-orange-600 hover:bg-orange-50">
@@ -376,7 +389,7 @@ export default async function HomePage() {
               </Button>
             </Link>
           </div>
-          
+
           {posts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               {posts.map((post) => (
@@ -391,7 +404,7 @@ export default async function HomePage() {
                         />
                       )}
                     </div>
-                    
+
                     <div className="p-6">
                       <div className="flex items-center gap-2 mb-3">
                         <img
@@ -408,15 +421,15 @@ export default async function HomePage() {
                           </div>
                         </div>
                       </div>
-                      
+
                       <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
                         {post.title}
                       </h3>
-                      
+
                       <p className="text-gray-600 text-sm mb-4 line-clamp-3">
                         {post.excerpt}
                       </p>
-                      
+
                       <div className="flex flex-wrap gap-2 mb-4">
                         {post.tags?.slice(0, 2).map((tag) => (
                           <Badge key={tag} variant="secondary" className="text-xs">
@@ -424,7 +437,7 @@ export default async function HomePage() {
                           </Badge>
                         ))}
                       </div>
-                      
+
                       <Link href={`/blog/${post.slug}`}>
                         <Button variant="ghost" className="w-full text-orange-600 hover:bg-orange-50">
                           Read Article
@@ -452,10 +465,10 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Join Our Growing Community</h2>
           <p className="text-lg md:text-xl text-gray-600 mb-8 md:mb-12 max-w-3xl mx-auto">
-            Connect with artists and art lovers across Africa and beyond. Share your passion, 
+            Connect with artists and art lovers across Africa and beyond. Share your passion,
             discover new talents, and be part of a vibrant creative ecosystem.
           </p>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-12">
             {[
               {
@@ -486,7 +499,7 @@ export default async function HomePage() {
               </div>
             ))}
           </div>
-          
+
           <div className="mb-12">
             <h3 className="text-xl font-semibold text-gray-900 mb-6">Follow Us for Daily Updates</h3>
             <div className="flex justify-center space-x-4">
@@ -514,8 +527,8 @@ export default async function HomePage() {
             and event invitations
           </p>
           <div className="max-w-md mx-auto flex flex-col sm:flex-row gap-4">
-            <Input 
-              type="email" 
+            <Input
+              type="email"
               placeholder="Enter your email"
               className="flex-1"
             />
@@ -531,10 +544,10 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Are You An African Creator?</h2>
           <p className="text-lg md:text-xl text-gray-600 mb-8 md:mb-12 max-w-3xl mx-auto">
-            Join our platform to showcase and sell your work to a global audience. 
+            Join our platform to showcase and sell your work to a global audience.
             We provide the tools, community, and support you need to thrive as a creative professional.
           </p>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-12">
             {[
               {
@@ -565,7 +578,7 @@ export default async function HomePage() {
               </div>
             ))}
           </div>
-          
+
           <Link href="/auth/signup?type=creator">
             <Button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 text-lg">
               Start Selling Today
@@ -597,7 +610,7 @@ export default async function HomePage() {
                 ))}
               </div>
             </div>
-            
+
             <div>
               <h3 className="font-semibold mb-4">Marketplace</h3>
               <ul className="space-y-2 text-sm text-gray-400">
@@ -608,7 +621,7 @@ export default async function HomePage() {
                 <li><Link href="/creators" className="hover:text-white transition-colors">Featured Creators</Link></li>
               </ul>
             </div>
-            
+
             <div>
               <h3 className="font-semibold mb-4">For Creators</h3>
               <ul className="space-y-2 text-sm text-gray-400">
@@ -619,7 +632,7 @@ export default async function HomePage() {
                 <li><Link href="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
               </ul>
             </div>
-            
+
             <div>
               <h3 className="font-semibold mb-4">Company</h3>
               <ul className="space-y-2 text-sm text-gray-400">
@@ -631,10 +644,10 @@ export default async function HomePage() {
               </ul>
             </div>
           </div>
-          
+
           <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm mb-4 md:mb-0">
-              © 2024 L'oge Arts. All rights reserved.
+              © 2024 L&apos;oge Arts. All rights reserved.
             </p>
             <div className="flex space-x-6 text-sm text-gray-400">
               <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
