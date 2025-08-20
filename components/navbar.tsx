@@ -56,8 +56,8 @@ export function Navbar() {
             <Image
               src="/image/logelogo.png"
               alt="L'oge Arts logo"
-              width={32}
-              height={32}
+              width={64}
+              height={64}
               priority
             />
             <span className="font-semibold text-lg text-gray-900">L&apos;oge Arts</span>

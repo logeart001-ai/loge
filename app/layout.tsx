@@ -17,11 +17,13 @@ export const metadata: Metadata = {
   description: "Celebrating contemporary African artistry across mediums.",
   icons: {
     icon: [
-      { url: "/favicon.ico" },
-      { url: "/image/logelogo.png", type: "image/png", sizes: "32x32" },
+      { url: "/image/logelogo.png?v=1", type: "image/png", sizes: "32x32" },
+    ],
+    shortcut: [
+      { url: "/image/logelogo.png?v=1", type: "image/png", sizes: "32x32" },
     ],
     apple: [
-      { url: "/image/logelogo.png" },
+      { url: "/image/logelogo.png?v=1" },
     ],
   },
 };
