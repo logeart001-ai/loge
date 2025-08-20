@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -11,7 +12,7 @@ import {
   getUpcomingEvents,
   getBlogPosts
 } from '@/lib/supabase-queries'
-import { Users, BookOpen, Shirt, Calendar, Upload, MessageCircle, FileText, Instagram, Facebook, Twitter, Star, Heart, MapPin, Clock, ArrowRight, TrendingUp, Award, Globe } from 'lucide-react'
+import { Users, BookOpen, Calendar, Upload, MessageCircle, FileText, Instagram, Facebook, Twitter, Star, Heart, MapPin, Clock, ArrowRight, TrendingUp, Award, Globe } from 'lucide-react'
 
 export default async function HomePage() {
   // Fetch dynamic data from Supabase with fallbacks
@@ -145,11 +146,14 @@ export default async function HomePage() {
               {artworks.map((artwork) => (
                 <Card key={artwork.id} className="group cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                   <CardContent className="p-0">
-                    <div className="relative overflow-hidden">
-                      <img
+                    <div className="relative overflow-hidden h-48 md:h-64">
+                      <Image
                         src={artwork.thumbnail_url || artwork.image_urls?.[0] || "/placeholder.svg?height=300&width=400&text=Artwork"}
                         alt={artwork.title}
-                        className="w-full h-48 md:h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+                        fill
+                        unoptimized
+                        sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                        className="object-cover group-hover:scale-110 transition-transform duration-500"
                       />
                       <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <Button size="sm" variant="secondary" className="rounded-full w-10 h-10 p-0">
@@ -240,11 +244,14 @@ export default async function HomePage() {
               {creators.map((creator) => (
                 <Card key={creator.id} className="text-center hover:shadow-lg transition-shadow">
                   <CardContent className="p-6 md:p-8">
-                    <div className="relative mb-6">
-                      <img
+                    <div className="relative mb-6 w-20 h-20 md:w-24 md:h-24 mx-auto">
+                      <Image
                         src={creator.avatar_url || "/placeholder.svg?height=120&width=120&text=Creator"}
                         alt={creator.full_name}
-                        className="w-20 h-20 md:w-24 md:h-24 rounded-full mx-auto object-cover"
+                        fill
+                        unoptimized
+                        className="rounded-full object-cover"
+                        sizes="(min-width: 768px) 96px, 80px"
                       />
                       {creator.is_verified && (
                         <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
@@ -294,7 +301,7 @@ export default async function HomePage() {
               <div className="text-gray-500 mb-4">
                 <Users className="w-16 h-16 mx-auto mb-4 opacity-50" />
                 <p className="text-lg">No featured creators available at the moment.</p>
-                <p className="text-sm">We're working on bringing you amazing artists!</p>
+                <p className="text-sm">We&apos;re working on bringing you amazing artists!</p>
               </div>
             </div>
           )}
@@ -395,22 +402,26 @@ export default async function HomePage() {
               {posts.map((post) => (
                 <Card key={post.id} className="hover:shadow-lg transition-shadow">
                   <CardContent className="p-0">
-                    <div className="h-48 bg-gray-200 rounded-t-lg">
-                      {post.featured_image_url && (
-                        <img
-                          src={post.featured_image_url || "/placeholder.svg"}
-                          alt={post.title}
-                          className="w-full h-48 object-cover rounded-t-lg"
-                        />
-                      )}
+                    <div className="relative h-48 bg-gray-200 rounded-t-lg overflow-hidden">
+                      <Image
+                        src={post.featured_image_url || "/placeholder.svg"}
+                        alt={post.title}
+                        fill
+                        unoptimized
+                        className="object-cover rounded-t-lg"
+                        sizes="(min-width: 768px) 33vw, 100vw"
+                      />
                     </div>
 
                     <div className="p-6">
                       <div className="flex items-center gap-2 mb-3">
-                        <img
+                        <Image
                           src={post.author?.avatar_url || "/placeholder.svg?height=32&width=32&text=Author"}
-                          alt={post.author?.full_name}
-                          className="w-8 h-8 rounded-full object-cover"
+                          alt={post.author?.full_name || 'Author avatar'}
+                          width={32}
+                          height={32}
+                          unoptimized
+                          className="rounded-full object-cover"
                         />
                         <div>
                           <div className="text-sm font-medium text-gray-900">
@@ -431,7 +442,7 @@ export default async function HomePage() {
                       </p>
 
                       <div className="flex flex-wrap gap-2 mb-4">
-                        {post.tags?.slice(0, 2).map((tag) => (
+                        {post.tags?.slice(0, 2).map((tag: string) => (
                           <Badge key={tag} variant="secondary" className="text-xs">
                             {tag}
                           </Badge>
@@ -453,7 +464,7 @@ export default async function HomePage() {
               <div className="text-gray-500 mb-4">
                 <FileText className="w-16 h-16 mx-auto mb-4 opacity-50" />
                 <p className="text-lg">No blog posts available at the moment.</p>
-                <p className="text-sm">We're working on bringing you inspiring stories!</p>
+                <p className="text-sm">We&apos;re working on bringing you inspiring stories!</p>
               </div>
             </div>
           )}
@@ -596,7 +607,7 @@ export default async function HomePage() {
                 <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
                   <span className="text-white font-bold text-sm">L</span>
                 </div>
-                <span className="font-semibold text-lg">L'oge Arts</span>
+                <span className="font-semibold text-lg">L&apos;oge Arts</span>
               </div>
               <p className="text-gray-400 text-sm mb-6">
                 Celebrating contemporary African artistry across visual art,
