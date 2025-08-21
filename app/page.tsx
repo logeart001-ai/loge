@@ -13,6 +13,7 @@ import {
   getBlogPosts
 } from '@/lib/supabase-queries'
 import { Users, BookOpen, Calendar, Upload, MessageCircle, FileText, Instagram, Facebook, Twitter, Star, Heart, MapPin, Clock, ArrowRight, TrendingUp, Award, Globe } from 'lucide-react'
+import { Reveal } from '@/components/reveal'
 
 export default async function HomePage() {
   // Fetch dynamic data from Supabase with fallbacks
@@ -51,39 +52,49 @@ export default async function HomePage() {
         {/* Content - positioned above the video */}
         <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6 drop-shadow-lg">
-              <span className="text-orange-400">African Creativity</span>{" "}
-              <br className="hidden sm:block" />
-              <span className="text-white">Across All Mediums</span>
-            </h1>
-            <p className="text-lg md:text-xl text-gray-100 mb-8 md:mb-12 max-w-3xl mx-auto drop-shadow-md">
-              Discover authentic art, fashion, and literature from Africa&apos;s most talented creators.
-              Support artists while building your collection of unique cultural treasures.
-            </p>
+            <Reveal>
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6 drop-shadow-lg">
+                <span className="text-orange-400">African Creativity</span>{" "}
+                <br className="hidden sm:block" />
+                <span className="text-white">Across All Mediums</span>
+              </h1>
+            </Reveal>
+            <Reveal delay={100}>
+              <p className="text-lg md:text-xl text-gray-100 mb-8 md:mb-12 max-w-3xl mx-auto drop-shadow-md">
+                Discover authentic art, fashion, and literature from Africa&apos;s most talented creators.
+                Support artists while building your collection of unique cultural treasures.
+              </p>
+            </Reveal>
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <Link href="/art">
-                <Button className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white px-6 md:px-8 py-3 text-base md:text-lg">
-                  Explore Gallery
-                </Button>
-              </Link>
-              <Link href="/auth/signup?type=creator">
-                <Button
-                  variant="outline"
-                  className="w-full sm:w-auto border-white/80 text-white bg-white/10 hover:bg-white/10 px-6 md:px-8 py-3 text-base md:text-lg backdrop-blur-sm"
-                >
-                  Join as Artist
-                </Button>
-              </Link>
-              <Link href="/events">
-                <Button
-                  variant="outline"
-                  className="w-full sm:w-auto border-white/80 text-white bg-white/10 hover:bg-white/10 px-6 md:px-8 py-3 text-base md:text-lg backdrop-blur-sm"
-                >
-                  Attend Events
-                </Button>
-              </Link>
+              <Reveal>
+                <Link href="/art">
+                  <Button className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white px-6 md:px-8 py-3 text-base md:text-lg">
+                    Explore Gallery
+                  </Button>
+                </Link>
+              </Reveal>
+              <Reveal delay={100}>
+                <Link href="/auth/signup?type=creator">
+                  <Button
+                    variant="outline"
+                    className="w-full sm:w-auto border-white/80 text-white bg-white/10 hover:bg-white/10 px-6 md:px-8 py-3 text-base md:text-lg backdrop-blur-sm"
+                  >
+                    Join as Artist
+                  </Button>
+                </Link>
+              </Reveal>
+              <Reveal delay={200}>
+                <Link href="/events">
+                  <Button
+                    variant="outline"
+                    className="w-full sm:w-auto border-white/80 text-white bg-white/10 hover:bg-white/10 px-6 md:px-8 py-3 text-base md:text-lg backdrop-blur-sm"
+                  >
+                    Attend Events
+                  </Button>
+                </Link>
+              </Reveal>
             </div>
 
             {/* Quick Category Links */}
@@ -120,13 +131,15 @@ export default async function HomePage() {
               { icon: Globe, value: '50+', label: 'Countries', color: 'blue' },
               { icon: Award, value: '98%', label: 'Satisfaction', color: 'green' }
             ].map((stat, index) => (
-              <div key={index} className="text-center">
+              <Reveal key={index} delay={([0, 100, 200, 300] as const)[index % 4]}>
+              <div className="text-center">
                 <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-orange-100 rounded-lg mb-3 md:mb-4">
                   <stat.icon className="h-6 w-6 md:h-8 md:w-8 text-orange-600" />
                 </div>
                 <div className="text-2xl md:text-3xl font-bold text-gray-900">{stat.value}</div>
                 <div className="text-sm md:text-base text-gray-600">{stat.label}</div>
               </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -149,8 +162,9 @@ export default async function HomePage() {
 
           {artworks.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-              {artworks.map((artwork) => (
-                <Card key={artwork.id} className="group cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+              {artworks.map((artwork, idx) => (
+                <Reveal key={artwork.id} delay={([0, 100, 200] as const)[idx % 3]}>
+                <Card className="group cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                   <CardContent className="p-0">
                     <div className="relative overflow-hidden h-48 md:h-64">
                       <Image
@@ -221,6 +235,7 @@ export default async function HomePage() {
                     </div>
                   </CardContent>
                 </Card>
+                </Reveal>
               ))}
             </div>
           ) : (
@@ -247,8 +262,9 @@ export default async function HomePage() {
 
           {creators.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-              {creators.map((creator) => (
-                <Card key={creator.id} className="text-center hover:shadow-lg transition-shadow">
+              {creators.map((creator, idx) => (
+                <Reveal key={creator.id} delay={([0, 100, 200] as const)[idx % 3]}>
+                <Card className="text-center hover:shadow-lg transition-shadow">
                   <CardContent className="p-6 md:p-8">
                     <div className="relative mb-6 w-20 h-20 md:w-24 md:h-24 mx-auto">
                       <Image
@@ -300,6 +316,7 @@ export default async function HomePage() {
                     </Link>
                   </CardContent>
                 </Card>
+                </Reveal>
               ))}
             </div>
           ) : (
@@ -326,8 +343,9 @@ export default async function HomePage() {
 
           {events.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-              {events.map((event) => (
-                <Card key={event.id} className="bg-white hover:shadow-xl transition-shadow">
+              {events.map((event, idx) => (
+                <Reveal key={event.id} delay={([0, 100, 200] as const)[idx % 3]}>
+                <Card className="bg-white hover:shadow-xl transition-shadow">
                   <CardContent className="p-6">
                     <div className="text-center mb-4">
                       <div className="text-2xl md:text-3xl font-bold text-gray-900">
@@ -366,6 +384,7 @@ export default async function HomePage() {
                     </div>
                   </CardContent>
                 </Card>
+                </Reveal>
               ))}
             </div>
           ) : (
@@ -405,8 +424,9 @@ export default async function HomePage() {
 
           {posts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-              {posts.map((post) => (
-                <Card key={post.id} className="hover:shadow-lg transition-shadow">
+              {posts.map((post, idx) => (
+                <Reveal key={post.id} delay={([0, 100, 200] as const)[idx % 3]}>
+                <Card className="hover:shadow-lg transition-shadow">
                   <CardContent className="p-0">
                     <div className="relative h-48 bg-gray-200 rounded-t-lg overflow-hidden">
                       <Image
@@ -463,6 +483,7 @@ export default async function HomePage() {
                     </div>
                   </CardContent>
                 </Card>
+                </Reveal>
               ))}
             </div>
           ) : (
@@ -507,13 +528,15 @@ export default async function HomePage() {
                 color: 'purple'
               }
             ].map((feature, index) => (
-              <div key={index} className="text-center">
+              <Reveal key={index} delay={([0, 100, 200] as const)[index % 3]}>
+              <div className="text-center">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-100 rounded-lg mb-4">
                   <feature.icon className="h-8 w-8 text-orange-600" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
                 <p className="text-gray-600">{feature.description}</p>
               </div>
+              </Reveal>
             ))}
           </div>
 
@@ -586,20 +609,24 @@ export default async function HomePage() {
                 color: 'blue'
               }
             ].map((feature, index) => (
-              <div key={index} className="text-center">
+              <Reveal key={index} delay={([0, 100, 200] as const)[index % 3]}>
+              <div className="text-center">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-100 rounded-lg mb-4">
                   <feature.icon className="h-8 w-8 text-orange-600" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
                 <p className="text-gray-600">{feature.description}</p>
               </div>
+              </Reveal>
             ))}
           </div>
 
           <Link href="/auth/signup?type=creator">
-            <Button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 text-lg">
-              Start Selling Today
-            </Button>
+            <Reveal>
+              <Button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 text-lg">
+                Start Selling Today
+              </Button>
+            </Reveal>
           </Link>
         </div>
       </section>

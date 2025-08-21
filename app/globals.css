@@ -120,3 +120,30 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Reveal animation utilities */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 500ms ease, transform 500ms ease;
+  will-change: opacity, transform;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger delays */
+.reveal.reveal-delay-0 { transition-delay: 0ms; }
+.reveal.reveal-delay-100 { transition-delay: 100ms; }
+.reveal.reveal-delay-200 { transition-delay: 200ms; }
+.reveal.reveal-delay-300 { transition-delay: 300ms; }
+.reveal.reveal-delay-400 { transition-delay: 400ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}

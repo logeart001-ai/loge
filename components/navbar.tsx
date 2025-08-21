@@ -51,7 +51,7 @@ export function Navbar() {
 
   return (
     <nav
-      className="border-b border-gray-100 sticky top-0 z-50 backdrop-blur-md bg-white/90"
+      className="border-b border-gray-100 sticky top-0 z-50 backdrop-blur-md bg-white/80"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
