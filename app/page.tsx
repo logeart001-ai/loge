@@ -150,7 +150,7 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-12">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Featured Artworks</h2>
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Featured Art Expressions</h2>
               <p className="text-gray-600">Handpicked pieces from our most talented creators</p>
             </div>
             <Link href="/art" className="mt-4 md:mt-0">
