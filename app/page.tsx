@@ -17,6 +17,30 @@ import { Reveal } from '@/components/reveal'
 import { CountUp } from '@/components/count-up'
 
 export default async function HomePage() {
+  // Local image mapping for Featured Artworks (filenames named after their cards)
+  const localArtworkImages: Record<string, string> = {
+    'ancestral-echoes': '/image/AncestralEchoes.jpg',
+    'urban-rythym': '/image/urbanRythym.jpg',
+    'resilience-ii': '/image/resilence2.jpg',
+    'resilence-2': '/image/resilence2.jpg',
+    'ankara-blazers': '/image/ankarablazers.jpg',
+    'kente': '/image/kente.jpg',
+  }
+
+  type ArtworkLike = { title?: string; thumbnail_url?: string | null; image_urls?: string[] | null }
+  const getArtworkImageSrc = (artwork: ArtworkLike): string => {
+    const title: string = artwork?.title || ''
+    const slug = title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '')
+
+    if (localArtworkImages[slug]) return localArtworkImages[slug]
+    for (const key of Object.keys(localArtworkImages)) {
+      if (slug.includes(key) || key.includes(slug)) return localArtworkImages[key]
+    }
+    return artwork?.thumbnail_url || artwork?.image_urls?.[0] || "/placeholder.svg?height=300&width=400&text=Artwork"
+  }
   // Fetch dynamic data from Supabase with fallbacks
   const [featuredArtworks, featuredCreators, upcomingEvents, blogPosts] = await Promise.allSettled([
     getFeaturedArtworks(6),
@@ -148,7 +172,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Featured Artworks */}
+      {/* Featured Art Expression */}
       <section className="py-12 md:py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-12">
@@ -170,14 +194,20 @@ export default async function HomePage() {
                 <Card className="group cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.01]">
                   <CardContent className="p-0">
                     <div className="relative overflow-hidden h-48 md:h-64">
-                      <Image
-                        src={artwork.thumbnail_url || artwork.image_urls?.[0] || "/placeholder.svg?height=300&width=400&text=Artwork"}
-                        alt={artwork.title}
-                        fill
-                        unoptimized
-                        sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                        className="object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
+                      {(() => {
+                        const src = getArtworkImageSrc(artwork)
+                        const isLocal = src.startsWith('/')
+                        return (
+                          <Image
+                            src={src}
+                            alt={artwork.title}
+                            fill
+                            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                            className="object-cover group-hover:scale-110 transition-transform duration-500"
+                            priority={idx < 3}
+                          />
+                        )
+                      })()}
                       <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <Button size="sm" variant="secondary" className="rounded-full w-10 h-10 p-0">
                           <Heart className="w-4 h-4" />
@@ -274,7 +304,6 @@ export default async function HomePage() {
                         src={creator.avatar_url || "/placeholder.svg?height=120&width=120&text=Creator"}
                         alt={creator.full_name}
                         fill
-                        unoptimized
                         className="rounded-full object-cover"
                         sizes="(min-width: 768px) 96px, 80px"
                       />
@@ -350,6 +379,17 @@ export default async function HomePage() {
                 <Reveal key={event.id} delay={([0, 100, 200] as const)[idx % 3]}>
                 <Card className="bg-white hover:shadow-xl transition-transform hover:-translate-y-1">
                   <CardContent className="p-6">
+                    {event.banner_image_url && (
+                      <div className="relative h-40 rounded-md overflow-hidden mb-4">
+                        <Image
+                          src={event.banner_image_url}
+                          alt={event.title}
+                          fill
+                          className="object-cover"
+                          sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                        />
+                      </div>
+                    )}
                     <div className="text-center mb-4">
                       <div className="text-2xl md:text-3xl font-bold text-gray-900">
                         {new Date(event.start_date).getDate()}
@@ -436,7 +476,6 @@ export default async function HomePage() {
                         src={post.featured_image_url || "/placeholder.svg"}
                         alt={post.title}
                         fill
-                        unoptimized
                         className="object-cover rounded-t-lg"
                         sizes="(min-width: 768px) 33vw, 100vw"
                       />
@@ -449,7 +488,6 @@ export default async function HomePage() {
                           alt={post.author?.full_name || 'Author avatar'}
                           width={32}
                           height={32}
-                          unoptimized
                           className="rounded-full object-cover"
                         />
                         <div>
