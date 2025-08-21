@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Heart, ShoppingBag, User, Bell, Settings, LogOut } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 async function getBuyerStats(userId: string) {
   const supabase = await createServerClient()
@@ -62,10 +63,8 @@ export default async function BuyerDashboard() {
       <header className="bg-white border-b border-gray-200 px-4 py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-sm">L</span>
-            </div>
-            <span className="font-bold text-lg">L'oge Arts</span>
+            <Image src="/image/logelogo.png" alt="L&apos;oge Arts logo" width={64} height={64} />
+            <span className="font-bold text-lg">L&apos;oge Arts</span>
           </Link>
           
           <div className="flex items-center space-x-4">
@@ -87,9 +86,15 @@ export default async function BuyerDashboard() {
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center space-x-3 mb-6">
-                  <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                  <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
                     {user.user_metadata?.avatar_url ? (
-                      <img src={user.user_metadata.avatar_url || "/placeholder.svg"} alt={user.user_metadata?.full_name} className="w-12 h-12 rounded-full" />
+                      <Image
+                        src={user.user_metadata.avatar_url || "/placeholder.svg"}
+                        alt={user.user_metadata?.full_name || 'Profile avatar'}
+                        width={48}
+                        height={48}
+                        className="rounded-full object-cover"
+                      />
                     ) : (
                       <User className="w-6 h-6 text-gray-600" />
                     )}
@@ -187,14 +192,23 @@ export default async function BuyerDashboard() {
               <CardContent>
                 {stats.recentOrders.length > 0 ? (
                   <div className="space-y-4">
-                    {stats.recentOrders.map((order: any) => (
+                    {stats.recentOrders.map((order: {
+                      id: string;
+                      total_amount: number | string;
+                      status: string;
+                      created_at: string;
+                      artworks?: { title?: string; image_urls?: (string | null)[] | null } | null;
+                      user_profiles?: { full_name?: string | null } | null;
+                    }) => (
                       <div key={order.id} className="flex items-center space-x-4 p-4 border rounded-lg">
                         <div className="w-16 h-16 bg-gray-200 rounded-lg flex-shrink-0">
                           {order.artworks?.image_urls?.[0] && (
-                            <img 
-                              src={order.artworks.image_urls[0] || "/placeholder.svg"} 
-                              alt={order.artworks.title}
-                              className="w-16 h-16 object-cover rounded-lg"
+                            <Image
+                              src={(order.artworks.image_urls[0] as string) || "/placeholder.svg"}
+                              alt={order.artworks.title || 'Artwork image'}
+                              width={64}
+                              height={64}
+                              className="object-cover rounded-lg"
                             />
                           )}
                         </div>

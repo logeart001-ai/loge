@@ -12,7 +12,7 @@ import {
   getUpcomingEvents,
   getBlogPosts
 } from '@/lib/supabase-queries'
-import { Users, BookOpen, Calendar, Upload, MessageCircle, FileText, Instagram, Facebook, Twitter, Star, Heart, MapPin, Clock, ArrowRight, TrendingUp, Award, Globe } from 'lucide-react'
+import { Users, BookOpen, Calendar, CalendarDays, Upload, MessageCircle, FileText, Instagram, Facebook, Twitter, Star, Heart, MapPin, Clock, ArrowRight, TrendingUp, Award, Globe } from 'lucide-react'
 import { Reveal } from '@/components/reveal'
 import { CountUp } from '@/components/count-up'
 
@@ -206,20 +206,33 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
               {artworks.map((artwork, idx) => (
                 <Reveal key={artwork.id} delay={([0, 100, 200] as const)[idx % 3]}>
-                <Card className="group cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.01]">
+                <Card className="group cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 pt-0">
                   <CardContent className="p-0">
-                    <div className="relative overflow-hidden h-48 md:h-64">
+                    <div className="relative overflow-hidden h-56 md:h-72 bg-white">
                       {(() => {
                         const src = getArtworkImageSrc(artwork)
                         return (
-                          <Image
-                            src={src}
-                            alt={artwork.title}
-                            fill
-                            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                            className="object-cover group-hover:scale-110 transition-transform duration-500"
-                            priority={idx < 3}
-                          />
+                          <>
+                            {/* Background cover layer for a full, rich fill without cropping the foreground */}
+                            <Image
+                              src={src}
+                              alt=""
+                              fill
+                              aria-hidden="true"
+                              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                              className="object-cover scale-110 blur-xl opacity-40"
+                              priority={false}
+                            />
+                            {/* Foreground full image, never cropped */}
+                            <Image
+                              src={src}
+                              alt={artwork.title}
+                              fill
+                              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                              className="object-contain object-center drop-shadow-sm"
+                              priority={idx < 3}
+                            />
+                          </>
                         )
                       })()}
                       <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -391,7 +404,7 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               {events.map((event, idx) => (
                 <Reveal key={event.id} delay={([0, 100, 200] as const)[idx % 3]}>
-                <Card className="bg-white hover:shadow-xl transition-transform hover:-translate-y-1">
+                <Card className="bg-white hover:shadow-xl transition-transform hover:-translate-y-1 pt-0">
                   <CardContent className="p-6">
                     {event.banner_image_url && (
                       <div className="relative h-40 rounded-md overflow-hidden mb-4">
@@ -418,6 +431,15 @@ export default async function HomePage() {
                     </h3>
 
                     <div className="space-y-2 mb-4">
+                      <div className="flex items-center gap-2 text-sm text-gray-700">
+                        <CalendarDays className="w-5 h-5 text-orange-600" strokeWidth={2.5} aria-hidden="true" />
+                        {new Date(event.start_date).toLocaleDateString('en-US', {
+                          weekday: 'short',
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}
+                      </div>
                       <div className="flex items-center gap-2 text-sm text-gray-600">
                         <Clock className="w-4 h-4" />
                         {new Date(event.start_date).toLocaleTimeString('en-US', {
@@ -483,7 +505,7 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               {posts.map((post, idx) => (
                 <Reveal key={post.id} delay={([0, 100, 200] as const)[idx % 3]}>
-                <Card className="hover:shadow-lg transition-transform hover:-translate-y-1">
+                <Card className="hover:shadow-lg transition-transform hover:-translate-y-1 pt-0">
                   <CardContent className="p-0">
                     <div className="relative h-48 bg-gray-200 rounded-t-lg overflow-hidden">
                       <Image
