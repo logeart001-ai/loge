@@ -34,7 +34,7 @@ export default async function HomePage() {
       <Navbar />
 
       {/* Hero Section with Video Background */}
-      <section className="relative bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 py-12 md:py-20 overflow-hidden">
+  <section className="relative bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 overflow-hidden min-h-[calc(100vh-4rem)] flex items-center">
         {/* Background Video */}
         <div className="absolute inset-0 w-full h-full">
           <BackgroundVideo
@@ -69,12 +69,12 @@ export default async function HomePage() {
                 </Button>
               </Link>
               <Link href="/auth/signup?type=creator">
-                <Button variant="outline" className="w-full sm:w-auto border-white text-white hover:bg-white hover:text-orange-500 px-6 md:px-8 py-3 text-base md:text-lg backdrop-blur-sm">
+                <Button variant="outline" className="w-full sm:w-auto border-white text-white px-6 md:px-8 py-3 text-base md:text-lg backdrop-blur-sm">
                   Join as Artist
                 </Button>
               </Link>
               <Link href="/events">
-                <Button variant="outline" className="w-full sm:w-auto border-white text-white hover:bg-white hover:text-gray-700 px-6 md:px-8 py-3 text-base md:text-lg backdrop-blur-sm">
+                <Button variant="outline" className="w-full sm:w-auto border-white text-white px-6 md:px-8 py-3 text-base md:text-lg backdrop-blur-sm">
                   Attend Events
                 </Button>
               </Link>
