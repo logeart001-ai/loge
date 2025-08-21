@@ -26,6 +26,21 @@ export default async function HomePage() {
     'ankara-blazers': '/image/ankarablazers.jpg',
     'kente': '/image/kente.jpg',
   }
+  // Local image mapping for Featured Creators (filenames named after creator full name, no spaces)
+  // Example files detected in /public/image: AdunniOlorunnisola.jpg, AmaraDiallo.jpg, KwameAsante.jpg
+  const localCreatorImages: Record<string, string> = {
+    adunniolorunnisola: '/image/AdunniOlorunnisola.jpg',
+    amaradiallo: '/image/AmaraDiallo.jpg',
+    kwameasante: '/image/KwameAsante.jpg',
+  }
+
+  const getCreatorImageSrc = (creator: { full_name?: string | null; avatar_url?: string | null }): string => {
+    const name = (creator.full_name || '').normalize('NFKD').replace(/[^\p{L}\p{N}]+/gu, '')
+    const key = name.toLowerCase()
+    if (localCreatorImages[key]) return localCreatorImages[key]
+    // Fallback to remote avatar or placeholder
+    return creator.avatar_url || '/placeholder.svg?height=120&width=120&text=Creator'
+  }
 
   type ArtworkLike = { title?: string; thumbnail_url?: string | null; image_urls?: string[] | null }
   const getArtworkImageSrc = (artwork: ArtworkLike): string => {
@@ -196,7 +211,6 @@ export default async function HomePage() {
                     <div className="relative overflow-hidden h-48 md:h-64">
                       {(() => {
                         const src = getArtworkImageSrc(artwork)
-                        const isLocal = src.startsWith('/')
                         return (
                           <Image
                             src={src}
@@ -301,7 +315,7 @@ export default async function HomePage() {
                   <CardContent className="p-6 md:p-8">
                     <div className="relative mb-6 w-20 h-20 md:w-24 md:h-24 mx-auto">
                       <Image
-                        src={creator.avatar_url || "/placeholder.svg?height=120&width=120&text=Creator"}
+                        src={getCreatorImageSrc(creator)}
                         alt={creator.full_name}
                         fill
                         className="rounded-full object-cover"
