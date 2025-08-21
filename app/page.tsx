@@ -14,6 +14,7 @@ import {
 } from '@/lib/supabase-queries'
 import { Users, BookOpen, Calendar, Upload, MessageCircle, FileText, Instagram, Facebook, Twitter, Star, Heart, MapPin, Clock, ArrowRight, TrendingUp, Award, Globe } from 'lucide-react'
 import { Reveal } from '@/components/reveal'
+import { CountUp } from '@/components/count-up'
 
 export default async function HomePage() {
   // Fetch dynamic data from Supabase with fallbacks
@@ -126,17 +127,19 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
             {[
-              { icon: Users, value: '500+', label: 'African Artists', color: 'orange' },
-              { icon: BookOpen, value: '1,200+', label: 'Artworks', color: 'red' },
-              { icon: Globe, value: '50+', label: 'Countries', color: 'blue' },
-              { icon: Award, value: '98%', label: 'Satisfaction', color: 'green' }
+              { icon: Users, value: 500, suffix: '+', label: 'African Artists' },
+              { icon: BookOpen, value: 1200, suffix: '+', label: 'Artworks' },
+              { icon: Globe, value: 50, suffix: '+', label: 'Countries' },
+              { icon: Award, value: 98, suffix: '%', label: 'Satisfaction' }
             ].map((stat, index) => (
               <Reveal key={index} delay={([0, 100, 200, 300] as const)[index % 4]}>
               <div className="text-center">
                 <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-orange-100 rounded-lg mb-3 md:mb-4">
                   <stat.icon className="h-6 w-6 md:h-8 md:w-8 text-orange-600" />
                 </div>
-                <div className="text-2xl md:text-3xl font-bold text-gray-900">{stat.value}</div>
+                <div className="text-2xl md:text-3xl font-bold text-gray-900">
+                  <CountUp end={stat.value} suffix={stat.suffix as string} />
+                </div>
                 <div className="text-sm md:text-base text-gray-600">{stat.label}</div>
               </div>
               </Reveal>
@@ -164,7 +167,7 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
               {artworks.map((artwork, idx) => (
                 <Reveal key={artwork.id} delay={([0, 100, 200] as const)[idx % 3]}>
-                <Card className="group cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <Card className="group cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.01]">
                   <CardContent className="p-0">
                     <div className="relative overflow-hidden h-48 md:h-64">
                       <Image
@@ -228,7 +231,7 @@ export default async function HomePage() {
                             </span>
                           )}
                         </div>
-                        <Button size="sm" className="bg-orange-600 hover:bg-orange-700">
+                        <Button size="sm" className="bg-orange-600 hover:bg-orange-700 transition-transform hover:-translate-y-0.5">
                           View Details
                         </Button>
                       </div>
@@ -264,7 +267,7 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               {creators.map((creator, idx) => (
                 <Reveal key={creator.id} delay={([0, 100, 200] as const)[idx % 3]}>
-                <Card className="text-center hover:shadow-lg transition-shadow">
+                <Card className="text-center hover:shadow-lg transition-transform hover:-translate-y-1">
                   <CardContent className="p-6 md:p-8">
                     <div className="relative mb-6 w-20 h-20 md:w-24 md:h-24 mx-auto">
                       <Image
@@ -310,7 +313,7 @@ export default async function HomePage() {
                     </div>
 
                     <Link href={`/creators/${creator.id}`}>
-                      <Button variant="outline" className="w-full text-orange-500 border-orange-500 hover:bg-orange-50">
+                      <Button variant="outline" className="w-full text-orange-500 border-orange-500 hover:bg-orange-50 transition-transform hover:-translate-y-0.5">
                         View Profile
                       </Button>
                     </Link>
@@ -345,7 +348,7 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               {events.map((event, idx) => (
                 <Reveal key={event.id} delay={([0, 100, 200] as const)[idx % 3]}>
-                <Card className="bg-white hover:shadow-xl transition-shadow">
+                <Card className="bg-white hover:shadow-xl transition-transform hover:-translate-y-1">
                   <CardContent className="p-6">
                     <div className="text-center mb-4">
                       <div className="text-2xl md:text-3xl font-bold text-gray-900">
@@ -378,7 +381,7 @@ export default async function HomePage() {
                       <span className="font-semibold text-gray-900">
                         {event.is_free ? 'Free' : `₦${event.ticket_price?.toLocaleString()}`}
                       </span>
-                      <Button className="bg-orange-500 hover:bg-orange-600 text-white">
+                      <Button className="bg-orange-500 hover:bg-orange-600 text-white transition-transform hover:-translate-y-0.5">
                         Register
                       </Button>
                     </div>
@@ -426,7 +429,7 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               {posts.map((post, idx) => (
                 <Reveal key={post.id} delay={([0, 100, 200] as const)[idx % 3]}>
-                <Card className="hover:shadow-lg transition-shadow">
+                <Card className="hover:shadow-lg transition-transform hover:-translate-y-1">
                   <CardContent className="p-0">
                     <div className="relative h-48 bg-gray-200 rounded-t-lg overflow-hidden">
                       <Image
@@ -476,7 +479,7 @@ export default async function HomePage() {
                       </div>
 
                       <Link href={`/blog/${post.slug}`}>
-                        <Button variant="ghost" className="w-full text-orange-600 hover:bg-orange-50">
+                        <Button variant="ghost" className="w-full text-orange-600 hover:bg-orange-50 transition-transform hover:-translate-y-0.5">
                           Read Article
                         </Button>
                       </Link>
