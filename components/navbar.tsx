@@ -41,6 +41,8 @@ export function Navbar() {
     return () => subscription.unsubscribe()
   }, [])
 
+  // Removed scroll-based background transitioning per request
+
   const handleSignOut = async () => {
     const supabase = createClient()
     await supabase.auth.signOut()
@@ -48,7 +50,9 @@ export function Navbar() {
   }
 
   return (
-    <nav className="bg-white border-b border-gray-100">
+    <nav
+      className="border-b border-gray-100 sticky top-0 z-50 backdrop-blur-md bg-white/90"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
