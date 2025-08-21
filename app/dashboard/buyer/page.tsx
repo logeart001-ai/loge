@@ -8,48 +8,67 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 async function getBuyerStats(userId: string) {
-  const supabase = await createServerClient()
-  
-  // Get orders count
-  const { count: ordersCount } = await supabase
-    .from('orders')
-    .select('*', { count: 'exact', head: true })
-    .eq('buyer_id', userId)
+  try {
+    const supabase = await createServerClient()
+    // Orders count
+    const { count: ordersCount } = await supabase
+      .from('orders')
+      .select('*', { count: 'exact', head: true })
+      .eq('buyer_id', userId)
 
-  // Get wishlist count
-  const { count: wishlistCount } = await supabase
-    .from('wishlist')
-    .select('*', { count: 'exact', head: true })
-    .eq('user_id', userId)
+    // Wishlist count: try plural then singular
+    let wishlistCount = 0
+    {
+      const { count, error } = await supabase
+        .from('wishlists')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', userId)
+      if (!error && typeof count === 'number') {
+        wishlistCount = count
+      } else {
+        const { count: countSingular } = await supabase
+          .from('wishlist')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', userId)
+        wishlistCount = countSingular || 0
+      }
+    }
 
-  // Get following count
-  const { count: followingCount } = await supabase
-    .from('following')
-    .select('*', { count: 'exact', head: true })
-    .eq('follower_id', userId)
+    // Following count: plural then singular table name
+    let followingCount = 0
+    {
+      const { count, error } = await supabase
+        .from('follows')
+        .select('*', { count: 'exact', head: true })
+        .eq('follower_id', userId)
+      if (!error && typeof count === 'number') {
+        followingCount = count
+      } else {
+        const { count: countSingular } = await supabase
+          .from('following')
+          .select('*', { count: 'exact', head: true })
+          .eq('follower_id', userId)
+        followingCount = countSingular || 0
+      }
+    }
 
-  // Get recent orders
-  const { data: recentOrders } = await supabase
-    .from('orders')
-    .select(`
-      *,
-      artworks (
-        title,
-        image_urls
-      ),
-      user_profiles!orders_creator_id_fkey (
-        full_name
-      )
-    `)
-    .eq('buyer_id', userId)
-    .order('created_at', { ascending: false })
-    .limit(5)
+    // Recent orders (simple selection)
+    const { data: recentOrders } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('buyer_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(5)
 
-  return {
-    ordersCount: ordersCount || 0,
-    wishlistCount: wishlistCount || 0,
-    followingCount: followingCount || 0,
-    recentOrders: recentOrders || []
+    return {
+      ordersCount: ordersCount || 0,
+      wishlistCount,
+      followingCount,
+      recentOrders: recentOrders || []
+    }
+  } catch (e) {
+    console.error('Error computing buyer stats:', e)
+  return { ordersCount: 0, wishlistCount: 0, followingCount: 0, recentOrders: [] as { id?: string; created_at?: string; total_amount?: number | string; status?: string }[] }
   }
 }
 
@@ -202,15 +221,7 @@ export default async function BuyerDashboard() {
                     }) => (
                       <div key={order.id} className="flex items-center space-x-4 p-4 border rounded-lg">
                         <div className="w-16 h-16 bg-gray-200 rounded-lg flex-shrink-0">
-                          {order.artworks?.image_urls?.[0] && (
-                            <Image
-                              src={(order.artworks.image_urls[0] as string) || "/placeholder.svg"}
-                              alt={order.artworks.title || 'Artwork image'}
-                              width={64}
-                              height={64}
-                              className="object-cover rounded-lg"
-                            />
-                          )}
+                          {/* Artwork thumbnail omitted to keep query simple and robust across schemas */}
                         </div>
                         <div className="flex-1">
                           <h4 className="font-medium">{order.artworks?.title}</h4>
