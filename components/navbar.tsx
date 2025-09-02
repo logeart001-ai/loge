@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Menu, X, User, LogOut } from 'lucide-react'
 import { createClient } from '@/lib/supabase-client'
@@ -20,6 +20,8 @@ export function Navbar() {
   const [user, setUser] = useState<MinimalUser | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
+  const pathname = usePathname()
+  const inDashboard = pathname?.startsWith('/dashboard')
 
   useEffect(() => {
     const supabase = createClient()
@@ -87,6 +89,14 @@ export function Navbar() {
             <Link href="/events" className="text-gray-700 hover:text-orange-500 font-medium">
               Events
             </Link>
+            {!loading && user && inDashboard && (
+              <Link
+                href={user.user_metadata?.user_type === 'creator' ? '/dashboard/creator' : '/dashboard/buyer'}
+                className="text-orange-600 font-semibold"
+              >
+                Dashboard Home
+              </Link>
+            )}
           </div>
 
           {/* Desktop Auth Buttons */}
@@ -186,6 +196,15 @@ export function Navbar() {
               >
                 Events
               </Link>
+              {!loading && user && inDashboard && (
+                <Link
+                  href={user.user_metadata?.user_type === 'creator' ? '/dashboard/creator' : '/dashboard/buyer'}
+                  className="block px-3 py-2 text-orange-600 font-semibold"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Dashboard Home
+                </Link>
+              )}
               
               <div className="border-t pt-4 space-y-2">
                 {loading ? (
