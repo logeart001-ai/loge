@@ -75,7 +75,7 @@ export default async function HomePage() {
       <Navbar />
 
       {/* Hero Section with Video Background */}
-  <section className="relative bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 overflow-hidden h-screen flex items-center">
+      <section className="relative bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 overflow-hidden h-screen flex items-center">
         {/* Background Video */}
         <div className="absolute inset-0 w-full h-full">
           <BackgroundVideo
@@ -172,15 +172,15 @@ export default async function HomePage() {
               { icon: Award, value: 98, suffix: '%', label: 'Satisfaction' }
             ].map((stat, index) => (
               <Reveal key={index} delay={([0, 100, 200, 300] as const)[index % 4]}>
-              <div className="text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-orange-100 rounded-lg mb-3 md:mb-4">
-                  <stat.icon className="h-6 w-6 md:h-8 md:w-8 text-orange-600" />
+                <div className="text-center">
+                  <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-orange-100 rounded-lg mb-3 md:mb-4">
+                    <stat.icon className="h-6 w-6 md:h-8 md:w-8 text-orange-600" />
+                  </div>
+                  <div className="text-2xl md:text-3xl font-bold text-gray-900">
+                    <CountUp end={stat.value} suffix={stat.suffix as string} />
+                  </div>
+                  <div className="text-sm md:text-base text-gray-600">{stat.label}</div>
                 </div>
-                <div className="text-2xl md:text-3xl font-bold text-gray-900">
-                  <CountUp end={stat.value} suffix={stat.suffix as string} />
-                </div>
-                <div className="text-sm md:text-base text-gray-600">{stat.label}</div>
-              </div>
               </Reveal>
             ))}
           </div>
@@ -206,95 +206,95 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
               {artworks.map((artwork, idx) => (
                 <Reveal key={artwork.id} delay={([0, 100, 200] as const)[idx % 3]}>
-                <Card className="group cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 pt-0">
-                  <CardContent className="p-0">
-                    <div className="relative overflow-hidden h-56 md:h-72 bg-white">
-                      {(() => {
-                        const src = getArtworkImageSrc(artwork)
-                        return (
-                          <>
-                            {/* Background cover layer for a full, rich fill without cropping the foreground */}
-                            <Image
-                              src={src}
-                              alt=""
-                              fill
-                              aria-hidden="true"
-                              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                              className="object-cover scale-110 blur-xl opacity-40"
-                              priority={false}
-                            />
-                            {/* Foreground full image, never cropped */}
-                            <Image
-                              src={src}
-                              alt={artwork.title}
-                              fill
-                              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                              className="object-contain object-center drop-shadow-sm"
-                              priority={idx < 3}
-                            />
-                          </>
-                        )
-                      })()}
-                      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <Button size="sm" variant="secondary" className="rounded-full w-10 h-10 p-0">
-                          <Heart className="w-4 h-4" />
-                        </Button>
-                      </div>
-                      {artwork.original_price && (
-                        <Badge className="absolute top-4 left-4 bg-red-500 text-white">
-                          Sale
-                        </Badge>
-                      )}
-                    </div>
-
-                    <div className="p-4 md:p-6">
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex-1">
-                          <h3 className="font-bold text-lg text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-1">
-                            {artwork.title}
-                          </h3>
-                          <p className="text-gray-600 text-sm">by {artwork.creator?.full_name}</p>
+                  <Card className="group cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 pt-0">
+                    <CardContent className="p-0">
+                      <div className="relative overflow-hidden h-56 md:h-72 bg-white">
+                        {(() => {
+                          const src = getArtworkImageSrc(artwork)
+                          return (
+                            <>
+                              {/* Background cover layer for a full, rich fill without cropping the foreground */}
+                              <Image
+                                src={src}
+                                alt=""
+                                fill
+                                aria-hidden="true"
+                                sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                                className="object-cover scale-110 blur-xl opacity-40"
+                                priority={false}
+                              />
+                              {/* Foreground full image, never cropped */}
+                              <Image
+                                src={src}
+                                alt={artwork.title}
+                                fill
+                                sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                                className="object-contain object-center drop-shadow-sm"
+                                priority={idx < 3}
+                              />
+                            </>
+                          )
+                        })()}
+                        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <Button size="sm" variant="secondary" className="rounded-full w-10 h-10 p-0">
+                            <Heart className="w-4 h-4" />
+                          </Button>
                         </div>
-                        <Badge variant="secondary" className="ml-2 text-xs">
-                          {artwork.category.replace('_', ' ')}
-                        </Badge>
+                        {artwork.original_price && (
+                          <Badge className="absolute top-4 left-4 bg-red-500 text-white">
+                            Sale
+                          </Badge>
+                        )}
                       </div>
 
-                      <div className="flex items-center mb-3">
-                        <div className="flex items-center">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`w-4 h-4 ${i < Math.floor(artwork.creator?.rating || 0)
-                                ? 'text-yellow-400 fill-current'
-                                : 'text-gray-300'
-                                }`}
-                            />
-                          ))}
-                          <span className="ml-2 text-sm text-gray-600">
-                            {artwork.creator?.rating?.toFixed(1) || 'New'}
-                          </span>
+                      <div className="p-4 md:p-6">
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex-1">
+                            <h3 className="font-bold text-lg text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-1">
+                              {artwork.title}
+                            </h3>
+                            <p className="text-gray-600 text-sm">by {artwork.creator?.full_name}</p>
+                          </div>
+                          <Badge variant="secondary" className="ml-2 text-xs">
+                            {artwork.category.replace('_', ' ')}
+                          </Badge>
                         </div>
-                      </div>
 
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xl md:text-2xl font-bold text-gray-900">
-                            ₦{artwork.price?.toLocaleString()}
-                          </span>
-                          {artwork.original_price && (
-                            <span className="text-lg text-gray-500 line-through">
-                              ₦{artwork.original_price.toLocaleString()}
+                        <div className="flex items-center mb-3">
+                          <div className="flex items-center">
+                            {[...Array(5)].map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`w-4 h-4 ${i < Math.floor(artwork.creator?.rating || 0)
+                                  ? 'text-yellow-400 fill-current'
+                                  : 'text-gray-300'
+                                  }`}
+                              />
+                            ))}
+                            <span className="ml-2 text-sm text-gray-600">
+                              {artwork.creator?.rating?.toFixed(1) || 'New'}
                             </span>
-                          )}
+                          </div>
                         </div>
-                        <Button size="sm" className="bg-orange-600 hover:bg-orange-700 transition-transform hover:-translate-y-0.5">
-                          View Details
-                        </Button>
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xl md:text-2xl font-bold text-gray-900">
+                              ₦{artwork.price?.toLocaleString()}
+                            </span>
+                            {artwork.original_price && (
+                              <span className="text-lg text-gray-500 line-through">
+                                ₦{artwork.original_price.toLocaleString()}
+                              </span>
+                            )}
+                          </div>
+                          <Button size="sm" className="bg-orange-600 hover:bg-orange-700 transition-transform hover:-translate-y-0.5">
+                            View Details
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
                 </Reveal>
               ))}
             </div>
@@ -324,57 +324,57 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               {creators.map((creator, idx) => (
                 <Reveal key={creator.id} delay={([0, 100, 200] as const)[idx % 3]}>
-                <Card className="text-center hover:shadow-lg transition-transform hover:-translate-y-1">
-                  <CardContent className="p-6 md:p-8">
-                    <div className="relative mb-6 w-20 h-20 md:w-24 md:h-24 mx-auto">
-                      <Image
-                        src={getCreatorImageSrc(creator)}
-                        alt={creator.full_name}
-                        fill
-                        className="rounded-full object-cover"
-                        sizes="(min-width: 768px) 96px, 80px"
-                      />
-                      {creator.is_verified && (
-                        <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
-                          <Badge className="bg-blue-500 text-white text-xs">Verified</Badge>
-                        </div>
-                      )}
-                    </div>
-
-                    <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">
-                      {creator.full_name}
-                    </h3>
-
-                    <div className="flex items-center justify-center gap-1 mb-2">
-                      <MapPin className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-600">{creator.location}</span>
-                    </div>
-
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                      {creator.bio || creator.discipline}
-                    </p>
-
-                    <div className="flex items-center justify-center gap-4 mb-6">
-                      <div className="text-center">
-                        <div className="font-bold text-gray-900">{creator.artworks?.length || 0}</div>
-                        <div className="text-xs text-gray-600">Artworks</div>
+                  <Card className="text-center hover:shadow-lg transition-transform hover:-translate-y-1">
+                    <CardContent className="p-6 md:p-8">
+                      <div className="relative mb-6 w-20 h-20 md:w-24 md:h-24 mx-auto">
+                        <Image
+                          src={getCreatorImageSrc(creator)}
+                          alt={creator.full_name}
+                          fill
+                          className="rounded-full object-cover"
+                          sizes="(min-width: 768px) 96px, 80px"
+                        />
+                        {creator.is_verified && (
+                          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
+                            <Badge className="bg-blue-500 text-white text-xs">Verified</Badge>
+                          </div>
+                        )}
                       </div>
-                      <div className="text-center">
-                        <div className="font-bold text-gray-900 flex items-center gap-1">
-                          <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                          {creator.rating?.toFixed(1) || 'New'}
-                        </div>
-                        <div className="text-xs text-gray-600">Rating</div>
-                      </div>
-                    </div>
 
-                    <Link href={`/creators/${creator.id}`}>
-                      <Button variant="outline" className="w-full text-orange-500 border-orange-500 hover:bg-orange-50 transition-transform hover:-translate-y-0.5">
-                        View Profile
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
+                      <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">
+                        {creator.full_name}
+                      </h3>
+
+                      <div className="flex items-center justify-center gap-1 mb-2">
+                        <MapPin className="w-4 h-4 text-gray-400" />
+                        <span className="text-sm text-gray-600">{creator.location}</span>
+                      </div>
+
+                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                        {creator.bio || creator.discipline}
+                      </p>
+
+                      <div className="flex items-center justify-center gap-4 mb-6">
+                        <div className="text-center">
+                          <div className="font-bold text-gray-900">{creator.artworks?.length || 0}</div>
+                          <div className="text-xs text-gray-600">Artworks</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="font-bold text-gray-900 flex items-center gap-1">
+                            <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                            {creator.rating?.toFixed(1) || 'New'}
+                          </div>
+                          <div className="text-xs text-gray-600">Rating</div>
+                        </div>
+                      </div>
+
+                      <Link href={`/creators/${creator.id}`}>
+                        <Button variant="outline" className="w-full text-orange-500 border-orange-500 hover:bg-orange-50 transition-transform hover:-translate-y-0.5">
+                          View Profile
+                        </Button>
+                      </Link>
+                    </CardContent>
+                  </Card>
                 </Reveal>
               ))}
             </div>
@@ -404,65 +404,65 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               {events.map((event, idx) => (
                 <Reveal key={event.id} delay={([0, 100, 200] as const)[idx % 3]}>
-                <Card className="bg-white hover:shadow-xl transition-transform hover:-translate-y-1 pt-0">
-                  <CardContent className="p-6">
-                    {event.banner_image_url && (
-                      <div className="relative h-40 rounded-md overflow-hidden mb-4">
-                        <Image
-                          src={event.banner_image_url}
-                          alt={event.title}
-                          fill
-                          className="object-cover"
-                          sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                        />
+                  <Card className="bg-white hover:shadow-xl transition-transform hover:-translate-y-1 pt-0">
+                    <CardContent className="p-6">
+                      {event.banner_image_url && (
+                        <div className="relative h-40 rounded-md overflow-hidden mb-4">
+                          <Image
+                            src={event.banner_image_url}
+                            alt={event.title}
+                            fill
+                            className="object-cover"
+                            sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                          />
+                        </div>
+                      )}
+                      <div className="text-center mb-4">
+                        <div className="text-2xl md:text-3xl font-bold text-gray-900">
+                          {new Date(event.start_date).getDate()}
+                        </div>
+                        <div className="text-gray-600">
+                          {new Date(event.start_date).toLocaleDateString('en-US', { month: 'short' })}
+                        </div>
                       </div>
-                    )}
-                    <div className="text-center mb-4">
-                      <div className="text-2xl md:text-3xl font-bold text-gray-900">
-                        {new Date(event.start_date).getDate()}
-                      </div>
-                      <div className="text-gray-600">
-                        {new Date(event.start_date).toLocaleDateString('en-US', { month: 'short' })}
-                      </div>
-                    </div>
 
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-                      {event.title}
-                    </h3>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+                        {event.title}
+                      </h3>
 
-                    <div className="space-y-2 mb-4">
-                      <div className="flex items-center gap-2 text-sm text-gray-700">
-                        <CalendarDays className="w-5 h-5 text-orange-600" strokeWidth={2.5} aria-hidden="true" />
-                        {new Date(event.start_date).toLocaleDateString('en-US', {
-                          weekday: 'short',
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                        })}
+                      <div className="space-y-2 mb-4">
+                        <div className="flex items-center gap-2 text-sm text-gray-700">
+                          <CalendarDays className="w-5 h-5 text-orange-600" strokeWidth={2.5} aria-hidden="true" />
+                          {new Date(event.start_date).toLocaleDateString('en-US', {
+                            weekday: 'short',
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })}
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Clock className="w-4 h-4" />
+                          {new Date(event.start_date).toLocaleTimeString('en-US', {
+                            hour: 'numeric',
+                            minute: '2-digit'
+                          })}
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <MapPin className="w-4 h-4" />
+                          {event.event_type === 'virtual' ? 'Virtual Event' : `${event.city}, ${event.country}`}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Clock className="w-4 h-4" />
-                        {new Date(event.start_date).toLocaleTimeString('en-US', {
-                          hour: 'numeric',
-                          minute: '2-digit'
-                        })}
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <MapPin className="w-4 h-4" />
-                        {event.event_type === 'virtual' ? 'Virtual Event' : `${event.city}, ${event.country}`}
-                      </div>
-                    </div>
 
-                    <div className="flex justify-between items-center">
-                      <span className="font-semibold text-gray-900">
-                        {event.is_free ? 'Free' : `₦${event.ticket_price?.toLocaleString()}`}
-                      </span>
-                      <Button className="bg-orange-500 hover:bg-orange-600 text-white transition-transform hover:-translate-y-0.5">
-                        Register
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                      <div className="flex justify-between items-center">
+                        <span className="font-semibold text-gray-900">
+                          {event.is_free ? 'Free' : `₦${event.ticket_price?.toLocaleString()}`}
+                        </span>
+                        <Button className="bg-orange-500 hover:bg-orange-600 text-white transition-transform hover:-translate-y-0.5">
+                          Register
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </Reveal>
               ))}
             </div>
@@ -505,61 +505,61 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               {posts.map((post, idx) => (
                 <Reveal key={post.id} delay={([0, 100, 200] as const)[idx % 3]}>
-                <Card className="hover:shadow-lg transition-transform hover:-translate-y-1 pt-0">
-                  <CardContent className="p-0">
-                    <div className="relative h-48 bg-gray-200 rounded-t-lg overflow-hidden">
-                      <Image
-                        src={post.featured_image_url || "/placeholder.svg"}
-                        alt={post.title}
-                        fill
-                        className="object-cover rounded-t-lg"
-                        sizes="(min-width: 768px) 33vw, 100vw"
-                      />
-                    </div>
-
-                    <div className="p-6">
-                      <div className="flex items-center gap-2 mb-3">
+                  <Card className="hover:shadow-lg transition-transform hover:-translate-y-1 pt-0">
+                    <CardContent className="p-0">
+                      <div className="relative h-48 bg-gray-200 rounded-t-lg overflow-hidden">
                         <Image
-                          src={post.author?.avatar_url || "/placeholder.svg?height=32&width=32&text=Author"}
-                          alt={post.author?.full_name || 'Author avatar'}
-                          width={32}
-                          height={32}
-                          className="rounded-full object-cover"
+                          src={post.featured_image_url || "/placeholder.svg"}
+                          alt={post.title}
+                          fill
+                          className="object-cover rounded-t-lg"
+                          sizes="(min-width: 768px) 33vw, 100vw"
                         />
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">
-                            {post.author?.full_name}
-                          </div>
-                          <div className="text-xs text-gray-600">
-                            {new Date(post.published_at).toLocaleDateString()}
+                      </div>
+
+                      <div className="p-6">
+                        <div className="flex items-center gap-2 mb-3">
+                          <Image
+                            src={post.author?.avatar_url || "/placeholder.svg?height=32&width=32&text=Author"}
+                            alt={post.author?.full_name || 'Author avatar'}
+                            width={32}
+                            height={32}
+                            className="rounded-full object-cover"
+                          />
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">
+                              {post.author?.full_name}
+                            </div>
+                            <div className="text-xs text-gray-600">
+                              {new Date(post.published_at).toLocaleDateString()}
+                            </div>
                           </div>
                         </div>
+
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+                          {post.title}
+                        </h3>
+
+                        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                          {post.excerpt}
+                        </p>
+
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {post.tags?.slice(0, 2).map((tag: string) => (
+                            <Badge key={tag} variant="secondary" className="text-xs">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+
+                        <Link href={`/blog/${post.slug}`}>
+                          <Button variant="ghost" className="w-full text-orange-600 hover:bg-orange-50 transition-transform hover:-translate-y-0.5">
+                            Read Article
+                          </Button>
+                        </Link>
                       </div>
-
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-                        {post.title}
-                      </h3>
-
-                      <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                        {post.excerpt}
-                      </p>
-
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {post.tags?.slice(0, 2).map((tag: string) => (
-                          <Badge key={tag} variant="secondary" className="text-xs">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-
-                      <Link href={`/blog/${post.slug}`}>
-                        <Button variant="ghost" className="w-full text-orange-600 hover:bg-orange-50 transition-transform hover:-translate-y-0.5">
-                          Read Article
-                        </Button>
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
                 </Reveal>
               ))}
             </div>
@@ -606,32 +606,18 @@ export default async function HomePage() {
               }
             ].map((feature, index) => (
               <Reveal key={index} delay={([0, 100, 200] as const)[index % 3]}>
-              <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-100 rounded-lg mb-4">
-                  <feature.icon className="h-8 w-8 text-orange-600" />
+                <div className="text-center">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-100 rounded-lg mb-4">
+                    <feature.icon className="h-8 w-8 text-orange-600" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
+                  <p className="text-gray-600">{feature.description}</p>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
-                <p className="text-gray-600">{feature.description}</p>
-              </div>
               </Reveal>
             ))}
           </div>
 
-          <div className="mb-12">
-            <h3 className="text-xl font-semibold text-gray-900 mb-6">Follow Us for Daily Updates</h3>
-            <div className="flex justify-center space-x-4">
-              {[
-                { icon: Instagram, name: 'Instagram', href: '#' },
-                { icon: Facebook, name: 'Facebook', href: '#' },
-                { icon: Twitter, name: 'Twitter', href: '#' }
-              ].map((social) => (
-                <Button key={social.name} variant="outline" className="flex items-center space-x-2">
-                  <social.icon className="h-4 w-4" />
-                  <span className="hidden sm:inline">{social.name}</span>
-                </Button>
-              ))}
-            </div>
-          </div>
+
         </div>
       </section>
 
@@ -687,13 +673,13 @@ export default async function HomePage() {
               }
             ].map((feature, index) => (
               <Reveal key={index} delay={([0, 100, 200] as const)[index % 3]}>
-              <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-100 rounded-lg mb-4">
-                  <feature.icon className="h-8 w-8 text-orange-600" />
+                <div className="text-center">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-100 rounded-lg mb-4">
+                    <feature.icon className="h-8 w-8 text-orange-600" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
+                  <p className="text-gray-600">{feature.description}</p>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
-                <p className="text-gray-600">{feature.description}</p>
-              </div>
               </Reveal>
             ))}
           </div>
