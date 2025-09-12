@@ -26,12 +26,12 @@ BEGIN
 
     -- Insert sample artworks
     INSERT INTO artworks (creator_id, title, description, category, price, original_price, thumbnail_url, is_featured, is_available, tags) VALUES
-    (creator1_id, 'Ancestral Echoes', 'A vibrant mixed media piece exploring the connection between past and present through traditional Yoruba symbols', 'art_design', 150000, 200000, '/placeholder.svg?height=400&width=400&text=Ancestral+Echoes', true, true, ARRAY['traditional', 'mixed-media', 'yoruba', 'contemporary']),
-    (creator1_id, 'Urban Rhythms', 'Digital art piece capturing the energy of Lagos street life with bold colors and geometric patterns', 'art_design', 75000, null, '/placeholder.svg?height=400&width=400&text=Urban+Rhythms', true, true, ARRAY['digital', 'urban', 'geometric', 'lagos']),
-    (creator2_id, 'Resilience', 'Bronze sculpture made from recycled materials, representing the strength of the African spirit', 'sculpture', 500000, null, '/placeholder.svg?height=400&width=400&text=Resilience', true, true, ARRAY['bronze', 'recycled', 'sculpture', 'strength']),
-    (creator2_id, 'Mother Earth', 'Clay sculpture celebrating the nurturing power of nature and femininity', 'sculpture', 250000, 300000, '/placeholder.svg?height=400&width=400&text=Mother+Earth', false, true, ARRAY['clay', 'nature', 'feminine', 'earth']),
-    (creator3_id, 'Kente Dreams Dress', 'Modern midi dress featuring authentic Kente cloth patterns with contemporary tailoring', 'fashion', 85000, null, '/placeholder.svg?height=400&width=400&text=Kente+Dreams', true, true, ARRAY['kente', 'dress', 'traditional', 'modern']),
-    (creator3_id, 'Ankara Blazer', 'Professional blazer in bold Ankara print, perfect for the modern African woman', 'fashion', 65000, 80000, '/placeholder.svg?height=400&width=400&text=Ankara+Blazer', true, true, ARRAY['ankara', 'blazer', 'professional', 'bold'])
+    (creator1_id, 'Ancestral Echoes', 'A vibrant mixed media piece exploring the connection between past and present through traditional Yoruba symbols', 'art_design', 150000, 200000, '/image/AncestralEchoes.jpg', true, true, ARRAY['traditional', 'mixed-media', 'yoruba', 'contemporary']),
+    (creator1_id, 'Urban Rhythms', 'Digital art piece capturing the energy of Lagos street life with bold colors and geometric patterns', 'art_design', 75000, null, '/image/urbanRythym.jpg', true, true, ARRAY['digital', 'urban', 'geometric', 'lagos']),
+    (creator2_id, 'Resilience', 'Bronze sculpture made from recycled materials, representing the strength of the African spirit', 'sculpture', 500000, null, '/image/resilence2.jpg', true, true, ARRAY['bronze', 'recycled', 'sculpture', 'strength']),
+    (creator2_id, 'Mother Earth', 'Clay sculpture celebrating the nurturing power of nature and femininity', 'sculpture', 250000, 300000, '/image/Creator Avatars female.png', false, true, ARRAY['clay', 'nature', 'feminine', 'earth']),
+    (creator3_id, 'Kente Dreams Dress', 'Modern midi dress featuring authentic Kente cloth patterns with contemporary tailoring', 'fashion', 85000, null, '/image/kente.jpg', true, true, ARRAY['kente', 'dress', 'traditional', 'modern']),
+    (creator3_id, 'Ankara Blazer', 'Professional blazer in bold Ankara print, perfect for the modern African woman', 'fashion', 65000, 80000, '/image/ankarablazers.jpg', true, true, ARRAY['ankara', 'blazer', 'professional', 'bold'])
     ON CONFLICT DO NOTHING;
 
     -- Insert sample events

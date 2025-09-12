@@ -44,8 +44,8 @@ export async function uploadArtwork(prevState: any, formData: FormData) {
       is_available: true,
       is_featured: false,
       // For now, we'll use placeholder images until we implement file upload
-      image_urls: ['/placeholder.svg?height=400&width=400&text=' + encodeURIComponent(title)],
-      thumbnail_url: '/placeholder.svg?height=400&width=400&text=' + encodeURIComponent(title)
+      image_urls: ['/image/AncestralEchoes.jpg'],
+      thumbnail_url: '/image/AncestralEchoes.jpg'
     }
 
     const { data, error } = await supabase
