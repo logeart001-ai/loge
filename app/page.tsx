@@ -39,7 +39,7 @@ export default async function HomePage() {
     const key = name.toLowerCase()
     if (localCreatorImages[key]) return localCreatorImages[key]
     // Fallback to remote avatar or placeholder
-    return creator.avatar_url || '/placeholder.svg?height=120&width=120&text=Creator'
+    return creator.avatar_url || '/image/Creator Avatars.png'
   }
 
   type ArtworkLike = { title?: string; thumbnail_url?: string | null; image_urls?: string[] | null }
@@ -54,7 +54,7 @@ export default async function HomePage() {
     for (const key of Object.keys(localArtworkImages)) {
       if (slug.includes(key) || key.includes(slug)) return localArtworkImages[key]
     }
-    return artwork?.thumbnail_url || artwork?.image_urls?.[0] || "/placeholder.svg?height=300&width=400&text=Artwork"
+    return artwork?.thumbnail_url || artwork?.image_urls?.[0] || "/image/AncestralEchoes.jpg"
   }
   // Fetch dynamic data from Supabase with fallbacks
   const [featuredArtworks, featuredCreators, upcomingEvents, blogPosts] = await Promise.allSettled([
@@ -87,7 +87,7 @@ export default async function HomePage() {
         </div>
 
         {/* Pattern overlay (optional - you can remove this if you prefer just the video) */}
-        <div className="absolute inset-0 bg-[url('/placeholder.svg?height=800&width=1200&text=African+Art+Pattern')] opacity-5 z-10"></div>
+        <div className="absolute inset-0 bg-[url('/image/African Art Pattern Background.png')] opacity-5 z-10"></div>
 
         {/* Content - positioned above the video */}
         <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -509,7 +509,7 @@ export default async function HomePage() {
                     <CardContent className="p-0">
                       <div className="relative h-48 bg-gray-200 rounded-t-lg overflow-hidden">
                         <Image
-                          src={post.featured_image_url || "/placeholder.svg"}
+                          src={post.featured_image_url || "/image/Blog Post Featured Images.png"}
                           alt={post.title}
                           fill
                           className="object-cover rounded-t-lg"
@@ -520,7 +520,7 @@ export default async function HomePage() {
                       <div className="p-6">
                         <div className="flex items-center gap-2 mb-3">
                           <Image
-                            src={post.author?.avatar_url || "/placeholder.svg?height=32&width=32&text=Author"}
+                            src={post.author?.avatar_url || "/image/Blog Author Avatars.png"}
                             alt={post.author?.full_name || 'Author avatar'}
                             width={32}
                             height={32}
