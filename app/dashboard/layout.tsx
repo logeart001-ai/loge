@@ -18,7 +18,12 @@ export default async function DashboardLayout({
     <div className="min-h-screen">
       <div className="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between">
-          <div className="text-sm text-gray-600">Dashboard</div>
+          <div className="flex items-center gap-4">
+            <Link href="/" className="text-orange-600 hover:text-orange-700 font-medium text-sm">
+              ← Home
+            </Link>
+            <div className="text-sm text-gray-600">Dashboard</div>
+          </div>
           <Link href={homeHref}>
             <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-white">
               Dashboard Home

@@ -35,6 +35,11 @@ export default function SignInPage() {
   if (state?.success) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50">
+        <div className="absolute top-4 left-4">
+          <Link href="/" className="text-orange-600 hover:text-orange-700 font-medium">
+            ← Back to Home
+          </Link>
+        </div>
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="text-green-600">Success!</CardTitle>
@@ -55,13 +60,18 @@ export default function SignInPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50">
+      <div className="absolute top-4 left-4">
+        <Link href="/" className="text-orange-600 hover:text-orange-700 font-medium">
+          ← Back to Home
+        </Link>
+      </div>
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex items-center justify-center space-x-2 mb-4">
             <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
               <span className="text-white font-bold text-sm">L</span>
             </div>
-            <span className="font-semibold text-lg text-gray-900">L'oge Arts</span>
+            <span className="font-semibold text-lg text-gray-900">L&apos;oge Arts</span>
           </div>
           <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
           <CardDescription>
