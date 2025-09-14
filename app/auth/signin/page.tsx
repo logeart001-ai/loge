@@ -1,7 +1,7 @@
 'use client'
 
 import { useActionState, useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -15,6 +15,7 @@ export default function SignInPage() {
   const [resendState, resendAction, isResending] = useActionState(resendConfirmation, null)
   const [showResendForm, setShowResendForm] = useState(false)
   const [userEmail, setUserEmail] = useState('')
+  const searchParams = useSearchParams()
   const router = useRouter()
 
   useEffect(() => {
@@ -70,6 +71,7 @@ export default function SignInPage() {
         <CardContent>
           {!showResendForm ? (
             <form action={action} className="space-y-4">
+              <input type="hidden" name="redirectTo" value={searchParams.get('redirectTo') || ''} />
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -83,7 +85,15 @@ export default function SignInPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">Password</Label>
+                  <Link 
+                    href="/auth/forgot-password" 
+                    className="text-sm text-orange-500 hover:underline"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
                 <Input
                   id="password"
                   name="password"

@@ -1,22 +1,20 @@
 'use client'
 
-import { useActionState, useEffect, useState } from 'react'
+import { useActionState, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { signUp } from '@/lib/auth'
+import { updatePassword } from '@/lib/auth'
 import { Loader2, Eye, EyeOff, Check, X } from 'lucide-react'
 
-export default function SignUpPage() {
-  const [state, action, isPending] = useActionState(signUp, null)
+export default function ResetPasswordPage() {
+  const [state, action, isPending] = useActionState(updatePassword, null)
   const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [password, setPassword] = useState('')
-  const [email, setEmail] = useState('')
-  const [fullName, setFullName] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const router = useRouter()
 
   // Password validation state
@@ -28,8 +26,7 @@ export default function SignUpPage() {
     hasSpecialChar: false
   })
 
-  // Email validation
-  const [emailValid, setEmailValid] = useState(true)
+  const [passwordsMatch, setPasswordsMatch] = useState(true)
 
   useEffect(() => {
     // Validate password in real-time
@@ -43,10 +40,9 @@ export default function SignUpPage() {
   }, [password])
 
   useEffect(() => {
-    // Validate email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    setEmailValid(email === '' || emailRegex.test(email))
-  }, [email])
+    // Check if passwords match
+    setPasswordsMatch(confirmPassword === '' || password === confirmPassword)
+  }, [password, confirmPassword])
 
   useEffect(() => {
     if (state?.success && state?.redirectTo) {
@@ -59,25 +55,26 @@ export default function SignUpPage() {
 
   if (state?.success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-50">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <CardTitle className="text-green-600">Success!</CardTitle>
+            <CardTitle className="text-green-600">Password Updated!</CardTitle>
             <CardDescription>
               {state.message}
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center">
-            <Link href="/auth/signin">
-              <Button className="bg-orange-500 hover:bg-orange-600">
-                Go to Sign In
-              </Button>
-            </Link>
+            <div className="flex items-center justify-center space-x-2">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Redirecting to dashboard...</span>
+            </div>
           </CardContent>
         </Card>
       </div>
     )
   }
+
+  const isFormValid = Object.values(passwordValidation).every(Boolean) && passwordsMatch && password && confirmPassword
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50">
@@ -89,57 +86,21 @@ export default function SignUpPage() {
             </div>
             <span className="font-semibold text-lg text-gray-900">L'oge Arts</span>
           </div>
-          <CardTitle className="text-2xl font-bold">Join L'oge Arts</CardTitle>
+          <CardTitle className="text-2xl font-bold">Set New Password</CardTitle>
           <CardDescription>
-            Create your account to get started
+            Choose a strong password for your account
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form action={action} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="fullName">Full Name</Label>
-              <Input
-                id="fullName"
-                name="fullName"
-                type="text"
-                placeholder="Enter your full name"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                required
-                disabled={isPending}
-                className={fullName.trim().length > 0 && fullName.trim().length < 2 ? 'border-red-300' : ''}
-              />
-              {fullName.trim().length > 0 && fullName.trim().length < 2 && (
-                <p className="text-sm text-red-600">Full name must be at least 2 characters</p>
-              )}
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={isPending}
-                className={!emailValid ? 'border-red-300' : ''}
-              />
-              {!emailValid && (
-                <p className="text-sm text-red-600">Please enter a valid email address</p>
-              )}
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">New Password</Label>
               <div className="relative">
                 <Input
                   id="password"
                   name="password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Create a password"
+                  placeholder="Enter your new password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -191,40 +152,62 @@ export default function SignUpPage() {
                 </div>
               )}
             </div>
+
             <div className="space-y-2">
-              <Label htmlFor="userType">I am a...</Label>
-              <Select name="userType" required disabled={isPending}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select your role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="buyer">Art Enthusiast/Buyer</SelectItem>
-                  <SelectItem value="creator">Artist/Creator</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label htmlFor="confirmPassword">Confirm New Password</Label>
+              <div className="relative">
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  placeholder="Confirm your new password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  disabled={isPending}
+                  className={!passwordsMatch ? 'border-red-300' : ''}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  disabled={isPending}
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-4 w-4 text-gray-400" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-gray-400" />
+                  )}
+                </Button>
+              </div>
+              {!passwordsMatch && confirmPassword && (
+                <p className="text-sm text-red-600">Passwords do not match</p>
+              )}
             </div>
+            
             {state?.error && (
               <div className="text-red-600 text-sm bg-red-50 p-3 rounded-md">
                 {state.error}
               </div>
             )}
-            <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600" disabled={isPending}>
+            
+            <Button 
+              type="submit" 
+              className="w-full bg-orange-500 hover:bg-orange-600" 
+              disabled={isPending || !isFormValid}
+            >
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating account...
+                  Updating password...
                 </>
               ) : (
-                'Create Account'
+                'Update Password'
               )}
             </Button>
           </form>
-          <div className="mt-6 text-center text-sm">
-            <span className="text-gray-600">Already have an account? </span>
-            <Link href="/auth/signin" className="text-orange-500 hover:underline font-medium">
-              Sign in
-            </Link>
-          </div>
         </CardContent>
       </Card>
     </div>
