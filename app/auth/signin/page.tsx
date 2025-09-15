@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useEffect, useState } from 'react'
+import { useActionState, useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { signIn, resendConfirmation } from '@/lib/auth'
 import { Loader2, Mail } from 'lucide-react'
 
-export default function SignInPage() {
+function SignInForm() {
   const [state, action, isPending] = useActionState(signIn, null)
   const [resendState, resendAction, isResending] = useActionState(resendConfirmation, null)
   const [showResendForm, setShowResendForm] = useState(false)
@@ -190,5 +190,23 @@ export default function SignInPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    }>
+      <SignInForm />
+    </Suspense>
   )
 }
