@@ -78,8 +78,7 @@ export async function signUp(prevState: any, formData: FormData) {
         data: {
           full_name: fullName.trim(),
           user_type: userType,
-        },
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/confirm`
+        }
       }
     })
 
@@ -112,8 +111,8 @@ export async function signUp(prevState: any, formData: FormData) {
 
     return {
       success: true,
-      message: 'Account created successfully! Please check your email to confirm your account.',
-      redirectTo: '/auth/confirmed'
+      message: 'Account created successfully! You can now sign in with your credentials.',
+      redirectTo: '/auth/signin'
     }
   } catch (error) {
     console.error('Signup error:', error)
@@ -149,17 +148,27 @@ export async function signIn(prevState: any, formData: FormData) {
     })
 
     if (error) {
-      // Provide more user-friendly error messages
+      console.log('Auth error:', error.message, error)
+      
+      // Handle specific error cases
       if (error.message.includes('Invalid login credentials')) {
         return {
           error: 'Invalid email or password. Please check your credentials and try again.'
         }
       }
+      
       if (error.message.includes('Email not confirmed')) {
         return {
           error: 'Please confirm your email address before signing in. Check your inbox for a confirmation email.'
         }
       }
+      
+      if (error.message.includes('signup_disabled')) {
+        return {
+          error: 'Account registration is currently disabled. Please contact support.'
+        }
+      }
+      
       return {
         error: error.message
       }

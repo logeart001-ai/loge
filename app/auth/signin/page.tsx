@@ -116,20 +116,6 @@ export default function SignInPage() {
               {state?.error && (
                 <div className="text-red-600 text-sm bg-red-50 p-3 rounded-md">
                   {state.error}
-                  {state.error.toLowerCase().includes('email not confirmed') && (
-                    <div className="mt-2">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setShowResendForm(true)}
-                        className="text-orange-600 border-orange-600 hover:bg-orange-50"
-                      >
-                        <Mail className="w-4 h-4 mr-2" />
-                        Resend confirmation email
-                      </Button>
-                    </div>
-                  )}
                 </div>
               )}
               <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600" disabled={isPending}>
