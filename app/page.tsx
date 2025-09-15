@@ -58,17 +58,88 @@ export default async function HomePage() {
   }
   // Fetch dynamic data from Supabase with fallbacks
   const [featuredArtworks, featuredCreators, upcomingEvents, blogPosts] = await Promise.allSettled([
-    getFeaturedArtworks(6),
+    getFeaturedArtworks(9),
     getFeaturedCreators(3),
     getUpcomingEvents(3),
     getBlogPosts(3)
   ])
 
   // Extract data with fallbacks for failed promises
-  const artworks = featuredArtworks.status === 'fulfilled' ? featuredArtworks.value : []
+  let artworks = featuredArtworks.status === 'fulfilled' ? featuredArtworks.value : []
   const creators = featuredCreators.status === 'fulfilled' ? featuredCreators.value : []
   const events = upcomingEvents.status === 'fulfilled' ? upcomingEvents.value : []
   const posts = blogPosts.status === 'fulfilled' ? blogPosts.value : []
+
+  // Add dummy data if we don't have enough artworks to show 9 cards
+  const dummyArtworks = [
+    {
+      id: 'dummy-1',
+      title: 'Desert Mirage',
+      price: 85000,
+      original_price: 95000,
+      category: 'painting',
+      thumbnail_url: '/image/Sunset Over Lagos.png',
+      creator: {
+        id: 'dummy-creator-1',
+        full_name: 'Fatima Al-Rashid',
+        avatar_url: '/image/Creator Avatars female.png',
+        location: 'Cairo, Egypt',
+        rating: 4.6
+      }
+    },
+    {
+      id: 'dummy-2',
+      title: 'Ocean Waves',
+      price: 72000,
+      category: 'art_design',
+      thumbnail_url: '/image/Urban Dreams.png',
+      creator: {
+        id: 'dummy-creator-2',
+        full_name: 'Kofi Mensah',
+        avatar_url: '/image/Creator Avatars male.png',
+        location: 'Cape Coast, Ghana',
+        rating: 4.8
+      }
+    },
+    {
+      id: 'dummy-3',
+      title: 'Mountain Spirit',
+      price: 110000,
+      category: 'sculpture',
+      thumbnail_url: '/image/Mother Earth.jpg',
+      creator: {
+        id: 'dummy-creator-3',
+        full_name: 'Amina Hassan',
+        avatar_url: '/image/Creator Avatars female.png',
+        location: 'Marrakech, Morocco',
+        rating: 4.7
+      }
+    },
+    {
+      id: 'dummy-4',
+      title: 'City Lights',
+      price: 58000,
+      original_price: 68000,
+      category: 'digital_art',
+      thumbnail_url: '/image/urbanRythym.jpg',
+      creator: {
+        id: 'dummy-creator-4',
+        full_name: 'Sekou Traore',
+        avatar_url: '/image/Creator Avatars male.png',
+        location: 'Bamako, Mali',
+        rating: 4.5
+      }
+    }
+  ]
+
+  // Ensure we have exactly 9 artworks by adding dummy data if needed
+  while (artworks.length < 9) {
+    const dummyIndex = (artworks.length - (featuredArtworks.status === 'fulfilled' ? featuredArtworks.value.length : 0)) % dummyArtworks.length
+    const dummyArtwork = { ...dummyArtworks[dummyIndex] }
+    // Make each dummy artwork unique by adding the current length to the ID
+    dummyArtwork.id = `${dummyArtwork.id}-${artworks.length}`
+    artworks.push(dummyArtwork)
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -179,12 +250,12 @@ export default async function HomePage() {
           </div>
 
           {artworks.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {artworks.map((artwork, idx) => (
                 <Reveal key={artwork.id} delay={([0, 100, 200] as const)[idx % 3]}>
-                  <Card className="group cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 pt-0">
+                  <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 pt-0">
                     <CardContent className="p-0">
-                      <div className="relative overflow-hidden h-56 md:h-72 bg-white">
+                      <div className="relative overflow-hidden h-40 md:h-48 bg-white">
                         {(() => {
                           const src = getArtworkImageSrc(artwork)
                           return (
@@ -206,66 +277,66 @@ export default async function HomePage() {
                                 fill
                                 sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                                 className="object-contain object-center drop-shadow-sm"
-                                priority={idx < 3}
+                                priority={idx < 6}
                               />
                             </>
                           )
                         })()}
-                        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <Button size="sm" variant="secondary" className="rounded-full w-10 h-10 p-0">
-                            <Heart className="w-4 h-4" />
+                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <Button size="sm" variant="secondary" className="rounded-full w-8 h-8 p-0">
+                            <Heart className="w-3 h-3" />
                           </Button>
                         </div>
                         {artwork.original_price && (
-                          <Badge className="absolute top-4 left-4 bg-red-500 text-white">
+                          <Badge className="absolute top-2 left-2 bg-red-500 text-white text-xs">
                             Sale
                           </Badge>
                         )}
                       </div>
 
-                      <div className="p-4 md:p-6">
+                      <div className="p-3 md:p-4">
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex-1">
-                            <h3 className="font-bold text-lg text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-1">
+                            <h3 className="font-bold text-sm md:text-base text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-1">
                               {artwork.title}
                             </h3>
-                            <p className="text-gray-600 text-sm">by {artwork.creator?.full_name}</p>
+                            <p className="text-gray-600 text-xs">by {artwork.creator?.full_name}</p>
                           </div>
                           <Badge variant="secondary" className="ml-2 text-xs">
                             {artwork.category.replace('_', ' ')}
                           </Badge>
                         </div>
 
-                        <div className="flex items-center mb-3">
+                        <div className="flex items-center mb-2">
                           <div className="flex items-center">
                             {[...Array(5)].map((_, i) => (
                               <Star
                                 key={i}
-                                className={`w-4 h-4 ${i < Math.floor(artwork.creator?.rating || 0)
+                                className={`w-3 h-3 ${i < Math.floor(artwork.creator?.rating || 0)
                                   ? 'text-yellow-400 fill-current'
                                   : 'text-gray-300'
                                   }`}
                               />
                             ))}
-                            <span className="ml-2 text-sm text-gray-600">
+                            <span className="ml-1 text-xs text-gray-600">
                               {artwork.creator?.rating?.toFixed(1) || 'New'}
                             </span>
                           </div>
                         </div>
 
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <span className="text-xl md:text-2xl font-bold text-gray-900">
+                          <div className="flex items-center gap-1">
+                            <span className="text-base md:text-lg font-bold text-gray-900">
                               ₦{artwork.price?.toLocaleString()}
                             </span>
                             {artwork.original_price && (
-                              <span className="text-lg text-gray-500 line-through">
+                              <span className="text-sm text-gray-500 line-through">
                                 ₦{artwork.original_price.toLocaleString()}
                               </span>
                             )}
                           </div>
-                          <Button size="sm" className="bg-orange-600 hover:bg-orange-700 transition-transform hover:-translate-y-0.5">
-                            View Details
+                          <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-xs px-2 py-1">
+                            View
                           </Button>
                         </div>
                       </div>
