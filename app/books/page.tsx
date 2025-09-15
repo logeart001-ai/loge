@@ -128,6 +128,114 @@ export default function BooksPage() {
       inStock: true,
       description: 'How technology is transforming Africa and shaping its future.',
       tags: ['technology', 'africa', 'digital', 'future']
+    },
+    {
+      id: 7,
+      title: 'African Traditional Spirituality',
+      author: 'Dr. Kofi Asante',
+      price: 7200,
+      image: '/placeholder.svg?height=400&width=300&text=African+Spirituality',
+      genre: 'Spiritual & Religious',
+      format: 'Hardcover',
+      pages: 288,
+      language: 'English',
+      publishYear: 2023,
+      rating: 4.8,
+      reviews: 92,
+      isLiked: false,
+      inStock: true,
+      description: 'Exploring the rich spiritual traditions and beliefs across African cultures.',
+      tags: ['spirituality', 'traditional', 'african', 'beliefs', 'culture']
+    },
+    {
+      id: 8,
+      title: 'The Quran in African Context',
+      author: 'Sheikh Abdullah Hakim',
+      price: 6500,
+      image: '/placeholder.svg?height=400&width=300&text=Quran+African+Context',
+      genre: 'Spiritual & Religious',
+      format: 'Paperback',
+      pages: 412,
+      language: 'English/Arabic',
+      publishYear: 2022,
+      rating: 4.9,
+      reviews: 156,
+      isLiked: true,
+      inStock: true,
+      description: 'Understanding Islamic teachings through an African lens and perspective.',
+      tags: ['islam', 'quran', 'african', 'islamic', 'teachings']
+    },
+    {
+      id: 9,
+      title: 'Christianity and African Heritage',
+      author: 'Rev. Dr. Grace Mbeki',
+      price: 5800,
+      image: '/placeholder.svg?height=400&width=300&text=Christianity+African+Heritage',
+      genre: 'Spiritual & Religious',
+      format: 'Paperback',
+      pages: 324,
+      language: 'English',
+      publishYear: 2023,
+      rating: 4.6,
+      reviews: 73,
+      isLiked: false,
+      inStock: true,
+      description: 'Bridging Christian faith with African cultural traditions and values.',
+      tags: ['christianity', 'african', 'heritage', 'faith', 'culture']
+    },
+    {
+      id: 10,
+      title: 'Ancestral Wisdom: Connecting with the Spirits',
+      author: 'Mama Asha Kone',
+      price: 4900,
+      image: '/placeholder.svg?height=400&width=300&text=Ancestral+Wisdom',
+      genre: 'Spiritual & Religious',
+      format: 'Paperback',
+      pages: 256,
+      language: 'English',
+      publishYear: 2023,
+      rating: 4.7,
+      reviews: 84,
+      isLiked: false,
+      inStock: true,
+      description: 'A guide to connecting with ancestral spirits and traditional healing practices.',
+      tags: ['ancestors', 'spirits', 'healing', 'traditional', 'wisdom']
+    },
+    {
+      id: 11,
+      title: 'Meditation and Mindfulness in Africa',
+      author: 'Dr. Amina Hassan',
+      price: 5500,
+      image: '/placeholder.svg?height=400&width=300&text=Meditation+Africa',
+      genre: 'Spiritual & Religious',
+      format: 'Paperback',
+      pages: 198,
+      language: 'English',
+      publishYear: 2023,
+      rating: 4.5,
+      reviews: 67,
+      isLiked: true,
+      inStock: true,
+      description: 'Exploring meditation practices rooted in African spiritual traditions.',
+      tags: ['meditation', 'mindfulness', 'spiritual', 'practices', 'wellness']
+    },
+    {
+      id: 12,
+      title: 'Sacred Rituals of the Yoruba',
+      author: 'Babalawo Ifayemi Elebuibon',
+      price: 8200,
+      image: '/placeholder.svg?height=400&width=300&text=Yoruba+Rituals',
+      genre: 'Spiritual & Religious',
+      format: 'Hardcover',
+      pages: 368,
+      language: 'English/Yoruba',
+      publishYear: 2022,
+      rating: 4.9,
+      reviews: 118,
+      isLiked: false,
+      inStock: true,
+      description: 'Comprehensive guide to Yoruba spiritual practices, rituals, and ceremonies.',
+      tags: ['yoruba', 'rituals', 'ceremonies', 'ifa', 'orisha']
     }
   ]
 
@@ -140,6 +248,7 @@ export default function BooksPage() {
     { value: 'poetry', label: 'Poetry' },
     { value: 'technology', label: 'Technology' },
     { value: 'biography', label: 'Biography' },
+    { value: 'spiritual-religious', label: 'Spiritual & Religious' },
     { value: 'children', label: 'Children\'s Books' }
   ]
 
@@ -206,6 +315,63 @@ export default function BooksPage() {
                 Advanced Filters
               </Button>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Spiritual & Religious Books Highlight Section */}
+      <section className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Spiritual & Religious Collection
+            </h2>
+            <p className="text-xl text-purple-100 max-w-3xl mx-auto">
+              Explore the rich spiritual heritage of Africa through sacred texts, traditional wisdom, 
+              and contemporary religious thought from across the continent.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 text-center">
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <BookOpen className="w-8 h-8" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Traditional Spirituality</h3>
+              <p className="text-purple-100">
+                Discover ancient African spiritual practices, ancestral wisdom, and traditional healing methods.
+              </p>
+            </div>
+            
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 text-center">
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Heart className="w-8 h-8" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Contemporary Faith</h3>
+              <p className="text-purple-100">
+                Modern interpretations of Christianity, Islam, and other world religions in African contexts.
+              </p>
+            </div>
+            
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 text-center">
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Star className="w-8 h-8" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Meditation & Wellness</h3>
+              <p className="text-purple-100">
+                Mindfulness practices, spiritual wellness, and holistic approaches to mental and spiritual health.
+              </p>
+            </div>
+          </div>
+          
+          <div className="text-center mt-8">
+            <Button 
+              variant="secondary" 
+              className="bg-white text-purple-600 hover:bg-purple-50"
+              onClick={() => setSelectedGenre('spiritual-religious')}
+            >
+              Browse Spiritual & Religious Books
+            </Button>
           </div>
         </div>
       </section>
