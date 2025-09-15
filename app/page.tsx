@@ -161,31 +161,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-12 md:py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-            {[
-              { icon: Users, value: 500, suffix: '+', label: 'African Artists' },
-              { icon: BookOpen, value: 1200, suffix: '+', label: 'Artworks' },
-              { icon: Globe, value: 50, suffix: '+', label: 'Countries' },
-              { icon: Award, value: 98, suffix: '%', label: 'Satisfaction' }
-            ].map((stat, index) => (
-              <Reveal key={index} delay={([0, 100, 200, 300] as const)[index % 4]}>
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-orange-100 rounded-lg mb-3 md:mb-4">
-                    <stat.icon className="h-6 w-6 md:h-8 md:w-8 text-orange-600" />
-                  </div>
-                  <div className="text-2xl md:text-3xl font-bold text-gray-900">
-                    <CountUp end={stat.value} suffix={stat.suffix as string} />
-                  </div>
-                  <div className="text-sm md:text-base text-gray-600">{stat.label}</div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
+
 
       {/* Featured Art Expression */}
       <section className="py-12 md:py-16 bg-gray-50">
