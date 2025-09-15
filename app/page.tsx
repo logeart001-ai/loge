@@ -597,26 +597,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Newsletter Signup */}
-      <section className="py-12 md:py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Stay Updated</h2>
-          <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Subscribe to our newsletter for new artist announcements, exclusive offers,
-            and event invitations
-          </p>
-          <div className="max-w-md mx-auto flex flex-col sm:flex-row gap-4">
-            <Input
-              type="email"
-              placeholder="Enter your email"
-              className="flex-1"
-            />
-            <Button className="bg-orange-500 hover:bg-orange-600 text-white">
-              Subscribe
-            </Button>
-          </div>
-        </div>
-      </section>
+
 
       {/* Creator CTA */}
       <section className="py-12 md:py-16 bg-gradient-to-br from-yellow-50 to-orange-50">
@@ -715,14 +696,20 @@ export default async function HomePage() {
             </div>
 
             <div>
-              <h3 className="font-semibold mb-4">Company</h3>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link href="/about" className="hover:text-white transition-colors">About Us</Link></li>
-                <li><Link href="/blog" className="hover:text-white transition-colors">Blog</Link></li>
-                <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
-                <li><Link href="/careers" className="hover:text-white transition-colors">Careers</Link></li>
-                <li><Link href="/press" className="hover:text-white transition-colors">Press</Link></li>
-              </ul>
+              <h3 className="font-semibold mb-4">Stay Updated</h3>
+              <p className="text-gray-400 text-sm mb-4">
+                Subscribe to our newsletter for new artist announcements, exclusive offers, and event invitations.
+              </p>
+              <div className="space-y-3">
+                <Input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:border-orange-500"
+                />
+                <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white">
+                  Subscribe
+                </Button>
+              </div>
             </div>
           </div>
 
