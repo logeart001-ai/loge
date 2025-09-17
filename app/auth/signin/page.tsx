@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { signIn, resendConfirmation } from '@/lib/auth'
-import { Loader2, Mail } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 
 function SignInForm() {
   const [state, action, isPending] = useActionState(signIn, null)
