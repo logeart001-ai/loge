@@ -345,57 +345,57 @@ export default async function HomePage() {
       </section>
 
       {/* Creator Spotlight */}
-      <section className="py-12 md:py-16 bg-white">
+      <section className="py-8 md:py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Featured Creators</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Meet the talented artists who are shaping the future of African creativity
+          <div className="text-center mb-6 md:mb-8">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Featured Creators</h2>
+            <p className="text-gray-600 text-sm max-w-xl mx-auto">
+              Meet the talented artists shaping African creativity
             </p>
           </div>
 
           {creators.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
               {creators.map((creator, idx) => (
                 <Reveal key={creator.id} delay={([0, 100, 200] as const)[idx % 3]}>
-                  <Card className="text-center hover:shadow-lg transition-transform hover:-translate-y-1">
-                    <CardContent className="p-6 md:p-8">
-                      <div className="relative mb-6 w-20 h-20 md:w-24 md:h-24 mx-auto">
+                  <Card className="text-center hover:shadow-md transition-transform hover:-translate-y-1">
+                    <CardContent className="p-4 md:p-5">
+                      <div className="relative mb-4 w-16 h-16 md:w-18 md:h-18 mx-auto">
                         <Image
                           src={getCreatorImageSrc(creator)}
                           alt={creator.full_name}
                           fill
                           className="rounded-full object-cover"
-                          sizes="(min-width: 768px) 96px, 80px"
+                          sizes="(min-width: 768px) 72px, 64px"
                         />
                         {creator.is_verified && (
-                          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
-                            <Badge className="bg-blue-500 text-white text-xs">Verified</Badge>
+                          <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2">
+                            <Badge className="bg-blue-500 text-white text-xs px-1 py-0">Verified</Badge>
                           </div>
                         )}
                       </div>
 
-                      <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">
+                      <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-1">
                         {creator.full_name}
                       </h3>
 
                       <div className="flex items-center justify-center gap-1 mb-2">
-                        <MapPin className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-600">{creator.location}</span>
+                        <MapPin className="w-3 h-3 text-gray-400" />
+                        <span className="text-xs text-gray-600">{creator.location}</span>
                       </div>
 
-                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                      <p className="text-gray-600 text-xs mb-3 line-clamp-1">
                         {creator.bio || creator.discipline}
                       </p>
 
-                      <div className="flex items-center justify-center gap-4 mb-6">
+                      <div className="flex items-center justify-center gap-3 mb-4">
                         <div className="text-center">
-                          <div className="font-bold text-gray-900">{creator.artworks?.length || 0}</div>
-                          <div className="text-xs text-gray-600">Artworks</div>
+                          <div className="font-bold text-sm text-gray-900">{creator.artworks?.length || 0}</div>
+                          <div className="text-xs text-gray-600">Works</div>
                         </div>
                         <div className="text-center">
-                          <div className="font-bold text-gray-900 flex items-center gap-1">
-                            <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                          <div className="font-bold text-sm text-gray-900 flex items-center gap-1">
+                            <Star className="w-3 h-3 text-yellow-400 fill-current" />
                             {creator.rating?.toFixed(1) || 'New'}
                           </div>
                           <div className="text-xs text-gray-600">Rating</div>
@@ -403,7 +403,7 @@ export default async function HomePage() {
                       </div>
 
                       <Link href={`/creators/${creator.id}`}>
-                        <Button variant="outline" className="w-full text-orange-500 border-orange-500 hover:bg-orange-50 transition-transform hover:-translate-y-0.5">
+                        <Button variant="outline" size="sm" className="w-full text-orange-500 border-orange-500 hover:bg-orange-50 text-xs">
                           View Profile
                         </Button>
                       </Link>

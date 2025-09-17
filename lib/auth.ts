@@ -36,7 +36,7 @@ function validateEmail(email: string): boolean {
   return emailRegex.test(email)
 }
 
-export async function signUp(prevState: any, formData: FormData) {
+export async function signUp(prevState: unknown, formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
   const fullName = formData.get('fullName') as string
@@ -105,7 +105,10 @@ export async function signUp(prevState: any, formData: FormData) {
       
       if (profileError) {
         console.error('Profile creation error:', profileError)
-        // Don't fail the signup if profile creation fails
+        // Return the specific error to debug
+        return {
+          error: `Profile creation failed: ${profileError.message || JSON.stringify(profileError)}`
+        }
       }
     }
 
@@ -122,7 +125,7 @@ export async function signUp(prevState: any, formData: FormData) {
   }
 }
 
-export async function signIn(prevState: any, formData: FormData) {
+export async function signIn(prevState: unknown, formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
   const redirectTo = formData.get('redirectTo') as string
@@ -209,7 +212,7 @@ export async function requireAuth() {
   return user
 }
 
-export async function resendConfirmation(prevState: any, formData: FormData) {
+export async function resendConfirmation(prevState: unknown, formData: FormData) {
   const email = formData.get('email') as string
 
   if (!email) {
@@ -253,7 +256,7 @@ export async function resendConfirmation(prevState: any, formData: FormData) {
   }
 }
 
-export async function resetPassword(prevState: any, formData: FormData) {
+export async function resetPassword(prevState: unknown, formData: FormData) {
   const email = formData.get('email') as string
 
   if (!email) {
@@ -293,7 +296,7 @@ export async function resetPassword(prevState: any, formData: FormData) {
   }
 }
 
-export async function updatePassword(prevState: any, formData: FormData) {
+export async function updatePassword(prevState: unknown, formData: FormData) {
   const password = formData.get('password') as string
   const confirmPassword = formData.get('confirmPassword') as string
 
@@ -342,7 +345,7 @@ export async function updatePassword(prevState: any, formData: FormData) {
   }
 }
 
-export async function updateUserProfile(prevState: any, formData: FormData) {
+export async function updateUserProfile(prevState: unknown, formData: FormData) {
   const fullName = formData.get('fullName') as string
   const bio = formData.get('bio') as string
   const location = formData.get('location') as string
@@ -390,7 +393,7 @@ export async function updateUserProfile(prevState: any, formData: FormData) {
       success: true,
       message: 'Profile updated successfully'
     }
-  } catch (error) {
+  } catch {
     return {
       error: 'An unexpected error occurred'
     }
