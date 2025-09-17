@@ -58,7 +58,7 @@ export default async function HomePage() {
   }
   // Fetch dynamic data from Supabase with fallbacks
   const [featuredArtworks, featuredCreators, upcomingEvents, blogPosts] = await Promise.allSettled([
-    getFeaturedArtworks(9),
+    getFeaturedArtworks(3),
     getFeaturedCreators(3),
     getUpcomingEvents(3),
     getBlogPosts(3)
@@ -70,7 +70,7 @@ export default async function HomePage() {
   const events = upcomingEvents.status === 'fulfilled' ? upcomingEvents.value : []
   const posts = blogPosts.status === 'fulfilled' ? blogPosts.value : []
 
-  // Add dummy data if we don't have enough artworks to show 9 cards
+  // Add dummy data if we don't have enough artworks to show 3 cards
   const dummyArtworks = [
     {
       id: 'dummy-1',
@@ -114,32 +114,20 @@ export default async function HomePage() {
         location: 'Marrakech, Morocco',
         rating: 4.7
       }
-    },
-    {
-      id: 'dummy-4',
-      title: 'City Lights',
-      price: 58000,
-      original_price: 68000,
-      category: 'digital_art',
-      thumbnail_url: '/image/urbanRythym.jpg',
-      creator: {
-        id: 'dummy-creator-4',
-        full_name: 'Sekou Traore',
-        avatar_url: '/image/Creator Avatars male.png',
-        location: 'Bamako, Mali',
-        rating: 4.5
-      }
     }
   ]
 
-  // Ensure we have exactly 9 artworks by adding dummy data if needed
-  while (artworks.length < 9) {
+  // Ensure we have exactly 3 artworks by adding dummy data if needed
+  while (artworks.length < 3) {
     const dummyIndex = (artworks.length - (featuredArtworks.status === 'fulfilled' ? featuredArtworks.value.length : 0)) % dummyArtworks.length
     const dummyArtwork = { ...dummyArtworks[dummyIndex] }
     // Make each dummy artwork unique by adding the current length to the ID
     dummyArtwork.id = `${dummyArtwork.id}-${artworks.length}`
     artworks.push(dummyArtwork)
   }
+
+  // Limit to exactly 3 artworks
+  artworks = artworks.slice(0, 3)
 
   return (
     <div className="min-h-screen bg-gray-50">

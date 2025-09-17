@@ -203,7 +203,7 @@ export default function SignUpPage() {
                   <SelectValue placeholder="Select your role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="buyer">Art Enthusiast/Buyer</SelectItem>
+                  <SelectItem value="buyer">Art Enthusiast/Collector</SelectItem>
                   <SelectItem value="creator">Artist/Creator</SelectItem>
                 </SelectContent>
               </Select>
