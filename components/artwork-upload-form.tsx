@@ -233,6 +233,8 @@ export function ArtworkUploadForm({ userId }: ArtworkUploadFormProps) {
                     onClick={() => removeTag(tag)}
                     className="ml-1 hover:text-red-500"
                     disabled={isPending}
+                    aria-label={`Remove ${tag} tag`}
+                    title={`Remove ${tag} tag`}
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -267,6 +269,8 @@ export function ArtworkUploadForm({ userId }: ArtworkUploadFormProps) {
               name="isLimitedEdition"
               className="rounded"
               disabled={isPending}
+              aria-label="Mark as limited edition"
+              title="Mark as limited edition"
             />
             <Label htmlFor="isLimitedEdition">Limited Edition</Label>
           </div>

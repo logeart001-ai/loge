@@ -320,57 +320,21 @@ export default function BooksPage() {
       </section>
 
       {/* Spiritual & Religious Books Highlight Section */}
-      <section className="bg-gradient-to-r from-brand-orange to-brand-red text-white py-12">
+      <section className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
+          <div className="text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Spiritual & Religious Collection
             </h2>
-            <p className="text-xl text-white/80 max-w-3xl mx-auto">
-              Explore the rich spiritual heritage of Africa through sacred texts, traditional wisdom, 
-              and contemporary religious thought from across the continent.
+            <p className="text-lg text-white/90 mb-6">
+              Discover Africa's rich spiritual heritage and contemporary faith
             </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 text-center">
-              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <BookOpen className="w-8 h-8" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Traditional Spirituality</h3>
-              <p className="text-white/80">
-                Discover ancient African spiritual practices, ancestral wisdom, and traditional healing methods.
-              </p>
-            </div>
-            
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 text-center">
-              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Heart className="w-8 h-8" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Contemporary Faith</h3>
-              <p className="text-white/80">
-                Modern interpretations of Christianity, Islam, and other world religions in African contexts.
-              </p>
-            </div>
-            
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 text-center">
-              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Star className="w-8 h-8" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Meditation & Wellness</h3>
-              <p className="text-white/80">
-                Mindfulness practices, spiritual wellness, and holistic approaches to mental and spiritual health.
-              </p>
-            </div>
-          </div>
-          
-          <div className="text-center mt-8">
             <Button 
               variant="secondary" 
-              className="bg-white text-brand-orange hover:bg-brand-orange/10"
+              className="bg-white text-orange-500 hover:bg-white/90"
               onClick={() => setSelectedGenre('spiritual-religious')}
             >
-              Browse Spiritual & Religious Books
+              Browse Collection
             </Button>
           </div>
         </div>
