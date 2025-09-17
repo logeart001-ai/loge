@@ -7,7 +7,7 @@ import { Heart, ShoppingBag, User, Bell, Settings, LogOut } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 
-async function getBuyerStats(userId: string) {
+async function getCollectorStats(userId: string) {
   try {
     const supabase = await createServerClient()
     // Orders count
@@ -67,14 +67,14 @@ async function getBuyerStats(userId: string) {
       recentOrders: recentOrders || []
     }
   } catch (e) {
-    console.error('Error computing buyer stats:', e)
+    console.error('Error computing collector stats:', e)
   return { ordersCount: 0, wishlistCount: 0, followingCount: 0, recentOrders: [] as { id?: string; created_at?: string; total_amount?: number | string; status?: string }[] }
   }
 }
 
-export default async function BuyerDashboard() {
+export default async function CollectorDashboard() {
   const user = await requireAuth()
-  const stats = await getBuyerStats(user.id)
+  const stats = await getCollectorStats(user.id)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -120,28 +120,28 @@ export default async function BuyerDashboard() {
                   </div>
                   <div>
                     <h3 className="card-title font-semibold">{user.user_metadata?.full_name || user.email}</h3>
-                    <Badge variant="secondary">Art Enthusiast</Badge>
+                    <Badge variant="secondary">Art Collector</Badge>
                   </div>
                 </div>
                 
                 <nav className="space-y-2">
-                  <Link href="/dashboard/buyer" className="flex items-center space-x-2 p-2 bg-orange-50 text-orange-600 rounded">
+                  <Link href="/dashboard/collector" className="flex items-center space-x-2 p-2 bg-orange-50 text-orange-600 rounded">
                     <User className="w-4 h-4" />
                     <span>Dashboard</span>
                   </Link>
-                  <Link href="/dashboard/buyer/orders" className="flex items-center space-x-2 p-2 text-gray-600 hover:bg-gray-50 rounded">
+                  <Link href="/dashboard/collector/orders" className="flex items-center space-x-2 p-2 text-gray-600 hover:bg-gray-50 rounded">
                     <ShoppingBag className="w-4 h-4" />
                     <span>Order History</span>
                   </Link>
-                  <Link href="/dashboard/buyer/wishlist" className="flex items-center space-x-2 p-2 text-gray-600 hover:bg-gray-50 rounded">
+                  <Link href="/dashboard/collector/wishlist" className="flex items-center space-x-2 p-2 text-gray-600 hover:bg-gray-50 rounded">
                     <Heart className="w-4 h-4" />
                     <span>Wishlist</span>
                   </Link>
-                  <Link href="/dashboard/buyer/following" className="flex items-center space-x-2 p-2 text-gray-600 hover:bg-gray-50 rounded">
+                  <Link href="/dashboard/collector/following" className="flex items-center space-x-2 p-2 text-gray-600 hover:bg-gray-50 rounded">
                     <Bell className="w-4 h-4" />
                     <span>Following</span>
                   </Link>
-                  <Link href="/dashboard/buyer/settings" className="flex items-center space-x-2 p-2 text-gray-600 hover:bg-gray-50 rounded">
+                  <Link href="/dashboard/collector/settings" className="flex items-center space-x-2 p-2 text-gray-600 hover:bg-gray-50 rounded">
                     <Settings className="w-4 h-4" />
                     <span>Settings</span>
                   </Link>
@@ -224,7 +224,7 @@ export default async function BuyerDashboard() {
                           {/* Artwork thumbnail omitted to keep query simple and robust across schemas */}
                         </div>
                         <div className="flex-1">
-                          <h4 className="font-medium">{order.artworks?.title}</h4>
+                          <h4 className="card-title font-medium">{order.artworks?.title}</h4>
                           <p className="text-sm text-gray-600">by {order.user_profiles?.full_name}</p>
                           <p className="text-sm text-gray-500">
                             {new Date(order.created_at).toLocaleDateString()}

@@ -73,7 +73,7 @@ export default async function CreatorDashboard() {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
             <Image src="/image/logelogo.png" alt="L'oge Arts logo" width={64} height={64} />
-            <span className="font-bold text-lg">L&apos;oge Arts</span>
+            <span className="brand-text font-bold text-lg">L&apos;oge Arts</span>
           </Link>
           
           <div className="flex items-center space-x-4">
