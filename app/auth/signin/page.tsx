@@ -42,7 +42,7 @@ function SignInForm() {
         </div>
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <CardTitle className="text-green-600">Success!</CardTitle>
+            <CardTitle className="text-brand-yellow">Success!</CardTitle>
             <CardDescription>
               {state.message}
             </CardDescription>
@@ -131,8 +131,8 @@ function SignInForm() {
             </form>
           ) : (
             <div className="space-y-4">
-              <div className="bg-blue-50 p-4 rounded-md border border-blue-200">
-                <h3 className="font-medium text-blue-900 mb-2">Resend Confirmation Email</h3>
+              <div className="bg-brand-orange/10 p-4 rounded-md border border-brand-orange/20">
+                <h3 className="font-medium text-brand-orange mb-2">Resend Confirmation Email</h3>
                 <form action={resendAction} className="space-y-3">
                   <Input
                     name="email"
@@ -147,7 +147,7 @@ function SignInForm() {
                       type="submit"
                       size="sm"
                       disabled={isResending}
-                      className="bg-blue-600 hover:bg-blue-700"
+                      className="bg-brand-orange hover:bg-brand-red"
                     >
                       {isResending ? (
                         <>
@@ -169,7 +169,7 @@ function SignInForm() {
                   </div>
                 </form>
                 {resendState?.success && (
-                  <div className="mt-2 text-green-600 text-sm">
+                  <div className="mt-2 text-brand-yellow text-sm">
                     {resendState.message}
                   </div>
                 )}

@@ -90,25 +90,47 @@ export async function signUp(prevState: unknown, formData: FormData) {
 
     // Create user profile after successful signup
     if (data.user) {
+      console.log('Creating profile for user:', {
+        id: data.user.id,
+        email: data.user.email,
+        userType,
+        fullName: fullName.trim()
+      })
+      
+      const profileData = {
+        id: data.user.id,
+        email: data.user.email,
+        full_name: fullName.trim(),
+        role: userType === 'creator' ? 'creator' : 'buyer',
+        creator_status: userType === 'creator' ? 'pending' : null,
+        is_verified: false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }
+      
+      console.log('Profile data to insert:', profileData)
+      
       const { error: profileError } = await supabase
         .from('user_profiles')
-        .insert({
-          id: data.user.id,
-          email: data.user.email,
-          full_name: fullName.trim(),
-          role: userType === 'creator' ? 'creator' : 'buyer',
-          creator_status: userType === 'creator' ? 'pending' : null,
-          is_verified: false,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        })
+        .insert(profileData)
       
       if (profileError) {
         console.error('Profile creation error:', profileError)
+        console.error('Profile error details:', {
+          message: profileError.message,
+          details: profileError.details,
+          hint: profileError.hint,
+          code: profileError.code
+        })
         // Return the specific error to debug
         return {
-          error: `Profile creation failed: ${profileError.message || JSON.stringify(profileError)}`
+          error: `Profile creation failed: ${profileError.message} | Details: ${profileError.details || 'none'} | Hint: ${profileError.hint || 'none'} | Code: ${profileError.code || 'none'}`
         }
+      }
+    } else {
+      console.error('No user data returned from signup')
+      return {
+        error: 'User creation succeeded but no user data was returned'
       }
     }
 

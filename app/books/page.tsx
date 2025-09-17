@@ -320,13 +320,13 @@ export default function BooksPage() {
       </section>
 
       {/* Spiritual & Religious Books Highlight Section */}
-      <section className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-12">
+      <section className="bg-gradient-to-r from-brand-orange to-brand-red text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Spiritual & Religious Collection
             </h2>
-            <p className="text-xl text-purple-100 max-w-3xl mx-auto">
+            <p className="text-xl text-white/80 max-w-3xl mx-auto">
               Explore the rich spiritual heritage of Africa through sacred texts, traditional wisdom, 
               and contemporary religious thought from across the continent.
             </p>
@@ -338,7 +338,7 @@ export default function BooksPage() {
                 <BookOpen className="w-8 h-8" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Traditional Spirituality</h3>
-              <p className="text-purple-100">
+              <p className="text-white/80">
                 Discover ancient African spiritual practices, ancestral wisdom, and traditional healing methods.
               </p>
             </div>
@@ -348,7 +348,7 @@ export default function BooksPage() {
                 <Heart className="w-8 h-8" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Contemporary Faith</h3>
-              <p className="text-purple-100">
+              <p className="text-white/80">
                 Modern interpretations of Christianity, Islam, and other world religions in African contexts.
               </p>
             </div>
@@ -358,7 +358,7 @@ export default function BooksPage() {
                 <Star className="w-8 h-8" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Meditation & Wellness</h3>
-              <p className="text-purple-100">
+              <p className="text-white/80">
                 Mindfulness practices, spiritual wellness, and holistic approaches to mental and spiritual health.
               </p>
             </div>
@@ -367,7 +367,7 @@ export default function BooksPage() {
           <div className="text-center mt-8">
             <Button 
               variant="secondary" 
-              className="bg-white text-purple-600 hover:bg-purple-50"
+              className="bg-white text-brand-orange hover:bg-brand-orange/10"
               onClick={() => setSelectedGenre('spiritual-religious')}
             >
               Browse Spiritual & Religious Books

@@ -275,14 +275,14 @@ export default function FashionPage() {
                       <div
                         key={color}
                         className={`w-8 h-8 rounded-full border-2 border-gray-300 cursor-pointer hover:border-gray-500 ${
-                          color === 'Red' ? 'bg-red-500' :
-                          color === 'Blue' ? 'bg-blue-500' :
-                          color === 'Green' ? 'bg-green-500' :
-                          color === 'Yellow' ? 'bg-yellow-500' :
+                          color === 'Red' ? 'bg-brand-red' :
+                          color === 'Blue' ? 'bg-brand-grey' :
+                          color === 'Green' ? 'bg-brand-yellow' :
+                          color === 'Yellow' ? 'bg-brand-yellow' :
                           color === 'Black' ? 'bg-black' :
                           color === 'White' ? 'bg-white' :
-                          color === 'Brown' ? 'bg-amber-800' :
-                          'bg-orange-500'
+                          color === 'Brown' ? 'bg-brand-orange' :
+                          'bg-brand-orange'
                         }`}
                         title={color}
                       />
@@ -387,7 +387,7 @@ export default function FashionPage() {
                         </Badge>
                       )}
                       {item.fastShipping && (
-                        <Badge className="absolute bottom-4 left-4 bg-green-500 text-white">
+                        <Badge className="absolute bottom-4 left-4 bg-brand-yellow text-black">
                           <Truck className="w-3 h-3 mr-1" />
                           Fast Ship
                         </Badge>

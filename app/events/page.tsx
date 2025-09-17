@@ -417,13 +417,13 @@ export default function EventsPage() {
                       )}
                       <div className="absolute bottom-4 right-4">
                         {event.type === 'Virtual' && (
-                          <Badge className="bg-blue-500 text-white">
+                          <Badge className="bg-brand-orange text-white">
                             <Video className="w-3 h-3 mr-1" />
                             Virtual
                           </Badge>
                         )}
                         {event.type === 'Hybrid' && (
-                          <Badge className="bg-purple-500 text-white">
+                          <Badge className="bg-brand-red text-white">
                             <Globe className="w-3 h-3 mr-1" />
                             Hybrid
                           </Badge>

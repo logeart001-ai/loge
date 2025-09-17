@@ -111,7 +111,7 @@ export function ProfileForm({ user, profile }: ProfileFormProps) {
       )}
 
       {state?.success && (
-        <div className="text-green-600 text-sm bg-green-50 p-3 rounded-md">
+        <div className="text-brand-yellow text-sm bg-brand-yellow/10 p-3 rounded-md">
           {state.message}
         </div>
       )}

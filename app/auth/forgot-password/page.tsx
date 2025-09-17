@@ -23,9 +23,9 @@ export default function ForgotPasswordPage() {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
-              <Mail className="h-12 w-12 text-green-500" />
+              <Mail className="h-12 w-12 text-brand-yellow" />
             </div>
-            <CardTitle className="text-green-600">Email Sent!</CardTitle>
+            <CardTitle className="text-brand-yellow">Email Sent!</CardTitle>
             <CardDescription>
               {state.message}
             </CardDescription>

@@ -165,7 +165,7 @@ export default async function CreatorDashboard() {
             <div className="grid md:grid-cols-4 gap-4">
               <Card>
                 <CardContent className="p-6 text-center">
-                  <Package className="w-8 h-8 text-blue-500 mx-auto mb-2" />
+                  <Package className="w-8 h-8 text-brand-orange mx-auto mb-2" />
                   <div className="text-2xl font-bold">{stats.artworksCount}</div>
                   <div className="text-gray-600">Artworks</div>
                 </CardContent>
@@ -173,7 +173,7 @@ export default async function CreatorDashboard() {
               
               <Card>
                 <CardContent className="p-6 text-center">
-                  <Eye className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                  <Eye className="w-8 h-8 text-brand-yellow mx-auto mb-2" />
                   <div className="text-2xl font-bold">{stats.totalViews}</div>
                   <div className="text-gray-600">Total Views</div>
                 </CardContent>
@@ -181,7 +181,7 @@ export default async function CreatorDashboard() {
               
               <Card>
                 <CardContent className="p-6 text-center">
-                  <DollarSign className="w-8 h-8 text-orange-500 mx-auto mb-2" />
+                  <DollarSign className="w-8 h-8 text-brand-orange mx-auto mb-2" />
                   <div className="text-2xl font-bold">${stats.totalEarnings.toFixed(2)}</div>
                   <div className="text-gray-600">Total Earnings</div>
                 </CardContent>
@@ -189,7 +189,7 @@ export default async function CreatorDashboard() {
               
               <Card>
                 <CardContent className="p-6 text-center">
-                  <TrendingUp className="w-8 h-8 text-purple-500 mx-auto mb-2" />
+                  <TrendingUp className="w-8 h-8 text-brand-red mx-auto mb-2" />
                   <div className="text-2xl font-bold">{stats.ordersCount}</div>
                   <div className="text-gray-600">Orders</div>
                 </CardContent>

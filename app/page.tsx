@@ -373,7 +373,7 @@ export default async function HomePage() {
                         />
                         {creator.is_verified && (
                           <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2">
-                            <Badge className="bg-blue-500 text-white text-xs px-1 py-0">Verified</Badge>
+                            <Badge className="bg-brand-red text-white text-xs px-1 py-0">Verified</Badge>
                           </div>
                         )}
                       </div>

@@ -177,7 +177,7 @@ export function ArtworkUploadForm({ userId }: ArtworkUploadFormProps) {
               <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <div className="space-y-2">
                 <Label htmlFor="images" className="cursor-pointer">
-                  <span className="text-blue-600 hover:text-blue-500">
+                  <span className="text-brand-orange hover:text-brand-red">
                     Click to upload images
                   </span>
                   <span className="text-gray-600"> or drag and drop</span>
@@ -281,7 +281,7 @@ export function ArtworkUploadForm({ userId }: ArtworkUploadFormProps) {
       )}
 
       {state?.success && (
-        <div className="text-green-600 text-sm bg-green-50 p-3 rounded-md">
+        <div className="text-brand-yellow text-sm bg-brand-yellow/10 p-3 rounded-md">
           {state.message}
         </div>
       )}

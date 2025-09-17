@@ -67,7 +67,7 @@ export function ArtworkCard({ artwork, isCreatorView = false }: ArtworkCardProps
               </Badge>
             )}
             {artwork.is_limited_edition && (
-              <Badge className="bg-purple-500 text-white text-xs">
+              <Badge className="bg-brand-orange text-white text-xs">
                 Limited Edition
               </Badge>
             )}
@@ -134,7 +134,7 @@ export function ArtworkCard({ artwork, isCreatorView = false }: ArtworkCardProps
               <div className="flex items-center space-x-2">
                 <Badge 
                   variant={isAvailable ? "default" : "secondary"}
-                  className={isAvailable ? "bg-green-500" : "bg-gray-500"}
+                  className={isAvailable ? "bg-brand-yellow text-black" : "bg-brand-grey"}
                 >
                   {isAvailable ? 'Available' : 'Unavailable'}
                 </Badge>

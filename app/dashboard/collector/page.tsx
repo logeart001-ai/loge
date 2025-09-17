@@ -196,7 +196,7 @@ export default async function CollectorDashboard() {
               
               <Card>
                 <CardContent className="p-6 text-center">
-                  <Bell className="w-8 h-8 text-blue-500 mx-auto mb-2" />
+                  <Bell className="w-8 h-8 text-brand-orange mx-auto mb-2" />
                   <div className="text-2xl font-bold">{stats.followingCount}</div>
                   <div className="text-gray-600">Following</div>
                 </CardContent>

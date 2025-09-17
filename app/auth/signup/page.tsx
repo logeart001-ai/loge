@@ -62,7 +62,7 @@ export default function SignUpPage() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <CardTitle className="text-green-600">Success!</CardTitle>
+            <CardTitle className="text-brand-yellow">Success!</CardTitle>
             <CardDescription>
               {state.message}
             </CardDescription>
@@ -179,14 +179,14 @@ export default function SignUpPage() {
                     ].map(({ key, label }) => (
                       <div key={key} className="flex items-center space-x-2">
                         {passwordValidation[key as keyof typeof passwordValidation] ? (
-                          <Check className="h-4 w-4 text-green-500" />
+                          <Check className="h-4 w-4 text-brand-yellow" />
                         ) : (
-                          <X className="h-4 w-4 text-red-500" />
+                          <X className="h-4 w-4 text-brand-red" />
                         )}
                         <span className={`text-sm ${
                           passwordValidation[key as keyof typeof passwordValidation] 
-                            ? 'text-green-700' 
-                            : 'text-red-700'
+                            ? 'text-brand-yellow' 
+                            : 'text-brand-red'
                         }`}>
                           {label}
                         </span>

@@ -30,9 +30,9 @@ function ConfirmedContent() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <CheckCircle className="h-12 w-12 text-green-500" />
+            <CheckCircle className="h-12 w-12 text-brand-yellow" />
           </div>
-          <CardTitle className="text-green-600">Email Confirmed!</CardTitle>
+          <CardTitle className="text-brand-yellow">Email Confirmed!</CardTitle>
           <CardDescription>
             Your account has been successfully verified
           </CardDescription>
