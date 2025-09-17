@@ -151,7 +151,7 @@ export default async function HomePage() {
         <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <Reveal>
-              <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6 drop-shadow-lg">
+              <h1 className="hero-title text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6 drop-shadow-lg">
                 <span className="text-orange-400">African Creativity</span>{" "}
                 <br className="hidden sm:block" />
                 <span className="text-white">Across All Mediums</span>
@@ -226,7 +226,7 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-12">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Featured Art Expressions</h2>
+              <h2 className="section-title text-2xl md:text-3xl font-bold text-gray-900 mb-2">Featured Art Expressions</h2>
               <p className="text-gray-600">Handpicked pieces from our most talented creators</p>
             </div>
             <Link href="/art" className="mt-4 md:mt-0">
@@ -284,7 +284,7 @@ export default async function HomePage() {
                       <div className="p-3 md:p-4">
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex-1">
-                            <h3 className="font-bold text-sm md:text-base text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-1">
+                            <h3 className="card-title font-bold text-sm md:text-base text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-1">
                               {artwork.title}
                             </h3>
                             <p className="text-gray-600 text-xs">by {artwork.creator?.full_name}</p>
@@ -348,7 +348,7 @@ export default async function HomePage() {
       <section className="py-8 md:py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-6 md:mb-8">
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Featured Creators</h2>
+            <h2 className="section-title text-xl md:text-2xl font-bold text-gray-900 mb-2">Featured Creators</h2>
             <p className="text-gray-600 text-sm max-w-xl mx-auto">
               Meet the talented artists shaping African creativity
             </p>
@@ -428,7 +428,7 @@ export default async function HomePage() {
       <section className="py-12 md:py-16 bg-gradient-to-r from-orange-500 to-red-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">Upcoming Events</h2>
+            <h2 className="section-title text-2xl md:text-3xl font-bold text-white mb-4">Upcoming Events</h2>
             <p className="text-orange-100 max-w-2xl mx-auto">
               Join exhibitions, workshops, and cultural celebrations
             </p>

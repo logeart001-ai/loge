@@ -81,7 +81,13 @@
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: Helvetica, Arial, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+}
+
+/* Font Family Variables */
+:root {
+  --font-heading: var(--font-playfair), 'Playfair Display', serif;
+  --font-body: var(--font-inter), 'Inter', sans-serif;
+  --font-accent: var(--font-dancing), 'Dancing Script', cursive;
 }
 
 /* Reveal animation utilities */
@@ -109,4 +115,65 @@ body {
     transform: none !important;
     transition: none !important;
   }
+}
+
+/* Font Utility Classes */
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
+.font-accent {
+  font-family: var(--font-accent);
+}
+
+/* Typography Styles */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.brand-text {
+  font-family: var(--font-heading);
+  font-weight: 700;
+}
+
+.accent-text {
+  font-family: var(--font-accent);
+  font-weight: 400;
+}
+
+/* Specific heading styles */
+.hero-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.section-title {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.card-title {
+  font-family: var(--font-heading);
+  font-weight: 600;
+}
+
+/* Body text improvements */
+body, p, span, div {
+  font-family: var(--font-body);
+  line-height: 1.6;
+}
+
+/* Button text */
+button {
+  font-family: var(--font-body);
+  font-weight: 500;
 }

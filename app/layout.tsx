@@ -1,5 +1,25 @@
 import type { Metadata } from "next";
+import { Playfair_Display, Inter, Dancing_Script } from 'next/font/google';
 import "./globals.css";
+
+// Configure Google Fonts
+const playfairDisplay = Playfair_Display({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-playfair',
+});
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+});
+
+const dancingScript = Dancing_Script({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-dancing',
+});
 
 export const metadata: Metadata = {
   title: "L'oge Arts",
@@ -23,8 +43,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-  <body className="antialiased">
+    <html lang="en" className={`${playfairDisplay.variable} ${inter.variable} ${dancingScript.variable}`}>
+      <body className="antialiased font-body">
         {children}
       </body>
     </html>

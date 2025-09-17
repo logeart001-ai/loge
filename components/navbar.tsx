@@ -66,7 +66,7 @@ export function Navbar() {
               height={64}
               priority
             />
-            <span className="font-semibold text-lg text-gray-900">L&apos;oge Arts</span>
+            <span className="brand-text font-semibold text-lg text-gray-900">L&apos;oge Arts</span>
           </Link>
 
           {/* Desktop Navigation */}
