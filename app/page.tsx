@@ -158,9 +158,12 @@ export default async function HomePage() {
               </h1>
             </Reveal>
             <Reveal delay={100}>
-              <p className="text-lg md:text-xl text-gray-100 mb-8 md:mb-12 max-w-3xl mx-auto drop-shadow-md">
+              <p className="text-lg md:text-xl text-gray-100 mb-4 max-w-3xl mx-auto drop-shadow-md">
                 Discover authentic art, fashion, and literature from Africa&apos;s most talented creators.
                 Support artists while building your collection of unique cultural treasures.
+              </p>
+              <p className="accent-text text-lg md:text-xl text-orange-200 mb-8 md:mb-12 drop-shadow-md">
+                Where creativity meets culture
               </p>
             </Reveal>
 
@@ -375,7 +378,7 @@ export default async function HomePage() {
                         )}
                       </div>
 
-                      <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-1">
+                      <h3 className="card-title text-base md:text-lg font-semibold text-gray-900 mb-1">
                         {creator.full_name}
                       </h3>
 
