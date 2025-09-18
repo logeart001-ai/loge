@@ -824,10 +824,6 @@ CREATE INDEX "users_is_anonymous_idx" ON "auth"."users" USING "btree" ("is_anony
 
 
 
-CREATE OR REPLACE TRIGGER "auth_user_created_trigger" AFTER INSERT ON "auth"."users" FOR EACH ROW EXECUTE FUNCTION "public"."handle_auth_user_created"();
-
-
-
 CREATE OR REPLACE TRIGGER "on_auth_user_created" AFTER INSERT ON "auth"."users" FOR EACH ROW EXECUTE FUNCTION "public"."handle_new_user"();
 
 
