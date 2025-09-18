@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { signUp } from '@/lib/auth'
+import { testSignUp } from '@/lib/test-auth'
 import { Loader2, Eye, EyeOff, Check, X } from 'lucide-react'
 
 export default function SignUpPage() {
@@ -19,6 +20,8 @@ export default function SignUpPage() {
   const [fullName, setFullName] = useState('')
   const [userType, setUserType] = useState('')
   const router = useRouter()
+
+  console.log('🎯 SIGNUP PAGE STATE:', JSON.stringify(state, null, 2))
 
   // Password validation state
   const [passwordValidation, setPasswordValidation] = useState({

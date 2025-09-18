@@ -692,11 +692,21 @@ export default async function HomePage() {
                 fashion, and literature. Connecting creators with global audiences.
               </p>
               <div className="flex space-x-4">
-                {[Instagram, Facebook, Twitter].map((Icon, index) => (
-                  <Button key={index} variant="ghost" size="sm" className="text-gray-400 hover:text-white p-2">
-                    <Icon className="h-5 w-5" />
+                <Link href="https://www.instagram.com/loge_arts?igsh=cXAydGVqc3V0cmNn&utm_source=" target="_blank" rel="noopener noreferrer">
+                  <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white p-2">
+                    <Instagram className="h-5 w-5" />
                   </Button>
-                ))}
+                </Link>
+                <Link href="https://www.facebook.com/share/1BAepZxJou/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer">
+                  <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white p-2">
+                    <Facebook className="h-5 w-5" />
+                  </Button>
+                </Link>
+                <Link href="https://x.com/logeafrica?s=21" target="_blank" rel="noopener noreferrer">
+                  <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white p-2">
+                    <Twitter className="h-5 w-5" />
+                  </Button>
+                </Link>
               </div>
             </div>
 

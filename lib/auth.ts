@@ -47,12 +47,14 @@ export async function signUp(prevState: unknown, formData: FormData) {
 
   // Enhanced validation
   if (!email || !password || !fullName || !userType) {
+    console.log('🔥 VALIDATION ERROR: Missing fields')
     return {
       error: 'All fields are required'
     }
   }
 
   if (!validateEmail(email)) {
+    console.log('🔥 VALIDATION ERROR: Invalid email')
     return {
       error: 'Please enter a valid email address'
     }
@@ -60,12 +62,14 @@ export async function signUp(prevState: unknown, formData: FormData) {
 
   const passwordValidation = validatePassword(password)
   if (!passwordValidation.isValid) {
+    console.log('🔥 VALIDATION ERROR: Invalid password')
     return {
       error: passwordValidation.message
     }
   }
 
   if (fullName.trim().length < 2) {
+    console.log('🔥 VALIDATION ERROR: Invalid name')
     return {
       error: 'Full name must be at least 2 characters long'
     }
