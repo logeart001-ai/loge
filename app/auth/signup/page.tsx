@@ -9,11 +9,16 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { signUp } from '@/lib/auth'
-import { testSignUp } from '@/lib/test-auth'
 import { Loader2, Eye, EyeOff, Check, X } from 'lucide-react'
 
+// Define the signup response type
+type SignUpResponse = 
+  | { success: true; message: string; redirectTo: string }
+  | { error: string }
+  | null
+
 export default function SignUpPage() {
-  const [state, action, isPending] = useActionState(signUp, null)
+  const [state, action, isPending] = useActionState(signUp, null as SignUpResponse)
   const [showPassword, setShowPassword] = useState(false)
   const [password, setPassword] = useState('')
   const [email, setEmail] = useState('')
@@ -53,7 +58,7 @@ export default function SignUpPage() {
   }, [email])
 
   useEffect(() => {
-    if (state?.success && state?.redirectTo) {
+    if (state && 'success' in state && state.success && 'redirectTo' in state) {
       const timer = setTimeout(() => {
         router.push(state.redirectTo)
       }, 2000)
@@ -66,7 +71,7 @@ export default function SignUpPage() {
     }
   }, [state, router])
 
-  if (state?.success) {
+  if (state && 'success' in state && state.success) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50">
         <Card className="w-full max-w-md">
@@ -227,7 +232,7 @@ export default function SignUpPage() {
               {/* Hidden input to ensure userType is included in form data */}
               <input type="hidden" name="userType" value={userType} />
             </div>
-            {state?.error && (
+            {state && 'error' in state && state.error && (
               <div className="text-red-600 text-sm bg-red-50 p-3 rounded-md">
                 {state.error}
               </div>
