@@ -27,7 +27,7 @@ async function getOrders(userId: string) {
   return (data as OrderRow[]) || []
 }
 
-export default async function BuyerOrdersPage() {
+export default async function CollectorOrdersPage() {
   const user = await requireAuth()
   const orders = await getOrders(user.id)
 
@@ -35,18 +35,18 @@ export default async function BuyerOrdersPage() {
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-200 px-4 py-3">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-xl font-semibold">Order History</h1>
+          <h1 className="text-xl font-semibold">Collection History</h1>
         </div>
       </header>
 
       <div className="max-w-7xl mx-auto p-6">
         <Card>
           <CardHeader>
-            <CardTitle>Your Orders</CardTitle>
+            <CardTitle>Your Art Collection</CardTitle>
           </CardHeader>
           <CardContent>
             {orders.length === 0 ? (
-              <div className="text-center py-12 text-gray-500">No orders yet.</div>
+              <div className="text-center py-12 text-gray-500">No artworks collected yet.</div>
             ) : (
               <div className="space-y-4">
                 {orders.map((order) => (
@@ -54,7 +54,7 @@ export default async function BuyerOrdersPage() {
                     <div className="flex-1">
                       <div className="font-medium">Order {order.order_number || order.id.slice(0, 8)}</div>
                       <div className="text-sm text-gray-600">
-                        Placed on {new Date(order.created_at).toLocaleDateString()}
+                        Collected on {new Date(order.created_at).toLocaleDateString()}
                       </div>
                     </div>
                     <div className="text-right">

@@ -171,7 +171,7 @@ export async function signIn(prevState: unknown, formData: FormData) {
 
     // Determine redirect URL
     const userType = data.user?.user_metadata?.user_type
-    const defaultRedirect = userType === 'creator' ? '/dashboard/creator' : '/dashboard/buyer'
+    const defaultRedirect = userType === 'creator' ? '/dashboard/creator' : '/dashboard/collector'
     const finalRedirect = redirectTo || defaultRedirect
 
     return {

@@ -12,7 +12,7 @@ interface User {
   id: string
   email: string
   full_name: string
-  role: 'buyer' | 'creator'
+  role: 'collector' | 'creator'
   bio?: string
   location?: string
   discipline?: string

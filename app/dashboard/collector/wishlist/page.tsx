@@ -68,7 +68,7 @@ async function getWishlist(userId: string) {
   }
 }
 
-export default async function BuyerWishlistPage() {
+export default async function CollectorWishlistPage() {
   const user = await requireAuth()
   const items = await getWishlist(user.id)
 

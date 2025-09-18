@@ -11,7 +11,7 @@ import { createClient } from '@/lib/supabase-client'
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   type UserMetadata = {
-    user_type?: 'creator' | 'buyer'
+    user_type?: 'creator' | 'collector'
     full_name?: string
     avatar_url?: string
     [key: string]: unknown
@@ -91,7 +91,7 @@ export function Navbar() {
             </Link>
             {!loading && user && inDashboard && (
               <Link
-                href={user.user_metadata?.user_type === 'creator' ? '/dashboard/creator' : '/dashboard/buyer'}
+                href={user.user_metadata?.user_type === 'creator' ? '/dashboard/creator' : '/dashboard/collector'}
                 className="text-orange-600 font-semibold"
               >
                 Dashboard Home
@@ -106,7 +106,7 @@ export function Navbar() {
             ) : user ? (
               <div className="flex items-center space-x-4">
                 <Link
-                  href={user.user_metadata?.user_type === 'creator' ? '/dashboard/creator' : '/dashboard/buyer'}
+                  href={user.user_metadata?.user_type === 'creator' ? '/dashboard/creator' : '/dashboard/collector'}
                   className="flex items-center space-x-2 text-gray-700 hover:text-orange-500"
                 >
                   <User className="h-4 w-4" />
@@ -198,7 +198,7 @@ export function Navbar() {
               </Link>
               {!loading && user && inDashboard && (
                 <Link
-                  href={user.user_metadata?.user_type === 'creator' ? '/dashboard/creator' : '/dashboard/buyer'}
+                  href={user.user_metadata?.user_type === 'creator' ? '/dashboard/creator' : '/dashboard/collector'}
                   className="block px-3 py-2 text-orange-600 font-semibold"
                   onClick={() => setIsOpen(false)}
                 >
@@ -214,7 +214,7 @@ export function Navbar() {
                 ) : user ? (
                   <div className="space-y-2">
                     <Link
-                      href={user.user_metadata?.user_type === 'creator' ? '/dashboard/creator' : '/dashboard/buyer'}
+                      href={user.user_metadata?.user_type === 'creator' ? '/dashboard/creator' : '/dashboard/collector'}
                       className="block px-3 py-2 text-gray-700 hover:text-orange-500 font-medium"
                       onClick={() => setIsOpen(false)}
                     >

@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { requireAuth } from '@/lib/auth'
 import { Button } from '@/components/ui/button'
 
-type UserType = 'creator' | 'buyer'
+type UserType = 'creator' | 'collector'
 
 export default async function DashboardLayout({
   children,
@@ -12,7 +12,7 @@ export default async function DashboardLayout({
   const user = await requireAuth()
   const meta = (user.user_metadata ?? {}) as Record<string, unknown>
   const userType = (typeof meta.user_type === 'string' ? meta.user_type : undefined) as UserType | undefined
-  const homeHref = userType === 'creator' ? '/dashboard/creator' : '/dashboard/buyer'
+  const homeHref = userType === 'creator' ? '/dashboard/creator' : '/dashboard/collector'
 
   return (
     <div className="min-h-screen">

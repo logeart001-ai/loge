@@ -48,7 +48,7 @@ async function getFollowing(userId: string) {
   return (dataSingular as unknown as FollowingRow[]) || []
 }
 
-export default async function BuyerFollowingPage() {
+export default async function CollectorFollowingPage() {
   const user = await requireAuth()
   const rows = await getFollowing(user.id)
 

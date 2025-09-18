@@ -13,7 +13,7 @@ async function getUserProfile(userId: string) {
   return data
 }
 
-export default async function BuyerSettingsPage() {
+export default async function CollectorSettingsPage() {
   const user = await requireAuth()
   const profile = await getUserProfile(user.id)
 

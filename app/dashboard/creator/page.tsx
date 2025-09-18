@@ -61,7 +61,7 @@ export default async function CreatorDashboard() {
   const user = await requireAuth()
   
   if (user.user_metadata?.user_type !== 'creator') {
-    redirect('/dashboard/buyer')
+    redirect('/dashboard/collector')
   }
 
   const stats = await getCreatorStats(user.id)
