@@ -85,7 +85,7 @@ export async function signUp(prevState: unknown, formData: FormData) {
       options: {
         data: {
           full_name: fullName.trim(),
-          user_type: userType,
+          role: userType, // Pass the role to the trigger
         }
       }
     })
@@ -99,62 +99,13 @@ export async function signUp(prevState: unknown, formData: FormData) {
       }
     }
 
-    // Create user profile after successful signup
-    if (data.user) {
-      console.log('Creating profile for user:', {
-        id: data.user.id,
-        email: data.user.email,
-        userType,
-        fullName: fullName.trim()
-      })
-      
-      const profileData = {
-        id: data.user.id,
-        email: data.user.email,
-        full_name: fullName.trim(),
-        role: userType === 'creator' ? 'creator' : 'buyer',
-        creator_status: userType === 'creator' ? 'pending' : null,
-        is_verified: false,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      }
-      
-      console.log('Profile data to insert:', profileData)
-      
-      const { error: profileError } = await supabase
-        .from('user_profiles')
-        .insert(profileData)
-      
-      if (profileError) {
-        console.error('🔥 Profile creation error:', profileError)
-        console.error('🔥 Profile error details:', {
-          message: profileError.message,
-          details: profileError.details,
-          hint: profileError.hint,
-          code: profileError.code
-        })
-        // Return the specific error to debug
-        const errorResponse = {
-          error: `Profile creation failed: ${profileError.message} | Details: ${profileError.details || 'none'} | Hint: ${profileError.hint || 'none'} | Code: ${profileError.code || 'none'}`
-        }
-        console.log('🔥 RETURNING PROFILE ERROR:', errorResponse)
-        return errorResponse
-      }
-      
-      console.log('🔥 Profile created successfully!')
-    } else {
-      console.error('🔥 No user data returned from signup')
-      const errorResponse = {
-        error: 'User creation succeeded but no user data was returned'
-      }
-      console.log('🔥 RETURNING NO USER DATA ERROR:', errorResponse)
-      return errorResponse
-    }
+    // The user profile is now created by the database trigger "on_auth_user_created".
+    // No need to insert it from the application code anymore.
 
     const successResponse = {
       success: true,
-      message: 'Account created successfully! You can now sign in with your credentials.',
-      redirectTo: '/auth/signin'
+      message: 'Account created successfully! Please check your email to confirm your account before signing in.',
+      redirectTo: '/auth/confirmed'
     }
     console.log('🔥 RETURNING SUCCESS:', successResponse)
     return successResponse
