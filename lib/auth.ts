@@ -37,10 +37,13 @@ function validateEmail(email: string): boolean {
 }
 
 export async function signUp(prevState: unknown, formData: FormData) {
+  console.log('🚀 NEW SIGNUP FUNCTION RUNNING - VERSION 2.0')
   const email = formData.get('email') as string
   const password = formData.get('password') as string
   const fullName = formData.get('fullName') as string
   const userType = formData.get('userType') as string
+
+  console.log('Form data received:', { email, fullName, userType })
 
   // Enhanced validation
   if (!email || !password || !fullName || !userType) {
@@ -69,6 +72,7 @@ export async function signUp(prevState: unknown, formData: FormData) {
   }
 
   try {
+    console.log('🔥 Starting Supabase auth.signUp...')
     const supabase = await createServerClient()
     
     const { data, error } = await supabase.auth.signUp({
@@ -82,7 +86,10 @@ export async function signUp(prevState: unknown, formData: FormData) {
       }
     })
 
+    console.log('🔥 Auth.signUp result:', { data: !!data.user, error: error?.message })
+
     if (error) {
+      console.log('🔥 AUTH ERROR - returning error:', error.message)
       return {
         error: error.message
       }
@@ -115,34 +122,42 @@ export async function signUp(prevState: unknown, formData: FormData) {
         .insert(profileData)
       
       if (profileError) {
-        console.error('Profile creation error:', profileError)
-        console.error('Profile error details:', {
+        console.error('🔥 Profile creation error:', profileError)
+        console.error('🔥 Profile error details:', {
           message: profileError.message,
           details: profileError.details,
           hint: profileError.hint,
           code: profileError.code
         })
         // Return the specific error to debug
-        return {
+        const errorResponse = {
           error: `Profile creation failed: ${profileError.message} | Details: ${profileError.details || 'none'} | Hint: ${profileError.hint || 'none'} | Code: ${profileError.code || 'none'}`
         }
+        console.log('🔥 RETURNING PROFILE ERROR:', errorResponse)
+        return errorResponse
       }
+      
+      console.log('🔥 Profile created successfully!')
     } else {
-      console.error('No user data returned from signup')
-      return {
+      console.error('🔥 No user data returned from signup')
+      const errorResponse = {
         error: 'User creation succeeded but no user data was returned'
       }
+      console.log('🔥 RETURNING NO USER DATA ERROR:', errorResponse)
+      return errorResponse
     }
 
-    return {
+    const successResponse = {
       success: true,
       message: 'Account created successfully! You can now sign in with your credentials.',
       redirectTo: '/auth/signin'
     }
+    console.log('🔥 RETURNING SUCCESS:', successResponse)
+    return successResponse
   } catch (error) {
-    console.error('Signup error:', error)
+    console.error('🔥 CATCH BLOCK ERROR:', error)
     return {
-      error: 'An unexpected error occurred. Please try again.'
+      error: 'CATCH BLOCK: An unexpected error occurred. Please try again.'
     }
   }
 }

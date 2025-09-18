@@ -17,6 +17,7 @@ export default function SignUpPage() {
   const [password, setPassword] = useState('')
   const [email, setEmail] = useState('')
   const [fullName, setFullName] = useState('')
+  const [userType, setUserType] = useState('')
   const router = useRouter()
 
   // Password validation state
@@ -54,6 +55,11 @@ export default function SignUpPage() {
         router.push(state.redirectTo)
       }, 2000)
       return () => clearTimeout(timer)
+    }
+    
+    // Debug logging
+    if (state) {
+      console.log('Signup state:', state)
     }
   }, [state, router])
 
@@ -100,7 +106,15 @@ export default function SignUpPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={action} className="space-y-4">
+          <form action={action} className="space-y-4" onSubmit={(e) => {
+            console.log('🚀 Form submission started');
+            // Check if all required fields are filled
+            const formData = new FormData(e.currentTarget);
+            console.log('Form data entries:');
+            for (const [key, value] of formData.entries()) {
+              console.log(key, value);
+            }
+          }}>
             <div className="space-y-2">
               <Label htmlFor="fullName">Full Name</Label>
               <Input
@@ -198,7 +212,7 @@ export default function SignUpPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="userType">I am a...</Label>
-              <Select name="userType" required disabled={isPending}>
+              <Select name="userType" required disabled={isPending} value={userType} onValueChange={setUserType}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select your role" />
                 </SelectTrigger>
@@ -207,6 +221,8 @@ export default function SignUpPage() {
                   <SelectItem value="creator">Artist/Creator</SelectItem>
                 </SelectContent>
               </Select>
+              {/* Hidden input to ensure userType is included in form data */}
+              <input type="hidden" name="userType" value={userType} />
             </div>
             {state?.error && (
               <div className="text-red-600 text-sm bg-red-50 p-3 rounded-md">
