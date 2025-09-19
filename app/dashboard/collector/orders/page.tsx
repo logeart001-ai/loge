@@ -32,12 +32,21 @@ async function getOrders(userId: string) {
 
     console.log('Orders query result:', { 
       dataCount: data?.length || 0, 
-      error: error?.message || 'none',
-      fullError: error 
+      errorMessage: error?.message,
+      errorCode: error?.code,
+      errorDetails: error?.details,
+      errorHint: error?.hint,
+      hasError: !!error
     })
 
     if (error) {
-      console.error('Error fetching orders:', error)
+      // Try to log the full error in a way that won't break serialization
+      console.error('Error fetching orders - message:', error.message)
+      console.error('Error fetching orders - code:', error.code)
+      console.error('Error fetching orders - details:', error.details)
+      console.error('Error fetching orders - hint:', error.hint)
+      
+      // Return empty array to prevent page crash
       return [] as OrderRow[]
     }
     
