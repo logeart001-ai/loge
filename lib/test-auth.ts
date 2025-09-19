@@ -8,7 +8,7 @@ export async function testSignUp(prevState: unknown, formData: FormData) {
   const fullName = formData.get('fullName') as string
   const userType = formData.get('userType') as string
 
-  console.log('Test form data:', { email, fullName, userType })
+  console.log('Test form data:', { email, password: '***', fullName, userType })
 
   // Always return success for testing
   return {

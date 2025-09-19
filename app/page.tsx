@@ -12,7 +12,7 @@ import {
   getUpcomingEvents,
   getBlogPosts
 } from '@/lib/supabase-queries'
-import { Users, BookOpen, Calendar, CalendarDays, Upload, MessageCircle, FileText, Instagram, Facebook, Twitter, Star, Heart, MapPin, Clock, ArrowRight, TrendingUp } from 'lucide-react'
+import { Users, BookOpen, Calendar, CalendarDays, MessageCircle, FileText, Instagram, Facebook, Twitter, Star, Heart, MapPin, Clock, ArrowRight, TrendingUp } from 'lucide-react'
 import { Reveal } from '@/components/reveal'
 
 export default async function HomePage() {

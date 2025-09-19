@@ -17,7 +17,7 @@ export default async function DashboardPage() {
       .single()
     
     userRole = profile?.role
-  } catch (error) {
+  } catch {
     console.log('Could not fetch user profile, using metadata fallback')
   }
   
