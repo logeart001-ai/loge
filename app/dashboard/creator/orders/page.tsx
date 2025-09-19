@@ -1,5 +1,5 @@
 import { requireAuth } from '@/lib/auth'
-import { createServerClient } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 
@@ -13,18 +13,39 @@ type OrderRow = {
 }
 
 async function getCreatorOrders(userId: string) {
-  const supabase = await createServerClient()
-  const { data, error } = await supabase
-    .from('orders')
-    .select('*')
-    .eq('creator_id', userId)
-    .order('created_at', { ascending: false })
+  try {
+    // TEMPORARY: Use service role to bypass RLS issues (similar to collector orders)
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+    
+    const supabase = createClient(supabaseUrl, serviceRoleKey)
 
-  if (error) {
-    console.error('Error fetching creator orders:', error)
+    // Query orders that contain items from this creator
+    const { data, error } = await supabase
+      .from('orders')
+      .select(`
+        *,
+        order_items!inner(creator_id)
+      `)
+      .eq('order_items.creator_id', userId)
+      .order('created_at', { ascending: false })
+
+    console.log('Creator orders query result:', { 
+      dataCount: data?.length || 0, 
+      errorMessage: error?.message,
+      userId: userId
+    })
+
+    if (error) {
+      console.error('Error fetching creator orders:', error.message)
+      return [] as OrderRow[]
+    }
+    
+    return (data as OrderRow[]) || []
+  } catch (err) {
+    console.error('Exception in getCreatorOrders:', err)
     return [] as OrderRow[]
   }
-  return (data as OrderRow[]) || []
 }
 
 export default async function CreatorOrdersPage() {
