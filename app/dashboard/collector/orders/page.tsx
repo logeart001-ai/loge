@@ -12,19 +12,40 @@ type OrderRow = {
 }
 
 async function getOrders(userId: string) {
-  const supabase = await createServerClient()
-  // Keep selection simple to avoid FK name mismatches across environments
-  const { data, error } = await supabase
-    .from('orders')
-    .select('*')
-    .eq('buyer_id', userId)
-    .order('created_at', { ascending: false })
+  try {
+    const supabase = await createServerClient()
+    
+    // Debug: Check if we have a proper connection and auth
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    console.log('Orders query - Auth check:', { 
+      userId, 
+      currentUser: user?.id, 
+      authError: authError?.message 
+    })
+    
+    // Keep selection simple to avoid FK name mismatches across environments
+    const { data, error } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('buyer_id', userId)
+      .order('created_at', { ascending: false })
 
-  if (error) {
-    console.error('Error fetching orders:', error)
+    console.log('Orders query result:', { 
+      dataCount: data?.length || 0, 
+      error: error?.message || 'none',
+      fullError: error 
+    })
+
+    if (error) {
+      console.error('Error fetching orders:', error)
+      return [] as OrderRow[]
+    }
+    
+    return (data as OrderRow[]) || []
+  } catch (err) {
+    console.error('Exception in getOrders:', err)
     return [] as OrderRow[]
   }
-  return (data as OrderRow[]) || []
 }
 
 export default async function CollectorOrdersPage() {

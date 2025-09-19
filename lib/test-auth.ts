@@ -4,11 +4,12 @@ export async function testSignUp(prevState: unknown, formData: FormData) {
   console.log('🧪 TEST SIGNUP FUNCTION RUNNING')
   
   const email = formData.get('email') as string
-  const password = formData.get('password') as string
+  const _password = formData.get('password') as string
   const fullName = formData.get('fullName') as string
   const userType = formData.get('userType') as string
 
-  console.log('Test form data:', { email, password: '***', fullName, userType })
+  console.log('Test form data:', { email, fullName, userType })
+  console.log('Password received:', _password ? 'Yes' : 'No')
 
   // Always return success for testing
   return {
