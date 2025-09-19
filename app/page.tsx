@@ -178,20 +178,14 @@ export default async function HomePage() {
               </Reveal>
               <Reveal delay={100}>
                 <Link href="/auth/signup?type=creator">
-                  <Button
-                    variant="outline"
-                    className="w-full sm:w-auto border-white/80 text-white bg-white/10 hover:bg-white/10 px-6 md:px-8 py-3 text-base md:text-lg backdrop-blur-sm"
-                  >
+                  <Button className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white px-6 md:px-8 py-3 text-base md:text-lg">
                     Join as Artist
                   </Button>
                 </Link>
               </Reveal>
               <Reveal delay={200}>
                 <Link href="/events">
-                  <Button
-                    variant="outline"
-                    className="w-full sm:w-auto border-white/80 text-white bg-white/10 hover:bg-white/10 px-6 md:px-8 py-3 text-base md:text-lg backdrop-blur-sm"
-                  >
+                  <Button className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white px-6 md:px-8 py-3 text-base md:text-lg">
                     Attend Events
                   </Button>
                 </Link>

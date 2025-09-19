@@ -46,9 +46,22 @@ export function Navbar() {
   // Removed scroll-based background transitioning per request
 
   const handleSignOut = async () => {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    router.push('/')
+    try {
+      // Prefer server-side signout to ensure cookies cleared in SSR contexts
+      const res = await fetch('/auth/signout', { method: 'POST' })
+      if (!res.ok) {
+        // Fallback to client signout if server route fails
+        const supabase = createClient()
+        await supabase.auth.signOut()
+      }
+    } catch {
+      const supabase = createClient()
+      await supabase.auth.signOut()
+    } finally {
+      // Always navigate to landing or signin after signout
+      const inDash = pathname?.startsWith('/dashboard')
+      router.push(inDash ? '/auth/signin' : '/')
+    }
   }
 
   return (
