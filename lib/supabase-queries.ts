@@ -2,6 +2,38 @@ import { createServerClient } from '@/lib/supabase'
 import { createClient } from '@/lib/supabase-client'
 
 // Server-side queries with proper error handling
+export async function getArtworkById(id: string) {
+  try {
+    const supabase = await createServerClient()
+
+    const { data, error } = await supabase
+      .from('artworks')
+      .select(`
+        *,
+        creator:user_profiles!creator_id (
+          id,
+          full_name,
+          avatar_url,
+          location,
+          bio,
+          rating
+        )
+      `)
+      .eq('id', id)
+      .single()
+
+    if (error) {
+      console.error('Error fetching artwork by id:', error)
+      return null
+    }
+
+    return data
+  } catch (error) {
+    console.error('Unexpected error fetching artwork by id:', error)
+    return null
+  }
+}
+
 export async function getFeaturedArtworks(limit: number = 12) {
   try {
     const supabase = await createServerClient()

@@ -34,11 +34,21 @@ export function ArtworkCard({ artwork, isCreatorView = false }: ArtworkCardProps
       <CardContent className="p-0">
         {/* Image */}
         <div className="relative overflow-hidden">
-          <img
-            src={artwork.thumbnail_url || artwork.image_urls?.[0] || "/placeholder.svg?height=300&width=400&text=Artwork"}
-            alt={artwork.title}
-            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-          />
+          {isCreatorView ? (
+            <img
+              src={artwork.thumbnail_url || artwork.image_urls?.[0] || "/placeholder.svg?height=300&width=400&text=Artwork"}
+              alt={artwork.title}
+              className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          ) : (
+            <Link href={`/art/${artwork.id}`} className="block">
+              <img
+                src={artwork.thumbnail_url || artwork.image_urls?.[0] || "/placeholder.svg?height=300&width=400&text=Artwork"}
+                alt={artwork.title}
+                className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+            </Link>
+          )}
           
           {/* Overlay for creator view */}
           {isCreatorView && (
@@ -85,9 +95,13 @@ export function ArtworkCard({ artwork, isCreatorView = false }: ArtworkCardProps
         <div className="p-4">
           <div className="flex items-start justify-between mb-2">
             <div className="flex-1">
-              <h3 className="font-semibold text-lg text-gray-900 line-clamp-1">
-                {artwork.title}
-              </h3>
+              {isCreatorView ? (
+                <h3 className="font-semibold text-lg text-gray-900 line-clamp-1">{artwork.title}</h3>
+              ) : (
+                <Link href={`/art/${artwork.id}`}>
+                  <h3 className="font-semibold text-lg text-gray-900 line-clamp-1">{artwork.title}</h3>
+                </Link>
+              )}
               <p className="text-sm text-gray-600 capitalize">
                 {artwork.category?.replace('_', ' ')}
               </p>
@@ -148,9 +162,11 @@ export function ArtworkCard({ artwork, isCreatorView = false }: ArtworkCardProps
                 </Button>
               </div>
             ) : (
-              <Button size="sm" className="bg-orange-500 hover:bg-orange-600">
-                View Details
-              </Button>
+              <Link href={`/art/${artwork.id}`}>
+                <Button size="sm" className="bg-orange-500 hover:bg-orange-600">
+                  View Details
+                </Button>
+              </Link>
             )}
           </div>
 

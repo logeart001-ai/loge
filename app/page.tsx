@@ -14,6 +14,7 @@ import {
 } from '@/lib/supabase-queries'
 import { Users, BookOpen, Calendar, CalendarDays, MessageCircle, FileText, Instagram, Facebook, Twitter, Star, Heart, MapPin, Clock, ArrowRight, TrendingUp } from 'lucide-react'
 import { Reveal } from '@/components/reveal'
+import { LazySection } from '@/components/lazy-section'
 
 export default async function HomePage() {
   // Local image mapping for Featured Artworks (filenames named after their cards)
@@ -240,6 +241,7 @@ export default async function HomePage() {
                   <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 pt-0">
                     <CardContent className="p-0">
                       <div className="relative overflow-hidden h-40 md:h-48 bg-white">
+                        <Link href={`/art/${artwork.id}`} className="block absolute inset-0 z-10" aria-label={`View ${artwork.title}`}></Link>
                         {(() => {
                           const src = getArtworkImageSrc(artwork)
                           return (
@@ -281,9 +283,11 @@ export default async function HomePage() {
                       <div className="p-3 md:p-4">
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex-1">
-                            <h3 className="card-title font-bold text-sm md:text-base text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-1">
-                              {artwork.title}
-                            </h3>
+                            <Link href={`/art/${artwork.id}`}>
+                              <h3 className="card-title font-bold text-sm md:text-base text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-1">
+                                {artwork.title}
+                              </h3>
+                            </Link>
                             <p className="text-gray-600 text-xs">by {artwork.creator?.full_name}</p>
                           </div>
                           <Badge variant="secondary" className="ml-2 text-xs">
@@ -319,9 +323,11 @@ export default async function HomePage() {
                               </span>
                             )}
                           </div>
-                          <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-xs px-2 py-1">
-                            View
-                          </Button>
+                          <Link href={`/art/${artwork.id}`}>
+                            <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-xs px-2 py-1">
+                              View
+                            </Button>
+                          </Link>
                         </div>
                       </div>
                     </CardContent>
@@ -342,7 +348,8 @@ export default async function HomePage() {
       </section>
 
       {/* Creator Spotlight */}
-      <section className="py-8 md:py-12 bg-white">
+      <LazySection>
+        <section className="py-8 md:py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-6 md:mb-8">
             <h2 className="section-title text-xl md:text-2xl font-bold text-gray-900 mb-2">Featured Creators</h2>
@@ -364,6 +371,9 @@ export default async function HomePage() {
                           fill
                           className="rounded-full object-cover"
                           sizes="(min-width: 768px) 72px, 64px"
+                          loading="lazy"
+                          placeholder="blur"
+                          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+Kcp/9k="
                         />
                         {creator.is_verified && (
                           <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2">
@@ -556,6 +566,9 @@ export default async function HomePage() {
                             width={32}
                             height={32}
                             className="rounded-full object-cover"
+                            loading="lazy"
+                            placeholder="blur"
+                            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+Kcp/9k="
                           />
                           <div>
                             <div className="text-sm font-medium text-gray-900">
