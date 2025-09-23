@@ -430,6 +430,7 @@ export default async function HomePage() {
           )}
         </div>
       </section>
+      </LazySection>
 
       {/* Upcoming Events */}
       <section className="py-12 md:py-16 bg-gradient-to-r from-orange-500 to-red-500">

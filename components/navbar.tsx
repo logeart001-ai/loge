@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Menu, X, User, LogOut } from 'lucide-react'
+import { Menu, X, User, LogOut, ShoppingCart } from 'lucide-react'
 import { createClient } from '@/lib/supabase-client'
 
 export function Navbar() {
@@ -19,6 +19,7 @@ export function Navbar() {
   type MinimalUser = { id: string; email?: string | null; user_metadata?: UserMetadata }
   const [user, setUser] = useState<MinimalUser | null>(null)
   const [loading, setLoading] = useState(true)
+  const [cartCount, setCartCount] = useState<number>(0)
   const router = useRouter()
   const pathname = usePathname()
   const inDashboard = pathname?.startsWith('/dashboard')
@@ -37,10 +38,37 @@ export function Navbar() {
       (event, session) => {
         setUser(session?.user ?? null)
         setLoading(false)
+        if (session?.user) {
+          // refresh cart count on auth changes
+          fetch('/api/cart', { credentials: 'include' })
+            .then(r => r.ok ? r.json() : { count: 0 })
+            .then((d) => setCartCount(Number(d?.count ?? 0)))
+            .catch(() => setCartCount(0))
+        } else {
+          setCartCount(0)
+        }
       }
     )
 
-    return () => subscription.unsubscribe()
+    // Initial cart count attempt
+    fetch('/api/cart', { credentials: 'include' })
+      .then(r => r.ok ? r.json() : { count: 0 })
+      .then((d) => setCartCount(Number(d?.count ?? 0)))
+      .catch(() => {})
+
+    // Listen to cart updates
+    const onCartUpdated = () => {
+      fetch('/api/cart', { credentials: 'include' })
+        .then(r => r.ok ? r.json() : { count: 0 })
+        .then((d) => setCartCount(Number(d?.count ?? 0)))
+        .catch(() => {})
+    }
+    window.addEventListener('cart:updated', onCartUpdated)
+
+    return () => {
+      subscription.unsubscribe()
+      window.removeEventListener('cart:updated', onCartUpdated)
+    }
   }, [])
 
   // Removed scroll-based background transitioning per request
@@ -134,6 +162,14 @@ export function Navbar() {
                   <LogOut className="h-4 w-4" />
                   <span>Sign Out</span>
                 </Button>
+                <Link href="/cart" className="relative flex items-center text-gray-700 hover:text-orange-500">
+                  <ShoppingCart className="h-5 w-5" />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-orange-600 text-white text-xs rounded-full px-1.5 py-0.5 min-w-5 text-center">
+                      {cartCount}
+                    </span>
+                  )}
+                </Link>
               </div>
             ) : (
               <>
@@ -146,6 +182,14 @@ export function Navbar() {
                   <Button className="bg-orange-500 hover:bg-orange-600 text-white px-6">
                     Join
                   </Button>
+                </Link>
+                <Link href="/cart" className="relative flex items-center text-gray-700 hover:text-orange-500">
+                  <ShoppingCart className="h-5 w-5" />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-orange-600 text-white text-xs rounded-full px-1.5 py-0.5 min-w-5 text-center">
+                      {cartCount}
+                    </span>
+                  )}
                 </Link>
               </>
             )}
@@ -208,6 +252,13 @@ export function Navbar() {
                 onClick={() => setIsOpen(false)}
               >
                 Events
+              </Link>
+              <Link
+                href="/cart"
+                className="block px-3 py-2 text-gray-700 hover:text-orange-500 font-medium"
+                onClick={() => setIsOpen(false)}
+              >
+                Cart {cartCount > 0 ? `(${cartCount})` : ''}
               </Link>
               {!loading && user && inDashboard && (
                 <Link

@@ -5,11 +5,28 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { toggleArtworkAvailability } from '@/lib/artwork-actions'
-import { Eye, Edit, Trash2, MoreVertical } from 'lucide-react'
+import { Eye, Edit, Trash2 } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 interface ArtworkCardProps {
-  artwork: any
+  artwork: {
+    id: string
+    title: string
+    thumbnail_url?: string | null
+    image_urls?: string[] | null
+    is_featured?: boolean | null
+    is_limited_edition?: boolean | null
+    price?: number | null
+    original_price?: number | null
+    description?: string | null
+    tags?: string[] | null
+    views_count?: number | null
+    stock_quantity?: number | null
+    created_at?: string | null
+    category?: string | null
+    is_available?: boolean | null
+  }
   isCreatorView?: boolean
 }
 
@@ -22,7 +39,7 @@ export function ArtworkCard({ artwork, isCreatorView = false }: ArtworkCardProps
     try {
       await toggleArtworkAvailability(artwork.id, !isAvailable)
       setIsAvailable(!isAvailable)
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Failed to update availability:', error)
     } finally {
       setIsUpdating(false)
@@ -33,19 +50,25 @@ export function ArtworkCard({ artwork, isCreatorView = false }: ArtworkCardProps
     <Card className="group hover:shadow-lg transition-all duration-300">
       <CardContent className="p-0">
         {/* Image */}
-        <div className="relative overflow-hidden">
+        <div className="relative h-48 overflow-hidden">
           {isCreatorView ? (
-            <img
+            <Image
               src={artwork.thumbnail_url || artwork.image_urls?.[0] || "/placeholder.svg?height=300&width=400&text=Artwork"}
               alt={artwork.title}
-              className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
+              sizes="(min-width: 768px) 33vw, 100vw"
+              priority={false}
             />
           ) : (
             <Link href={`/art/${artwork.id}`} className="block">
-              <img
+              <Image
                 src={artwork.thumbnail_url || artwork.image_urls?.[0] || "/placeholder.svg?height=300&width=400&text=Artwork"}
                 alt={artwork.title}
-                className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                sizes="(min-width: 768px) 33vw, 100vw"
+                priority={false}
               />
             </Link>
           )}
@@ -176,7 +199,7 @@ export function ArtworkCard({ artwork, isCreatorView = false }: ArtworkCardProps
               <span className="text-xl font-bold text-gray-900">
                 ₦{artwork.price?.toLocaleString()}
               </span>
-              {artwork.original_price && artwork.original_price > artwork.price && (
+              {artwork.original_price && artwork.price != null && artwork.original_price > artwork.price && (
                 <span className="text-sm text-gray-500 line-through">
                   ₦{artwork.original_price.toLocaleString()}
                 </span>

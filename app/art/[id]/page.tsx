@@ -96,7 +96,7 @@ export default async function ArtworkDetailPage({ params }: { params: { id: stri
             )}
 
             <div className="flex gap-3">
-              <Button className="bg-orange-600 hover:bg-orange-700">Add to Cart</Button>
+              <AddToCartButton artworkId={artwork.id} />
               <Button variant="outline">Save</Button>
             </div>
           </div>
@@ -105,3 +105,5 @@ export default async function ArtworkDetailPage({ params }: { params: { id: stri
     </div>
   )
 }
+
+import { AddToCartButton } from '@/components/cart/add-to-cart-button'

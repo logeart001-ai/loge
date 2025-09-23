@@ -16,6 +16,16 @@ const nextConfig: NextConfig = {
       : [],
     formats: ['image/avif', 'image/webp'],
   },
+  // Enable file watching polling for OneDrive compatibility
+  webpack: (config, { dev }) => {
+    if (dev) {
+      config.watchOptions = {
+        poll: 1000,
+        aggregateTimeout: 300,
+      }
+    }
+    return config
+  },
 };
 
 export default nextConfig;
