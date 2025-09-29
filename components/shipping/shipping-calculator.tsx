@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge'
 import { Truck, Package, Clock, Shield } from 'lucide-react'
 
-interface ShippingQuote {
+export interface ShippingQuote {
   provider: string
   service_type: string
   price: number
@@ -17,7 +17,7 @@ interface ShippingQuote {
   tracking_available: boolean
 }
 
-interface ShippingCalculatorProps {
+export interface ShippingCalculatorProps {
   itemType: 'art' | 'book' | 'fashion'
   itemValue: number
   itemWeight?: number

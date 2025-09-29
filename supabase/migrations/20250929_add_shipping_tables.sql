@@ -119,21 +119,29 @@ ALTER TABLE shipments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tracking_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE shipping_quotes ENABLE ROW LEVEL SECURITY;
 
--- Orders policies
-CREATE POLICY "Users can view their own orders as buyer" ON orders
-  FOR SELECT USING (auth.uid() = buyer_id);
-
-CREATE POLICY "Users can view their own orders as seller" ON orders
-  FOR SELECT USING (auth.uid() = seller_id);
-
-CREATE POLICY "Users can insert orders as buyer" ON orders
-  FOR INSERT WITH CHECK (auth.uid() = buyer_id);
-
-CREATE POLICY "Users can update their orders as buyer" ON orders
-  FOR UPDATE USING (auth.uid() = buyer_id);
-
-CREATE POLICY "Sellers can update order status" ON orders
-  FOR UPDATE USING (auth.uid() = seller_id);
+-- Orders policies (with conflict handling)
+DO $$ 
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'orders' AND policyname = 'Users can view their own orders as buyer') THEN
+    CREATE POLICY "Users can view their own orders as buyer" ON orders FOR SELECT USING (auth.uid() = buyer_id);
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'orders' AND policyname = 'Users can view their own orders as seller') THEN
+    CREATE POLICY "Users can view their own orders as seller" ON orders FOR SELECT USING (auth.uid() = seller_id);
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'orders' AND policyname = 'Users can insert orders as buyer') THEN
+    CREATE POLICY "Users can insert orders as buyer" ON orders FOR INSERT WITH CHECK (auth.uid() = buyer_id);
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'orders' AND policyname = 'Users can update their orders as buyer') THEN
+    CREATE POLICY "Users can update their orders as buyer" ON orders FOR UPDATE USING (auth.uid() = buyer_id);
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'orders' AND policyname = 'Sellers can update order status') THEN
+    CREATE POLICY "Sellers can update order status" ON orders FOR UPDATE USING (auth.uid() = seller_id);
+  END IF;
+END $$;
 
 -- Shipping addresses policies
 CREATE POLICY "Users can view their own shipping addresses" ON shipping_addresses

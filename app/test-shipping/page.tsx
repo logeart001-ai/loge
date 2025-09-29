@@ -1,19 +1,20 @@
 'use client'
 
 import { useState } from 'react'
-import { ShippingCalculator } from '@/components/shipping/shipping-calculator'
+import { ShippingCalculator, ShippingQuote } from '@/components/shipping/shipping-calculator'
 import { TrackingDisplay } from '@/components/shipping/tracking-display'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
+
 export default function TestShippingPage() {
-  const [selectedQuote, setSelectedQuote] = useState(null)
+  const [selectedQuote, setSelectedQuote] = useState<ShippingQuote | null>(null)
   const [trackingNumber, setTrackingNumber] = useState('')
   const [showTracking, setShowTracking] = useState(false)
 
-  const handleQuoteSelect = (quote: any) => {
+  const handleQuoteSelect = (quote: ShippingQuote) => {
     setSelectedQuote(quote)
     console.log('Selected shipping quote:', quote)
   }
@@ -127,9 +128,9 @@ export default function TestShippingPage() {
             <div>
               <h4 className="font-semibold mb-2">1. Get API Keys</h4>
               <ul className="text-sm text-gray-600 space-y-1 ml-4">
-                <li>• Sendbox: <a href="https://sendbox.co/" className="text-blue-600 hover:underline" target="_blank">https://sendbox.co/</a></li>
+                <li>• Sendbox: <a href="https://sendbox.co/" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">https://sendbox.co/</a></li>
                 <li>• GIG Logistics: Contact them directly for API access</li>
-                <li>• Kwik Delivery: <a href="https://kwik.delivery/" className="text-blue-600 hover:underline" target="_blank">https://kwik.delivery/</a></li>
+                <li>• Kwik Delivery: <a href="https://kwik.delivery/" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">https://kwik.delivery/</a></li>
               </ul>
             </div>
             

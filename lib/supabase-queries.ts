@@ -38,7 +38,8 @@ export async function getFeaturedArtworks(limit: number = 12) {
   try {
     const supabase = await createServerClient()
     
-    const { data, error } = await supabase
+    // Primary query expecting is_available & is_featured columns
+    const primary = await supabase
       .from('artworks')
       .select(`
         *,
@@ -55,12 +56,67 @@ export async function getFeaturedArtworks(limit: number = 12) {
       .order('created_at', { ascending: false })
       .limit(limit)
 
-    if (error) {
-      console.error('Error fetching featured artworks:', error)
+    if (primary.error) {
+      const rawErr = primary.error as unknown
+      const msg = (typeof rawErr === 'object' && rawErr && 'message' in rawErr)
+        ? (rawErr as { message?: string }).message || ''
+        : String(rawErr)
+      const missingAvailable = /column .*is_available.* does not exist/i.test(msg)
+      const missingFeatured = /column .*is_featured.* does not exist/i.test(msg)
+      if (missingAvailable || missingFeatured) {
+        console.warn('[getFeaturedArtworks] Missing columns:', { missingAvailable, missingFeatured, msg })
+        // Fallback: drop the missing filters progressively
+        let fallbackQuery = supabase
+          .from('artworks')
+          .select(`
+            *,
+            creator:user_profiles!creator_id (
+              id,
+              full_name,
+              avatar_url,
+              location,
+              rating
+            )
+          `)
+          .order('created_at', { ascending: false })
+          .limit(limit)
+        // If is_featured exists but is_available missing, still filter by is_featured
+        if (!missingFeatured) fallbackQuery = fallbackQuery.eq('is_featured', true)
+        const fallback = await fallbackQuery
+        if (fallback.error) {
+          console.error('Fallback featured artworks query failed:', fallback.error)
+          return []
+        }
+        return fallback.data || []
+      }
+      console.error('Error fetching featured artworks:', primary.error)
       return []
     }
     
-    return data || []
+    // If query succeeded but returned no rows, attempt a softer fallback (maybe filters too strict)
+    if ((primary.data?.length || 0) === 0) {
+      const soft = await supabase
+        .from('artworks')
+        .select(`
+          *,
+          creator:user_profiles!creator_id (
+            id,
+            full_name,
+            avatar_url,
+            location,
+            rating
+          )
+        `)
+        .order('created_at', { ascending: false })
+        .limit(limit)
+      if (soft.error) {
+        console.error('Soft fallback featured artworks query failed:', soft.error)
+        return []
+      }
+      return soft.data || []
+    }
+    
+    return primary.data || []
   } catch (error) {
     console.error('Unexpected error fetching featured artworks:', error)
     return []
