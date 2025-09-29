@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Inter, Dancing_Script } from 'next/font/google';
 import "./globals.css";
+import { CartProvider } from '@/components/cart-provider'
 
 // Configure Google Fonts
 const playfairDisplay = Playfair_Display({
@@ -45,7 +46,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${playfairDisplay.variable} ${inter.variable} ${dancingScript.variable}`}>
       <body className="antialiased font-body">
-        {children}
+        <CartProvider>
+          {children}
+        </CartProvider>
       </body>
     </html>
   );

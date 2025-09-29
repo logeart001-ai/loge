@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import { useState } from 'react'
-import { updateCartItem, removeCartItem } from '@/lib/cart'
+import { useCart } from '@/components/cart-provider'
 
 export type CartRowItem = {
   id: string
@@ -20,11 +20,13 @@ export function CartRow({ item }: { item: CartRowItem }) {
   const [saving, setSaving] = useState(false)
   const [removing, setRemoving] = useState(false)
 
+  const { updateItem, removeItem } = useCart()
+
   const onUpdate = async (val: number) => {
     try {
       setSaving(true)
       setQty(val)
-      await updateCartItem(item.id, val)
+      await updateItem(item.id, val)
     } finally {
       setSaving(false)
     }
@@ -33,8 +35,7 @@ export function CartRow({ item }: { item: CartRowItem }) {
   const onRemove = async () => {
     try {
       setRemoving(true)
-      await removeCartItem(item.id)
-      window.location.reload()
+      await removeItem(item.id)
     } finally {
       setRemoving(false)
     }

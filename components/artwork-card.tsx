@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { AddToCartButton } from '@/components/add-to-cart-button'
 import { toggleArtworkAvailability } from '@/lib/artwork-actions'
 import { Eye, Edit, Trash2 } from 'lucide-react'
 import Link from 'next/link'
@@ -185,11 +186,14 @@ export function ArtworkCard({ artwork, isCreatorView = false }: ArtworkCardProps
                 </Button>
               </div>
             ) : (
-              <Link href={`/art/${artwork.id}`}>
-                <Button size="sm" className="bg-orange-500 hover:bg-orange-600">
-                  View Details
-                </Button>
-              </Link>
+              <div className="flex items-center space-x-2">
+                <Link href={`/art/${artwork.id}`}>
+                  <Button size="sm" variant="outline" className="border-orange-500 text-orange-600 hover:bg-orange-50">
+                    View
+                  </Button>
+                </Link>
+                <AddToCartButton artworkId={artwork.id} />
+              </div>
             )}
           </div>
 
