@@ -149,7 +149,8 @@ export async function getUpcomingEvents(limit: number = 6) {
       .limit(limit)
 
     if (error) {
-      console.error('Error fetching upcoming events:', error)
+      console.
+      error('Error fetching upcoming events:', error)
       return []
     }
     

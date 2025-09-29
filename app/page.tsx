@@ -12,7 +12,7 @@ import {
   getUpcomingEvents,
   getBlogPosts
 } from '@/lib/supabase-queries'
-import { Users, BookOpen, Calendar, CalendarDays, MessageCircle, FileText, Instagram, Facebook, Twitter, Star, Heart, MapPin, Clock, ArrowRight, TrendingUp } from 'lucide-react'
+import { Users, BookOpen, MessageCircle, FileText, Instagram, Facebook, Twitter, Star, Heart, MapPin, ArrowRight, TrendingUp } from 'lucide-react'
 import { Reveal } from '@/components/reveal'
 import { LazySection } from '@/components/lazy-section'
 
@@ -350,158 +350,110 @@ export default async function HomePage() {
       {/* Creator Spotlight */}
       <LazySection>
         <section className="py-8 md:py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-6 md:mb-8">
-            <h2 className="section-title text-xl md:text-2xl font-bold text-gray-900 mb-2">Featured Creators</h2>
-            <p className="text-gray-600 text-sm max-w-xl mx-auto">
-              Meet the talented artists shaping African creativity
-            </p>
-          </div>
-
-          {creators.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-              {creators.map((creator, idx) => (
-                <Reveal key={creator.id} delay={([0, 100, 200] as const)[idx % 3]}>
-                  <Card className="text-center hover:shadow-md transition-transform hover:-translate-y-1">
-                    <CardContent className="p-4 md:p-5">
-                      <div className="relative mb-4 w-16 h-16 md:w-18 md:h-18 mx-auto">
-                        <Image
-                          src={getCreatorImageSrc(creator)}
-                          alt={creator.full_name}
-                          fill
-                          className="rounded-full object-cover"
-                          sizes="(min-width: 768px) 72px, 64px"
-                          loading="lazy"
-                          placeholder="blur"
-                          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+Kcp/9k="
-                        />
-                        {creator.is_verified && (
-                          <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2">
-                            <Badge className="bg-brand-red text-white text-xs px-1 py-0">Verified</Badge>
-                          </div>
-                        )}
-                      </div>
-
-                      <h3 className="card-title text-base md:text-lg font-semibold text-gray-900 mb-1">
-                        {creator.full_name}
-                      </h3>
-
-                      <div className="flex items-center justify-center gap-1 mb-2">
-                        <MapPin className="w-3 h-3 text-gray-400" />
-                        <span className="text-xs text-gray-600">{creator.location}</span>
-                      </div>
-
-                      <p className="text-gray-600 text-xs mb-3 line-clamp-1">
-                        {creator.bio || creator.discipline}
-                      </p>
-
-                      <div className="flex items-center justify-center gap-3 mb-4">
-                        <div className="text-center">
-                          <div className="font-bold text-sm text-gray-900">{creator.artworks?.length || 0}</div>
-                          <div className="text-xs text-gray-600">Works</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="font-bold text-sm text-gray-900 flex items-center gap-1">
-                            <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                            {creator.rating?.toFixed(1) || 'New'}
-                          </div>
-                          <div className="text-xs text-gray-600">Rating</div>
-                        </div>
-                      </div>
-
-                      <Link href={`/creators/${creator.id}`}>
-                        <Button variant="outline" size="sm" className="w-full text-orange-500 border-orange-500 hover:bg-orange-50 text-xs">
-                          View Profile
-                        </Button>
-                      </Link>
-                    </CardContent>
-                  </Card>
-                </Reveal>
-              ))}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-6 md:mb-8">
+              <h2 className="section-title text-xl md:text-2xl font-bold text-gray-900 mb-2">Featured Creators</h2>
+              <p className="text-gray-600 text-sm max-w-xl mx-auto">
+                Meet the talented artists shaping African creativity
+              </p>
             </div>
-          ) : (
-            <div className="text-center py-12">
-              <div className="text-gray-500 mb-4">
-                <Users className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                <p className="text-lg">No featured creators available at the moment.</p>
-                <p className="text-sm">We&apos;re working on bringing you amazing artists!</p>
+
+            {creators.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+                {creators.map((creator, idx) => (
+                  <Reveal key={creator.id} delay={([0, 100, 200] as const)[idx % 3]}>
+                    <Card className="text-center hover:shadow-md transition-transform hover:-translate-y-1">
+                      <CardContent className="p-4 md:p-5">
+                        <div className="relative mb-4 w-16 h-16 md:w-18 md:h-18 mx-auto">
+                          <Image
+                            src={getCreatorImageSrc(creator)}
+                            alt={creator.full_name}
+                            fill
+                            className="rounded-full object-cover"
+                            sizes="(min-width: 768px) 72px, 64px"
+                            loading="lazy"
+                            placeholder="blur"
+                            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+Kcp/9k="
+                          />
+                          {creator.is_verified && (
+                            <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2">
+                              <Badge className="bg-brand-red text-white text-xs px-1 py-0">Verified</Badge>
+                            </div>
+                          )}
+                        </div>
+
+                        <h3 className="card-title text-base md:text-lg font-semibold text-gray-900 mb-1">
+                          {creator.full_name}
+                        </h3>
+
+                        <div className="flex items-center justify-center gap-1 mb-2">
+                          <MapPin className="w-3 h-3 text-gray-400" />
+                          <span className="text-xs text-gray-600">{creator.location}</span>
+                        </div>
+
+                        <p className="text-gray-600 text-xs mb-3 line-clamp-1">
+                          {creator.bio || creator.discipline}
+                        </p>
+
+                        <div className="flex items-center justify-center gap-3 mb-4">
+                          <div className="text-center">
+                            <div className="font-bold text-sm text-gray-900">{creator.artworks?.length || 0}</div>
+                            <div className="text-xs text-gray-600">Works</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="font-bold text-sm text-gray-900 flex items-center gap-1">
+                              <Star className="w-3 h-3 text-yellow-400 fill-current" />
+                              {creator.rating?.toFixed(1) || 'New'}
+                            </div>
+                            <div className="text-xs text-gray-600">Rating</div>
+                          </div>
+                        </div>
+
+                        <Link href={`/creators/${creator.id}`}>
+                          <Button variant="outline" size="sm" className="w-full text-orange-500 border-orange-500 hover:bg-orange-50 text-xs">
+                            View Profile
+                          </Button>
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  </Reveal>
+                ))}
               </div>
-            </div>
-          )}
-        </div>
-      </section>
+            ) : (
+              <div className="text-center py-12">
+                <div className="text-gray-500 mb-4">
+                  <Users className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                  <p className="text-lg">No featured creators available at the moment.</p>
+                  <p className="text-sm">We&apos;re working on bringing you amazing artists!</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
       </LazySection>
 
       {/* Upcoming Events */}
-      <section className="py-12 md:py-16 bg-gradient-to-r from-orange-500 to-red-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8 md:mb-12">
-            <h2 className="section-title text-2xl md:text-3xl font-bold text-white mb-4">Upcoming Events</h2>
-            <p className="text-orange-100 max-w-2xl mx-auto">
-              Join exhibitions, workshops, and cultural celebrations
-            </p>
+      <section className="py-6 bg-gradient-to-r from-orange-500 to-red-500">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-4">
+            <h2 className="section-title text-lg md:text-xl font-bold text-white mb-1">Upcoming Events</h2>
           </div>
-
           {events.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {events.map((event, idx) => (
                 <Reveal key={event.id} delay={([0, 100, 200] as const)[idx % 3]}>
-                  <Card className="bg-white hover:shadow-xl transition-transform hover:-translate-y-1 pt-0">
-                    <CardContent className="p-6">
-                      {event.banner_image_url && (
-                        <div className="relative h-40 rounded-md overflow-hidden mb-4">
-                          <Image
-                            src={event.banner_image_url}
-                            alt={event.title}
-                            fill
-                            className="object-cover"
-                            sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                          />
-                        </div>
-                      )}
-                      <div className="text-center mb-4">
-                        <div className="text-2xl md:text-3xl font-bold text-gray-900">
-                          {new Date(event.start_date).getDate()}
-                        </div>
-                        <div className="text-gray-600">
-                          {new Date(event.start_date).toLocaleDateString('en-US', { month: 'short' })}
-                        </div>
-                      </div>
-
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+                  <Card className="bg-white hover:shadow-md transition-transform hover:-translate-y-1">
+                    <CardContent className="p-3">
+                      <h3 className="text-sm font-semibold text-gray-900 mb-2 line-clamp-2">
                         {event.title}
                       </h3>
-
-                      <div className="space-y-2 mb-4">
-                        <div className="flex items-center gap-2 text-sm text-gray-700">
-                          <CalendarDays className="w-5 h-5 text-orange-600" strokeWidth={2.5} aria-hidden="true" />
-                          {new Date(event.start_date).toLocaleDateString('en-US', {
-                            weekday: 'short',
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                          })}
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Clock className="w-4 h-4" />
-                          {new Date(event.start_date).toLocaleTimeString('en-US', {
-                            hour: 'numeric',
-                            minute: '2-digit'
-                          })}
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <MapPin className="w-4 h-4" />
-                          {event.event_type === 'virtual' ? 'Virtual Event' : `${event.city}, ${event.country}`}
-                        </div>
-                      </div>
-
-                      <div className="flex justify-between items-center">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-gray-600">
+                          {new Date(event.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        </span>
                         <span className="font-semibold text-gray-900">
                           {event.is_free ? 'Free' : `₦${event.ticket_price?.toLocaleString()}`}
                         </span>
-                        <Button className="bg-orange-500 hover:bg-orange-600 text-white transition-transform hover:-translate-y-0.5">
-                          Register
-                        </Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -509,19 +461,14 @@ export default async function HomePage() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-12">
-              <div className="text-white mb-4">
-                <Calendar className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                <p className="text-lg">No upcoming events at the moment.</p>
-                <p className="text-sm text-orange-100">Stay tuned for exciting cultural events!</p>
-              </div>
+            <div className="text-center py-4">
+              <p className="text-white text-sm">No upcoming events at the moment.</p>
             </div>
           )}
-
-          <div className="text-center mt-8">
+          <div className="text-center mt-4">
             <Link href="/events">
-              <Button variant="secondary" className="bg-white text-orange-600 hover:bg-orange-50">
-                View All Events
+              <Button variant="secondary" size="sm" className="bg-white text-orange-600 hover:bg-orange-50 text-xs px-3 py-1">
+                View All
               </Button>
             </Link>
           </div>
@@ -530,244 +477,240 @@ export default async function HomePage() {
 
       {/* Blog/Journal Section */}
       <section className="py-12 md:py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-12">
-            <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Stories & Insights</h2>
-              <p className="text-gray-600">Behind-the-scenes stories and cultural deep-dives</p>
-            </div>
-            <Link href="/blog" className="mt-4 md:mt-0">
-              <Button variant="outline" className="flex items-center gap-2">
-                Read More <ArrowRight className="w-4 h-4" />
-              </Button>
-            </Link>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-12">
+          <div>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Stories & Insights</h2>
+            <p className="text-gray-600">Behind-the-scenes stories and cultural deep-dives</p>
           </div>
+          <Link href="/blog" className="mt-4 md:mt-0">
+            <Button variant="outline" className="flex items-center gap-2">
+              Read More <ArrowRight className="w-4 h-4" />
+            </Button>
+          </Link>
+        </div>
 
-          {posts.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-              {posts.map((post, idx) => (
-                <Reveal key={post.id} delay={([0, 100, 200] as const)[idx % 3]}>
-                  <Card className="hover:shadow-lg transition-transform hover:-translate-y-1 pt-0">
-                    <CardContent className="p-0">
-                      <div className="relative h-48 bg-gray-200 rounded-t-lg overflow-hidden">
+        {posts.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            {posts.map((post, idx) => (
+              <Reveal key={post.id} delay={([0, 100, 200] as const)[idx % 3]}>
+                <Card className="hover:shadow-lg transition-transform hover:-translate-y-1 pt-0">
+                  <CardContent className="p-0">
+                    <div className="relative h-48 bg-gray-200 rounded-t-lg overflow-hidden">
+                      <Image
+                        src={post.featured_image_url || "/image/Blog Post Featured Images.png"}
+                        alt={post.title}
+                        fill
+                        className="object-cover rounded-t-lg"
+                        sizes="(min-width: 768px) 33vw, 100vw"
+                      />
+                    </div>
+
+                    <div className="p-6">
+                      <div className="flex items-center gap-2 mb-3">
                         <Image
-                          src={post.featured_image_url || "/image/Blog Post Featured Images.png"}
-                          alt={post.title}
-                          fill
-                          className="object-cover rounded-t-lg"
-                          sizes="(min-width: 768px) 33vw, 100vw"
+                          src={post.author?.avatar_url || "/image/Blog Author Avatars.png"}
+                          alt={post.author?.full_name || 'Author avatar'}
+                          width={32}
+                          height={32}
+                          className="rounded-full object-cover"
+                          loading="lazy"
+                          placeholder="blur"
+                          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+Kcp/9k="
                         />
-                      </div>
-
-                      <div className="p-6">
-                        <div className="flex items-center gap-2 mb-3">
-                          <Image
-                            src={post.author?.avatar_url || "/image/Blog Author Avatars.png"}
-                            alt={post.author?.full_name || 'Author avatar'}
-                            width={32}
-                            height={32}
-                            className="rounded-full object-cover"
-                            loading="lazy"
-                            placeholder="blur"
-                            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+Kcp/9k="
-                          />
-                          <div>
-                            <div className="text-sm font-medium text-gray-900">
-                              {post.author?.full_name}
-                            </div>
-                            <div className="text-xs text-gray-600">
-                              {new Date(post.published_at).toLocaleDateString()}
-                            </div>
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {post.author?.full_name}
+                          </div>
+                          <div className="text-xs text-gray-600">
+                            {new Date(post.published_at).toLocaleDateString()}
                           </div>
                         </div>
-
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-                          {post.title}
-                        </h3>
-
-                        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                          {post.excerpt}
-                        </p>
-
-                        <div className="flex flex-wrap gap-2 mb-4">
-                          {post.tags?.slice(0, 2).map((tag: string) => (
-                            <Badge key={tag} variant="secondary" className="text-xs">
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
-
-                        <Link href={`/blog/${post.slug}`}>
-                          <Button variant="ghost" className="w-full text-orange-600 hover:bg-orange-50 transition-transform hover:-translate-y-0.5">
-                            Read Article
-                          </Button>
-                        </Link>
                       </div>
-                    </CardContent>
-                  </Card>
-                </Reveal>
-              ))}
+
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+                        {post.title}
+                      </h3>
+
+                      <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                        {post.excerpt}
+                      </p>
+
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {post.tags?.slice(0, 2).map((tag: string) => (
+                          <Badge key={tag} variant="secondary" className="text-xs">
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+
+                      <Link href={`/blog/${post.slug}`}>
+                        <Button variant="ghost" className="w-full text-orange-600 hover:bg-orange-50 transition-transform hover:-translate-y-0.5">
+                          Read Article
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Reveal>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <div className="text-gray-500 mb-4">
+              <FileText className="w-16 h-16 mx-auto mb-4 opacity-50" />
+              <p className="text-lg">No blog posts available at the moment.</p>
+              <p className="text-sm">We&apos;re working on bringing you inspiring stories!</p>
             </div>
-          ) : (
-            <div className="text-center py-12">
-              <div className="text-gray-500 mb-4">
-                <FileText className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                <p className="text-lg">No blog posts available at the moment.</p>
-                <p className="text-sm">We&apos;re working on bringing you inspiring stories!</p>
-              </div>
-            </div>
-          )}
+          </div>
+        )}
         </div>
       </section>
 
       {/* Community Features */}
       <section className="py-12 md:py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Join Our Growing Community</h2>
-          <p className="text-lg md:text-xl text-gray-600 mb-8 md:mb-12 max-w-3xl mx-auto">
-            Connect with artists and art lovers across Africa and beyond. Share your passion,
-            discover new talents, and be part of a vibrant creative ecosystem.
-          </p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Join Our Growing Community</h2>
+        <p className="text-lg md:text-xl text-gray-600 mb-8 md:mb-12 max-w-3xl mx-auto">
+          Connect with artists and art lovers across Africa and beyond. Share your passion,
+          discover new talents, and be part of a vibrant creative ecosystem.
+        </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-12">
-            {[
-              {
-                icon: MessageCircle,
-                title: 'Artist Q&A Sessions',
-                description: 'Join live conversations with featured artists and learn about their creative process.',
-                color: 'blue'
-              },
-              {
-                icon: Users,
-                title: 'Virtual Hangouts',
-                description: 'Connect with fellow art enthusiasts in our monthly virtual meetups.',
-                color: 'green'
-              },
-              {
-                icon: TrendingUp,
-                title: 'Featured Artist Program',
-                description: 'Get spotlighted as our Artist of the Month and reach new audiences.',
-                color: 'purple'
-              }
-            ].map((feature, index) => (
-              <Reveal key={index} delay={([0, 100, 200] as const)[index % 3]}>
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-100 rounded-lg mb-4">
-                    <feature.icon className="h-8 w-8 text-orange-600" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
-                  <p className="text-gray-600">{feature.description}</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-12">
+          {[
+            {
+              icon: MessageCircle,
+              title: 'Artist Q&A Sessions',
+              description: 'Join live conversations with featured artists and learn about their creative process.',
+              color: 'blue'
+            },
+            {
+              icon: Users,
+              title: 'Virtual Hangouts',
+              description: 'Connect with fellow art enthusiasts in our monthly virtual meetups.',
+              color: 'green'
+            },
+            {
+              icon: TrendingUp,
+              title: 'Featured Artist Program',
+              description: 'Get spotlighted as our Artist of the Month and reach new audiences.',
+              color: 'purple'
+            }
+          ].map((feature, index) => (
+            <Reveal key={index} delay={([0, 100, 200] as const)[index % 3]}>
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-100 rounded-lg mb-4">
+                  <feature.icon className="h-8 w-8 text-orange-600" />
                 </div>
-              </Reveal>
-            ))}
-          </div>
-
-
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
+                <p className="text-gray-600">{feature.description}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
         </div>
       </section>
 
-
-
       {/* Creator CTA */}
       <section className="py-8 md:py-12 bg-gradient-to-br from-yellow-50 to-orange-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Are You An African Creator?</h2>
-          <p className="text-lg text-gray-600 mb-6">
-            Join our platform to showcase and sell your work to a global audience.
-          </p>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Are You An African Creator?</h2>
+        <p className="text-lg text-gray-600 mb-6">
+          Join our platform to showcase and sell your work to a global audience.
+        </p>
 
-          <Link href="/auth/signup?type=creator">
-            <Reveal>
-              <Button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2">
-                Start Selling Today
-              </Button>
-            </Reveal>
-          </Link>
+        <Link href="/auth/signup?type=creator">
+          <Reveal>
+            <Button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2">
+              Start Selling Today
+            </Button>
+          </Reveal>
+        </Link>
         </div>
       </section>
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12 md:py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="md:col-span-1">
-              <div className="flex items-center space-x-2 mb-4">
-                <Image src="/image/logelogo.png" alt="L&apos;oge Arts logo" width={64} height={64} />
-                <span className="font-semibold text-lg">L&apos;oge Arts</span>
-              </div>
-              <p className="text-gray-400 text-sm mb-6">
-                Celebrating contemporary African artistry across visual art,
-                fashion, and literature. Connecting creators with global audiences.
-              </p>
-              <div className="flex space-x-4">
-                <Link href="https://www.instagram.com/loge_arts?igsh=cXAydGVqc3V0cmNn&utm_source=" target="_blank" rel="noopener noreferrer">
-                  <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white p-2">
-                    <Instagram className="h-5 w-5" />
-                  </Button>
-                </Link>
-                <Link href="https://www.facebook.com/share/1BAepZxJou/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer">
-                  <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white p-2">
-                    <Facebook className="h-5 w-5" />
-                  </Button>
-                </Link>
-                <Link href="https://x.com/logeafrica?s=21" target="_blank" rel="noopener noreferrer">
-                  <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white p-2">
-                    <Twitter className="h-5 w-5" />
-                  </Button>
-                </Link>
-              </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="md:col-span-1">
+            <div className="flex items-center space-x-2 mb-4">
+              <Image src="/image/logelogo.png" alt="L&apos;oge Arts logo" width={64} height={64} />
+              <span className="font-semibold text-lg">L&apos;oge Arts</span>
             </div>
-
-            <div>
-              <h3 className="font-semibold mb-4">Marketplace</h3>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link href="/art" className="hover:text-white transition-colors">Art & Designs</Link></li>
-                <li><Link href="/fashion" className="hover:text-white transition-colors">Fashion</Link></li>
-                <li><Link href="/books" className="hover:text-white transition-colors">Books</Link></li>
-                <li><Link href="/events" className="hover:text-white transition-colors">Events</Link></li>
-                <li><Link href="/creators" className="hover:text-white transition-colors">Featured Creators</Link></li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-semibold mb-4">For Creators</h3>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link href="/creator-application" className="hover:text-white transition-colors">Apply to Join</Link></li>
-                <li><Link href="/resources" className="hover:text-white transition-colors">Resources</Link></li>
-                <li><Link href="/community" className="hover:text-white transition-colors">Community</Link></li>
-                <li><Link href="/pricing-guide" className="hover:text-white transition-colors">Pricing Guide</Link></li>
-                <li><Link href="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-semibold mb-4">Stay Updated</h3>
-              <p className="text-gray-400 text-sm mb-4">
-                Subscribe to our newsletter for new artist announcements, exclusive offers, and event invitations.
-              </p>
-              <div className="space-y-3">
-                <Input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:border-orange-500"
-                />
-                <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white">
-                  Subscribe
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 text-sm mb-4 md:mb-0">
-              © 2024 L&apos;oge Arts. All rights reserved.
+            <p className="text-gray-400 text-sm mb-6">
+              Celebrating contemporary African artistry across visual art,
+              fashion, and literature. Connecting creators with global audiences.
             </p>
-            <div className="flex space-x-6 text-sm text-gray-400">
-              <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
-              <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
-              <Link href="/cookies" className="hover:text-white transition-colors">Cookie Policy</Link>
+            <div className="flex space-x-4">
+              <Link href="https://www.instagram.com/loge_arts?igsh=cXAydGVqc3V0cmNn&utm_source=" target="_blank" rel="noopener noreferrer">
+                <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white p-2">
+                  <Instagram className="h-5 w-5" />
+                </Button>
+              </Link>
+              <Link href="https://www.facebook.com/share/1BAepZxJou/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer">
+                <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white p-2">
+                  <Facebook className="h-5 w-5" />
+                </Button>
+              </Link>
+              <Link href="https://x.com/logeafrica?s=21" target="_blank" rel="noopener noreferrer">
+                <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white p-2">
+                  <Twitter className="h-5 w-5" />
+                </Button>
+              </Link>
             </div>
           </div>
+
+          <div>
+            <h3 className="font-semibold mb-4">Marketplace</h3>
+            <ul className="space-y-2 text-sm text-gray-400">
+              <li><Link href="/art" className="hover:text-white transition-colors">Art & Designs</Link></li>
+              <li><Link href="/fashion" className="hover:text-white transition-colors">Fashion</Link></li>
+              <li><Link href="/books" className="hover:text-white transition-colors">Books</Link></li>
+              <li><Link href="/events" className="hover:text-white transition-colors">Events</Link></li>
+              <li><Link href="/creators" className="hover:text-white transition-colors">Featured Creators</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold mb-4">For Creators</h3>
+            <ul className="space-y-2 text-sm text-gray-400">
+              <li><Link href="/creator-application" className="hover:text-white transition-colors">Apply to Join</Link></li>
+              <li><Link href="/resources" className="hover:text-white transition-colors">Resources</Link></li>
+              <li><Link href="/community" className="hover:text-white transition-colors">Community</Link></li>
+              <li><Link href="/pricing-guide" className="hover:text-white transition-colors">Pricing Guide</Link></li>
+              <li><Link href="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold mb-4">Stay Updated</h3>
+            <p className="text-gray-400 text-sm mb-4">
+              Subscribe to our newsletter for new artist announcements, exclusive offers, and event invitations.
+            </p>
+            <div className="space-y-3">
+              <Input
+                type="email"
+                placeholder="Enter your email"
+                className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:border-orange-500"
+              />
+              <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white">
+                Subscribe
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+          <p className="text-gray-400 text-sm mb-4 md:mb-0">
+            © 2024 L&apos;oge Arts. All rights reserved.
+          </p>
+          <div className="flex space-x-6 text-sm text-gray-400">
+            <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
+            <Link href="/cookies" className="hover:text-white transition-colors">Cookie Policy</Link>
+          </div>
+        </div>
         </div>
       </footer>
     </div>
