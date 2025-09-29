@@ -107,7 +107,8 @@ export async function getArtworksByCategory(
 export async function getFeaturedCreators(limit: number = 6) {
   try {
     const supabase = await createServerClient()
-    
+
+    // Attempt query with is_featured filter
     const { data, error } = await supabase
       .from('user_profiles')
       .select(`
@@ -125,10 +126,38 @@ export async function getFeaturedCreators(limit: number = 6) {
       .limit(limit)
 
     if (error) {
+      // Potential causes: column does not exist, RLS restriction, or other failure
+      const rawErr: unknown = error
+      const msg = (typeof rawErr === 'object' && rawErr && 'message' in rawErr)
+        ? (rawErr as { message?: string }).message || ''
+        : String(rawErr)
+      const isMissingCol = /column .*is_featured.* does not exist/i.test(msg)
+      if (isMissingCol) {
+        console.warn('[getFeaturedCreators] is_featured column missing; falling back to role-only filter.')
+        const fallback = await supabase
+          .from('user_profiles')
+          .select(`
+            *,
+            artworks:artworks!creator_id (
+              id,
+              thumbnail_url,
+              title,
+              price
+            )
+          `)
+          .eq('role', 'creator')
+          .order('rating', { ascending: false })
+          .limit(limit)
+        if (fallback.error) {
+          console.error('Fallback featured creators query failed:', fallback.error)
+          return []
+        }
+        return fallback.data || []
+      }
       console.error('Error fetching featured creators:', error)
       return []
     }
-    
+
     return data || []
   } catch (error) {
     console.error('Unexpected error fetching featured creators:', error)
