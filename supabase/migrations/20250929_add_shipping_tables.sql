@@ -143,46 +143,66 @@ BEGIN
   END IF;
 END $$;
 
--- Shipping addresses policies
-CREATE POLICY "Users can view their own shipping addresses" ON shipping_addresses
-  FOR SELECT USING (auth.uid() = user_id);
+-- Shipping addresses policies (with conflict handling)
+DO $$ 
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'shipping_addresses' AND policyname = 'Users can view their own shipping addresses') THEN
+    CREATE POLICY "Users can view their own shipping addresses" ON shipping_addresses FOR SELECT USING (auth.uid() = user_id);
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'shipping_addresses' AND policyname = 'Users can insert their own shipping addresses') THEN
+    CREATE POLICY "Users can insert their own shipping addresses" ON shipping_addresses FOR INSERT WITH CHECK (auth.uid() = user_id);
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'shipping_addresses' AND policyname = 'Users can update their own shipping addresses') THEN
+    CREATE POLICY "Users can update their own shipping addresses" ON shipping_addresses FOR UPDATE USING (auth.uid() = user_id);
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'shipping_addresses' AND policyname = 'Users can delete their own shipping addresses') THEN
+    CREATE POLICY "Users can delete their own shipping addresses" ON shipping_addresses FOR DELETE USING (auth.uid() = user_id);
+  END IF;
+END $$;
 
-CREATE POLICY "Users can insert their own shipping addresses" ON shipping_addresses
-  FOR INSERT WITH CHECK (auth.uid() = user_id);
+-- Shipments policies (with conflict handling)
+DO $$ 
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'shipments' AND policyname = 'Users can view their shipments') THEN
+    CREATE POLICY "Users can view their shipments" ON shipments FOR SELECT USING (
+      EXISTS (
+        SELECT 1 FROM orders 
+        WHERE orders.id = shipments.order_id 
+        AND orders.buyer_id = auth.uid()
+      )
+    );
+  END IF;
+END $$;
 
-CREATE POLICY "Users can update their own shipping addresses" ON shipping_addresses
-  FOR UPDATE USING (auth.uid() = user_id);
+-- Tracking events policies (with conflict handling)
+DO $$ 
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'tracking_events' AND policyname = 'Users can view tracking for their shipments') THEN
+    CREATE POLICY "Users can view tracking for their shipments" ON tracking_events FOR SELECT USING (
+      EXISTS (
+        SELECT 1 FROM shipments s
+        JOIN orders o ON o.id = s.order_id
+        WHERE s.id = tracking_events.shipment_id 
+        AND o.buyer_id = auth.uid()
+      )
+    );
+  END IF;
+END $$;
 
-CREATE POLICY "Users can delete their own shipping addresses" ON shipping_addresses
-  FOR DELETE USING (auth.uid() = user_id);
-
--- Shipments policies (users can view shipments for their orders)
-CREATE POLICY "Users can view their shipments" ON shipments
-  FOR SELECT USING (
-    EXISTS (
-      SELECT 1 FROM orders 
-      WHERE orders.id = shipments.order_id 
-      AND orders.buyer_id = auth.uid()
-    )
-  );
-
--- Tracking events policies
-CREATE POLICY "Users can view tracking for their shipments" ON tracking_events
-  FOR SELECT USING (
-    EXISTS (
-      SELECT 1 FROM shipments s
-      JOIN orders o ON o.id = s.order_id
-      WHERE s.id = tracking_events.shipment_id 
-      AND o.buyer_id = auth.uid()
-    )
-  );
-
--- Shipping quotes policies
-CREATE POLICY "Users can view their own quotes" ON shipping_quotes
-  FOR SELECT USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can insert their own quotes" ON shipping_quotes
-  FOR INSERT WITH CHECK (auth.uid() = user_id);
+-- Shipping quotes policies (with conflict handling)
+DO $$ 
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'shipping_quotes' AND policyname = 'Users can view their own quotes') THEN
+    CREATE POLICY "Users can view their own quotes" ON shipping_quotes FOR SELECT USING (auth.uid() = user_id);
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'shipping_quotes' AND policyname = 'Users can insert their own quotes') THEN
+    CREATE POLICY "Users can insert their own quotes" ON shipping_quotes FOR INSERT WITH CHECK (auth.uid() = user_id);
+  END IF;
+END $$;
 
 -- Function to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()

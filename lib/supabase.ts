@@ -21,11 +21,18 @@ export function createServerClient() {
   if (!cookiesFn) {
     throw new Error('createServerClient called in a non-server context')
   }
-  const cookieStore = cookiesFn() as any
-  const safeGetAll = typeof cookieStore.getAll === 'function' ? () => cookieStore.getAll() : () => []
+  // Narrow structural typing instead of any to satisfy linting.
+  interface CookieStoreLike {
+    getAll?: () => { name: string; value: string }[]
+    set?: (name: string, value: string, options?: CookieSetOptions) => void
+  }
+  const cookieStore = cookiesFn() as unknown as CookieStoreLike
+  const cookieGetAll = cookieStore.getAll
+  const safeGetAll = typeof cookieGetAll === 'function' ? () => cookieGetAll.call(cookieStore) : () => []
   type CookieSetOptions = { path?: string; domain?: string; maxAge?: number; expires?: Date; httpOnly?: boolean; secure?: boolean; sameSite?: 'lax' | 'strict' | 'none' | boolean }
-  const safeSet = typeof cookieStore.set === 'function'
-    ? (name: string, value: string, options?: CookieSetOptions) => cookieStore.set(name, value, options)
+  const cookieSet = cookieStore.set
+  const safeSet = typeof cookieSet === 'function'
+    ? (name: string, value: string, options?: CookieSetOptions) => cookieSet.call(cookieStore, name, value, options)
     : () => {}
   return createSupabaseServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
