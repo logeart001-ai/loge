@@ -16,23 +16,27 @@ function getCookiesApi() {
   }
 }
 
-export function createServerClient() {
+export async function createServerClient() {
   const cookiesFn = getCookiesApi()
   if (!cookiesFn) {
     throw new Error('createServerClient called in a non-server context')
   }
+  // Await the cookies function for Next.js 15 compatibility
+  const cookieStore = await cookiesFn()
+  
   // Narrow structural typing instead of any to satisfy linting.
   interface CookieStoreLike {
     getAll?: () => { name: string; value: string }[]
     set?: (name: string, value: string, options?: CookieSetOptions) => void
   }
-  const cookieStore = cookiesFn() as unknown as CookieStoreLike
-  const cookieGetAll = cookieStore.getAll
-  const safeGetAll = typeof cookieGetAll === 'function' ? () => cookieGetAll.call(cookieStore) : () => []
+  
+  const typedCookieStore = cookieStore as unknown as CookieStoreLike
+  const cookieGetAll = typedCookieStore.getAll
+  const safeGetAll = typeof cookieGetAll === 'function' ? () => cookieGetAll.call(typedCookieStore) : () => []
   type CookieSetOptions = { path?: string; domain?: string; maxAge?: number; expires?: Date; httpOnly?: boolean; secure?: boolean; sameSite?: 'lax' | 'strict' | 'none' | boolean }
-  const cookieSet = cookieStore.set
+  const cookieSet = typedCookieStore.set
   const safeSet = typeof cookieSet === 'function'
-    ? (name: string, value: string, options?: CookieSetOptions) => cookieSet.call(cookieStore, name, value, options)
+    ? (name: string, value: string, options?: CookieSetOptions) => cookieSet.call(typedCookieStore, name, value, options)
     : () => {}
   return createSupabaseServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -63,7 +67,7 @@ export function isServer() {
 
 export async function safeGetUser() {
   if (!isServer()) return null
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
   const { data: { user } } = await supabase.auth.getUser()
   return user
 }

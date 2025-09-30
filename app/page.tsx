@@ -17,17 +17,26 @@ import { Reveal } from '@/components/reveal'
 import { LazySection } from '@/components/lazy-section'
 
 export default async function HomePage() {
-  // Local image mapping for Featured Artworks (filenames named after their cards)
+  // Local image mapping for Featured Artworks (using actual available image files)
   const localArtworkImages: Record<string, string> = {
     'ancestral-echoes': '/image/AncestralEchoes.jpg',
+    'ancestral-wisdom': '/image/Ancestral Wisdom.png',
     'urban-rythym': '/image/urbanRythym.jpg',
+    'urban-rhythm': '/image/urbanRythym.jpg',
+    'urban-dreams': '/image/Urban Dreams.png',
     'resilience-ii': '/image/resilence2.jpg',
     'resilence-2': '/image/resilence2.jpg',
     'ankara-blazers': '/image/ankarablazers.jpg',
     'kente': '/image/kente.jpg',
+    'mother-earth': '/image/Mother Earth.jpg',
+    'sunset-over-lagos': '/image/Sunset Over Lagos.png',
+    'rhythms-of-the-sahel': '/image/Rhythms of the Sahel.png',
+    'whispers-of-the-savannah': '/image/Whispers of the Savannah.png',
+    'lagos-noir': '/image/Lagos Noir.png',
+    'ubuntu-philosophy': '/image/Ubuntu Philosophy.png',
+    'the-baobabs-daughter': '/image/The Baobab\'s Daughter.png',
   }
-  // Local image mapping for Featured Creators (filenames named after creator full name, no spaces)
-  // Example files detected in /public/image: AdunniOlorunnisola.jpg, AmaraDiallo.jpg, KwameAsante.jpg
+  // Local image mapping for Featured Creators (using actual available image files)
   const localCreatorImages: Record<string, string> = {
     adunniolorunnisola: '/image/AdunniOlorunnisola.jpg',
     amaradiallo: '/image/AmaraDiallo.jpg',
@@ -50,11 +59,20 @@ export default async function HomePage() {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '')
 
+    // First, try to find an exact match
     if (localArtworkImages[slug]) return localArtworkImages[slug]
+    
+    // Then try partial matches
     for (const key of Object.keys(localArtworkImages)) {
       if (slug.includes(key) || key.includes(slug)) return localArtworkImages[key]
     }
-    return artwork?.thumbnail_url || artwork?.image_urls?.[0] || "/image/AncestralEchoes.jpg"
+    
+    // Check if database has a valid image
+    if (artwork?.thumbnail_url) return artwork.thumbnail_url
+    if (artwork?.image_urls?.[0]) return artwork.image_urls[0]
+    
+    // Fallback to a guaranteed existing image
+    return "/image/AncestralEchoes.jpg"
   }
   // Fetch dynamic data from Supabase with fallbacks
   const [featuredArtworks, featuredCreators, upcomingEvents, blogPosts] = await Promise.allSettled([
@@ -74,7 +92,7 @@ export default async function HomePage() {
   const dummyArtworks = [
     {
       id: 'dummy-1',
-      title: 'Desert Mirage',
+      title: 'Sunset Over Lagos',
       price: 85000,
       original_price: 95000,
       category: 'painting',
@@ -89,7 +107,7 @@ export default async function HomePage() {
     },
     {
       id: 'dummy-2',
-      title: 'Ocean Waves',
+      title: 'Urban Dreams',
       price: 72000,
       category: 'art_design',
       thumbnail_url: '/image/Urban Dreams.png',
@@ -103,7 +121,7 @@ export default async function HomePage() {
     },
     {
       id: 'dummy-3',
-      title: 'Mountain Spirit',
+      title: 'Mother Earth',
       price: 110000,
       category: 'sculpture',
       thumbnail_url: '/image/Mother Earth.jpg',
