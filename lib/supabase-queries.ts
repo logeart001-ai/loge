@@ -8,17 +8,7 @@ export async function getArtworkById(id: string) {
 
     const { data, error } = await supabase
       .from('artworks')
-      .select(`
-        *,
-        creator:user_profiles!creator_id (
-          id,
-          full_name,
-          avatar_url,
-          location,
-          bio,
-          rating
-        )
-      `)
+      .select(`*`)
       .eq('id', id)
       .single()
 
@@ -42,14 +32,7 @@ export async function getFeaturedArtworks(limit: number = 12) {
     const primary = await supabase
       .from('artworks')
       .select(`
-        *,
-        creator:user_profiles!creator_id (
-          id,
-          full_name,
-          avatar_url,
-          location,
-          rating
-        )
+        *
       `)
       .eq('is_available', true)
       .eq('is_featured', true)
@@ -68,28 +51,19 @@ export async function getFeaturedArtworks(limit: number = 12) {
         // Fallback: drop the missing filters progressively
         let fallbackQuery = supabase
           .from('artworks')
-          .select(`
-            *,
-            creator:user_profiles!creator_id (
-              id,
-              full_name,
-              avatar_url,
-              location,
-              rating
-            )
-          `)
+          .select(`*`)
           .order('created_at', { ascending: false })
           .limit(limit)
         // If is_featured exists but is_available missing, still filter by is_featured
         if (!missingFeatured) fallbackQuery = fallbackQuery.eq('is_featured', true)
         const fallback = await fallbackQuery
         if (fallback.error) {
-          console.error('Fallback featured artworks query failed:', fallback.error)
+          console.error('Fallback featured artworks query failed:', JSON.stringify(fallback.error, null, 2))
           return []
         }
         return fallback.data || []
       }
-      console.error('Error fetching featured artworks:', primary.error)
+      console.error('Error fetching featured artworks:', JSON.stringify(primary.error, null, 2))
       return []
     }
     
@@ -97,20 +71,11 @@ export async function getFeaturedArtworks(limit: number = 12) {
     if ((primary.data?.length || 0) === 0) {
       const soft = await supabase
         .from('artworks')
-        .select(`
-          *,
-          creator:user_profiles!creator_id (
-            id,
-            full_name,
-            avatar_url,
-            location,
-            rating
-          )
-        `)
+        .select(`*`)
         .order('created_at', { ascending: false })
         .limit(limit)
       if (soft.error) {
-        console.error('Soft fallback featured artworks query failed:', soft.error)
+        console.error('Soft fallback featured artworks query failed:', JSON.stringify(soft.error, null, 2))
         return []
       }
       return soft.data || []
@@ -118,7 +83,7 @@ export async function getFeaturedArtworks(limit: number = 12) {
     
     return primary.data || []
   } catch (error) {
-    console.error('Unexpected error fetching featured artworks:', error)
+    console.error('Unexpected error fetching featured artworks:', JSON.stringify(error, null, 2))
     return []
   }
 }
@@ -133,16 +98,7 @@ export async function getArtworksByCategory(
     
     const { data, error } = await supabase
       .from('artworks')
-      .select(`
-        *,
-        creator:user_profiles!creator_id (
-          id,
-          full_name,
-          avatar_url,
-          location,
-          rating
-        )
-      `)
+      .select(`*`)
       .eq('is_available', true)
       .eq('category', category)
       .order('created_at', { ascending: false })
@@ -167,15 +123,7 @@ export async function getFeaturedCreators(limit: number = 6) {
     // Attempt query with is_featured filter
     const { data, error } = await supabase
       .from('user_profiles')
-      .select(`
-        *,
-        artworks:artworks!creator_id (
-          id,
-          thumbnail_url,
-          title,
-          price
-        )
-      `)
+      .select(`*`)
       .eq('role', 'creator')
       .eq('is_featured', true)
       .order('rating', { ascending: false })
@@ -192,31 +140,23 @@ export async function getFeaturedCreators(limit: number = 6) {
         console.warn('[getFeaturedCreators] is_featured column missing; falling back to role-only filter.')
         const fallback = await supabase
           .from('user_profiles')
-          .select(`
-            *,
-            artworks:artworks!creator_id (
-              id,
-              thumbnail_url,
-              title,
-              price
-            )
-          `)
+          .select(`*`)
           .eq('role', 'creator')
           .order('rating', { ascending: false })
           .limit(limit)
         if (fallback.error) {
-          console.error('Fallback featured creators query failed:', fallback.error)
+          console.error('Fallback featured creators query failed:', JSON.stringify(fallback.error, null, 2))
           return []
         }
         return fallback.data || []
       }
-      console.error('Error fetching featured creators:', error)
+      console.error('Error fetching featured creators:', JSON.stringify(error, null, 2))
       return []
     }
 
     return data || []
   } catch (error) {
-    console.error('Unexpected error fetching featured creators:', error)
+    console.error('Unexpected error fetching featured creators:', JSON.stringify(error, null, 2))
     return []
   }
 }

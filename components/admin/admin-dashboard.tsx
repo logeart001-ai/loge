@@ -22,6 +22,7 @@ import {
     Filter
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
+import { NotificationCenter } from '@/components/notifications/notification-center'
 
 interface Submission {
     id: string
@@ -44,7 +45,7 @@ interface Submission {
     artist_details?: any
     writer_details?: any
     fashion_details?: any
-    media_files?: any[]
+    media_files?: unknown[]
 }
 
 interface ReviewData {
@@ -323,6 +324,13 @@ export function AdminDashboard() {
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
                     <p className="text-gray-600 mt-1">Review and manage creator submissions</p>
+                </div>
+                <div className="flex items-center gap-4">
+                    <NotificationCenter />
+                    <Button variant="outline" size="sm">
+                        <Filter className="w-4 h-4 mr-2" />
+                        Filters
+                    </Button>
                 </div>
             </div>
 

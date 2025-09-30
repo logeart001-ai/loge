@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase'
+import { notificationService } from '@/lib/notification-service'
 
 export interface EmailTemplate {
   subject: string
@@ -31,21 +32,92 @@ export class EmailService {
     try {
       const template = this.getEmailTemplate(status, data)
       
-      // In a real implementation, you would use a service like:
-      // - Supabase Edge Functions with Resend
-      // - SendGrid
-      // - Mailgun
-      // - AWS SES
+      // Use Supabase Edge Function to send email
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+      const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
       
-      // For now, we'll log the email and store it in a notifications table
-      console.log('Email would be sent:', {
-        to: creatorEmail,
-        subject: template.subject,
-        html: template.html
-      })
+      if (supabaseUrl && supabaseServiceKey) {
+        try {
+          const response = await fetch(`${supabaseUrl}/functions/v1/send-email`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${supabaseServiceKey}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              to: creatorEmail,
+              subject: template.subject,
+              html: template.html,
+              text: template.text,
+              type: status,
+              metadata: data
+            })
+          })
 
-      // Store notification in database
-      await this.storeNotification(creatorEmail, template, data)
+          const result = await response.json()
+          
+          if (!response.ok) {
+            throw new Error(result.error || 'Email sending failed')
+          }
+          
+          console.log('Email sent successfully:', result)
+          
+          // Create notification record
+          await notificationService.createNotification({
+            recipient_email: creatorEmail,
+            subject: template.subject,
+            content: template.html,
+            type: status,
+            metadata: {
+              ...data,
+              email_sent: true,
+              sent_via: 'edge_function'
+            }
+          })
+          
+        } catch (error) {
+          console.error('Edge function email error:', error)
+          
+          // Create failed notification record
+          await notificationService.createNotification({
+            recipient_email: creatorEmail,
+            subject: template.subject,
+            content: template.html,
+            type: status,
+            metadata: {
+              ...data,
+              email_sent: false,
+              error: error.message,
+              sent_via: 'fallback'
+            }
+          })
+          
+          // Fallback to logging
+          console.log('Email would be sent (fallback):', {
+            to: creatorEmail,
+            subject: template.subject
+          })
+        }
+      } else {
+        // Development mode - just log and create notification
+        console.log('Email would be sent (development):', {
+          to: creatorEmail,
+          subject: template.subject,
+          html: template.html
+        })
+        
+        await notificationService.createNotification({
+          recipient_email: creatorEmail,
+          subject: template.subject,
+          content: template.html,
+          type: status,
+          metadata: {
+            ...data,
+            email_sent: false,
+            sent_via: 'development'
+          }
+        })
+      }
       
       return true
     } catch (error) {

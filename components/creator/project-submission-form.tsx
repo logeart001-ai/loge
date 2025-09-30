@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -8,9 +8,8 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Upload, Image, Video, FileText, Palette, BookOpen, Shirt } from 'lucide-react'
+import { Image as ImageIcon, Video as VideoIcon, FileText as FileTextIcon, Palette, BookOpen, Shirt } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 
 interface ProjectSubmissionFormProps {
@@ -111,13 +110,13 @@ export function ProjectSubmissionForm({ creatorType }: ProjectSubmissionFormProp
   const getFormIcon = () => {
     switch (creatorType) {
       case 'artist':
-        return <Palette className="w-6 h-6" />
+        return <Palette className="w-6 h-6" aria-hidden="true" />
       case 'writer':
-        return <BookOpen className="w-6 h-6" />
+        return <BookOpen className="w-6 h-6" aria-hidden="true" />
       case 'fashion_designer':
-        return <Shirt className="w-6 h-6" />
+        return <Shirt className="w-6 h-6" aria-hidden="true" />
       default:
-        return <FileText className="w-6 h-6" />
+        return <FileTextIcon className="w-6 h-6" aria-hidden="true" />
     }
   }
 
@@ -516,7 +515,7 @@ export function ProjectSubmissionForm({ creatorType }: ProjectSubmissionFormProp
                           <SelectItem value="poetry">Poetry</SelectItem>
                           <SelectItem value="drama">Drama</SelectItem>
                           <SelectItem value="academic">Academic</SelectItem>
-                          <SelectItem value="children">Children's Literature</SelectItem>
+                          <SelectItem value="children">Children&apos;s Literature</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -678,21 +677,32 @@ export function ProjectSubmissionForm({ creatorType }: ProjectSubmissionFormProp
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Images */}
                 <div>
-                  <Label className="flex items-center gap-2 mb-2">
-                    <Image className="w-4 h-4" />
+                    <Label
+                      id="submission-images-label"
+                      htmlFor="submission-images"
+                      className="flex items-center gap-2 mb-2"
+                    >
+                    <ImageIcon className="w-4 h-4" aria-hidden="true" />
                     Images (3 frames suggested)
                   </Label>
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
                     <input
+                      id="submission-images"
                       type="file"
                       multiple
                       accept="image/*"
                       onChange={(e) => handleFileUpload('images', e.target.files)}
                       className="w-full"
+                      aria-label="Images (3 frames suggested)"
+                      title="Upload images for your submission"
+                      aria-labelledby="submission-images-label"
+                      aria-describedby="submission-images-help"
                     />
-                    <p className="text-sm text-gray-500 mt-2">
-                      Frame 1: Clean product shot<br/>
-                      Frame 2: In context/styled<br/>
+                    <p id="submission-images-help" className="text-sm text-gray-500 mt-2">
+                      Frame 1: Clean product shot
+                      <br />
+                      Frame 2: In context/styled
+                      <br />
                       Frame 3: Creator with work
                     </p>
                   </div>
@@ -716,18 +726,27 @@ export function ProjectSubmissionForm({ creatorType }: ProjectSubmissionFormProp
 
                 {/* Videos */}
                 <div>
-                  <Label className="flex items-center gap-2 mb-2">
-                    <Video className="w-4 h-4" />
+                  <Label
+                    id="submission-video-label"
+                    htmlFor="submission-video"
+                    className="flex items-center gap-2 mb-2"
+                  >
+                    <VideoIcon className="w-4 h-4" aria-hidden="true" />
                     Video (30-60 seconds)
                   </Label>
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
                     <input
+                      id="submission-video"
                       type="file"
                       accept="video/*"
                       onChange={(e) => handleFileUpload('videos', e.target.files)}
                       className="w-full"
+                      aria-label="Video (30-60 seconds)"
+                      title="Upload video for your submission"
+                      aria-labelledby="submission-video-label"
+                      aria-describedby="submission-video-help"
                     />
-                    <p className="text-sm text-gray-500 mt-2">
+                    <p id="submission-video-help" className="text-sm text-gray-500 mt-2">
                       Short video explaining your piece
                     </p>
                   </div>
@@ -752,20 +771,29 @@ export function ProjectSubmissionForm({ creatorType }: ProjectSubmissionFormProp
                 {/* Audio (for writers) */}
                 {creatorType === 'writer' && (
                   <div>
-                    <Label className="flex items-center gap-2 mb-2">
-                      <FileText className="w-4 h-4" />
+                    <Label
+                      id="submission-audio-label"
+                      htmlFor="submission-audio"
+                      className="flex items-center gap-2 mb-2"
+                    >
+                      <FileTextIcon className="w-4 h-4" aria-hidden="true" />
                       Audio Excerpt
                     </Label>
                     <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
                       <input
+                        id="submission-audio"
                         type="file"
                         accept="audio/*"
                         onChange={(e) => handleFileUpload('audio', e.target.files)}
                         className="w-full"
+                        aria-label="Audio Excerpt"
+                        title="Upload audio excerpt for your submission"
+                        aria-labelledby="submission-audio-label"
+                        aria-describedby="submission-audio-help"
                       />
-                      <p className="text-sm text-gray-500 mt-2">
-                        Author reading a paragraph/poem
-                      </p>
+                        <p id="submission-audio-help" className="text-sm text-gray-500 mt-2">
+                          Author reading a paragraph/poem
+                        </p>
                     </div>
                   </div>
                 )}
@@ -773,18 +801,27 @@ export function ProjectSubmissionForm({ creatorType }: ProjectSubmissionFormProp
                 {/* Documents (for writers) */}
                 {creatorType === 'writer' && (
                   <div>
-                    <Label className="flex items-center gap-2 mb-2">
-                      <FileText className="w-4 h-4" />
+                    <Label
+                      id="submission-document-label"
+                      htmlFor="submission-document"
+                      className="flex items-center gap-2 mb-2"
+                    >
+                      <FileTextIcon className="w-4 h-4" aria-hidden="true" />
                       Manuscript/Document
                     </Label>
                     <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
                       <input
+                        id="submission-document"
                         type="file"
                         accept=".pdf,.doc,.docx"
                         onChange={(e) => handleFileUpload('documents', e.target.files)}
                         className="w-full"
+                        aria-label="Manuscript/Document"
+                        title="Upload document for your submission"
+                        aria-labelledby="submission-document-label"
+                        aria-describedby="submission-document-help"
                       />
-                      <p className="text-sm text-gray-500 mt-2">
+                      <p id="submission-document-help" className="text-sm text-gray-500 mt-2">
                         PDF or Word document
                       </p>
                     </div>
@@ -800,8 +837,8 @@ export function ProjectSubmissionForm({ creatorType }: ProjectSubmissionFormProp
                   <Checkbox
                     id="original_work"
                     checked={formData.original_work_confirmed}
-                    onCheckedChange={(checked) => 
-                      setFormData(prev => ({ ...prev, original_work_confirmed: checked as boolean }))
+                    onCheckedChange={(checked: boolean | 'indeterminate') =>
+                      setFormData(prev => ({ ...prev, original_work_confirmed: checked === true }))
                     }
                   />
                   <Label htmlFor="original_work">
@@ -813,12 +850,12 @@ export function ProjectSubmissionForm({ creatorType }: ProjectSubmissionFormProp
                   <Checkbox
                     id="terms_agreed"
                     checked={formData.terms_agreed}
-                    onCheckedChange={(checked) => 
-                      setFormData(prev => ({ ...prev, terms_agreed: checked as boolean }))
+                    onCheckedChange={(checked: boolean | 'indeterminate') =>
+                      setFormData(prev => ({ ...prev, terms_agreed: checked === true }))
                     }
                   />
                   <Label htmlFor="terms_agreed">
-                    ✅ I agree to L'oge Arts' submission terms
+                    ✅ I agree to L&apos;oge Arts&apos; submission terms
                   </Label>
                 </div>
               </div>
@@ -827,7 +864,7 @@ export function ProjectSubmissionForm({ creatorType }: ProjectSubmissionFormProp
                 <h3 className="font-semibold text-orange-900 mb-2">Review Process</h3>
                 <p className="text-orange-800 text-sm">
                   Your submission will be reviewed by our team within 3-5 business days. 
-                  You'll receive an email notification with the review results and any feedback.
+                  You&apos;ll receive an email notification with the review results and any feedback.
                 </p>
               </div>
 
