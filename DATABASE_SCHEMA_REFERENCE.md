@@ -19,13 +19,14 @@
 
 ## 🎯 Overview
 
-The Loge Arts platform uses **15 main tables** to support:
+The Loge Arts platform uses **22 main tables** to support:
 - **User Management**: Profiles, authentication, roles
 - **Marketplace**: Artworks, books, fashion items
 - **Content**: Events, blog posts
 - **Commerce**: Carts, orders, reviews, wishlists
 - **Logistics**: Shipping, tracking, quotes
 - **Social**: Follows, reviews
+- **Creator Submissions**: Project submissions, reviews, onboarding
 
 ### Current Data Status
 - **2 Featured Creators** (users with creator role)
