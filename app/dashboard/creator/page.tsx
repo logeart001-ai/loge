@@ -3,7 +3,7 @@ import { createServerClient } from '@/lib/supabase'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Upload, DollarSign, Eye, TrendingUp, Settings, LogOut, Plus, Package, BarChart3 } from 'lucide-react'
+import { Upload, DollarSign, Eye, TrendingUp, Settings, LogOut, Plus, Package, BarChart3, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { OptimizedImage } from '@/components/optimized-image'
@@ -128,6 +128,10 @@ export default async function CreatorDashboard() {
                   <Link href="/dashboard/creator/profile" className="flex items-center space-x-2 p-2 text-gray-600 hover:bg-gray-50 rounded">
                     <Settings className="w-4 h-4" />
                     <span>Profile Settings</span>
+                  </Link>
+                  <Link href="/support" className="flex items-center space-x-2 p-2 text-gray-600 hover:bg-gray-50 rounded">
+                    <MessageCircle className="w-4 h-4" />
+                    <span>Customer Support</span>
                   </Link>
                 </nav>
               </CardContent>

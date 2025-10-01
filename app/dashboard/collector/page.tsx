@@ -3,7 +3,7 @@ import { createServerClient } from '@/lib/supabase'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Heart, ShoppingBag, User, Bell, Settings, LogOut } from 'lucide-react'
+import { Heart, ShoppingBag, User, Bell, Settings, LogOut, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
 import { OptimizedImage } from '@/components/optimized-image'
 
@@ -144,6 +144,10 @@ export default async function CollectorDashboard() {
                   <Link href="/dashboard/collector/settings" className="flex items-center space-x-2 p-2 text-gray-600 hover:bg-gray-50 rounded">
                     <Settings className="w-4 h-4" />
                     <span>Settings</span>
+                  </Link>
+                  <Link href="/support" className="flex items-center space-x-2 p-2 text-gray-600 hover:bg-gray-50 rounded">
+                    <MessageCircle className="w-4 h-4" />
+                    <span>Customer Support</span>
                   </Link>
                 </nav>
               </CardContent>

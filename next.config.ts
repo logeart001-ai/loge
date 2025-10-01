@@ -9,19 +9,10 @@ try {
 }
 
 const nextConfig: NextConfig = {
-  // Performance optimizations
-  experimental: {
-    optimizePackageImports: ['lucide-react'],
-    // Disable turbo temporarily to fix vendor chunk issues
-    // turbo: {
-    //   rules: {
-    //     '*.svg': {
-    //       loaders: ['@svgr/webpack'],
-    //       as: '*.js',
-    //     },
-    //   },
-    // },
-  },
+  // Temporarily disable experimental features to fix module issues
+  // experimental: {
+  //   optimizePackageImports: ['lucide-react'],
+  // },
   
   // Compiler optimizations
   compiler: {

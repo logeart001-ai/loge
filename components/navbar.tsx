@@ -130,6 +130,9 @@ export function Navbar() {
             <Link href="/about" className="text-gray-700 hover:text-orange-500 font-medium">
               About
             </Link>
+            <Link href="/support" className="text-gray-700 hover:text-orange-500 font-medium">
+              Support
+            </Link>
             {!loading && user && inDashboard && (
               <Link
                 href={user.user_metadata?.user_type === 'creator' ? '/dashboard/creator' : '/dashboard/collector'}
@@ -252,6 +255,13 @@ export function Navbar() {
                 onClick={() => setIsOpen(false)}
               >
                 About
+              </Link>
+              <Link
+                href="/support"
+                className="block px-3 py-2 text-gray-700 hover:text-orange-500 font-medium"
+                onClick={() => setIsOpen(false)}
+              >
+                Support
               </Link>
               <Link
                 href="/cart"
