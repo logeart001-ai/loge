@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { tracking_number: string } }
+  { params }: { params: Promise<{ tracking_number: string }> }
 ) {
   try {
     const supabase = await createClient()
@@ -14,7 +14,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { tracking_number } = params
+    const { tracking_number } = await params
 
     // Get shipment from database to verify user access and get provider
     const { data: shipment, error: shipmentError } = await supabase

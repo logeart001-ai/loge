@@ -31,12 +31,9 @@ function SignInForm() {
       console.log('🔥 Success detected! Redirecting to:', state?.redirectTo || '/dashboard')
       const redirectPath = state?.redirectTo || '/dashboard'
       
-      // Use window.location.replace for more reliable redirect
-      const timer = setTimeout(() => {
-        console.log('🔥 Executing window.location redirect to:', redirectPath)
-        window.location.replace(redirectPath)
-      }, 1500)
-      return () => clearTimeout(timer)
+      // Use window.location.href for a full page reload to ensure cookies are sent
+      console.log('🔥 Executing full page redirect to:', redirectPath)
+      window.location.href = redirectPath
     } else if (state?.error) {
       console.log('🔥 Error detected:', state.error)
     } else if (state === null) {

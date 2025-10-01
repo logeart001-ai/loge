@@ -45,7 +45,11 @@ interface Submission {
     artist_details?: any
     writer_details?: any
     fashion_details?: any
-    media_files?: unknown[]
+    media_files?: Array<{
+        file_url: string
+        file_type: string
+        caption?: string
+    }>
 }
 
 interface ReviewData {
@@ -261,7 +265,7 @@ export function AdminDashboard() {
                 await supabase
                     .from('artworks')
                     .insert({
-                        creator_id: submission.creator_id,
+                        creator_id: submission.creator.id,
                         title: submission.title,
                         description: submission.description,
                         category: submission.artist_details?.medium?.toLowerCase() || 'painting',
@@ -504,7 +508,7 @@ export function AdminDashboard() {
                                         <Label htmlFor="review_status">Review Decision</Label>
                                         <Select
                                             value={reviewData.status}
-                                            onValueChange={(value) => setReviewData(prev => ({ ...prev, status: value as unknown }))}
+                                            onValueChange={(value) => setReviewData(prev => ({ ...prev, status: value as 'approved' | 'rejected' | 'needs_revision' }))}
                                         >
                                             <SelectTrigger>
                                                 <SelectValue />

@@ -1,4 +1,4 @@
-import { createServerClient } from '@/lib/supabase'
+import { createMiddlewareClient } from '@/lib/supabase-middleware'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
@@ -10,7 +10,7 @@ export async function middleware(request: NextRequest) {
       },
     })
 
-    const supabase = await createServerClient()
+    const supabase = createMiddlewareClient(request, response)
     const { data: { user } } = await supabase.auth.getUser()
     
     // Protect dashboard routes

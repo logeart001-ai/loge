@@ -44,8 +44,8 @@ class SimpleCache {
 
 export const cache = new SimpleCache()
 
-// Cleanup expired entries every 5 minutes
-if (typeof window === 'undefined') {
+// Cleanup expired entries every 5 minutes (only in browser)
+if (typeof window !== 'undefined') {
   setInterval(() => {
     cache.cleanup()
   }, 5 * 60 * 1000)

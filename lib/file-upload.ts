@@ -172,7 +172,7 @@ export class FileUploadService {
     }
   ): Promise<boolean> {
     try {
-      const mediaRecords = []
+      const mediaRecords: any[] = []
 
       // Process images
       uploadResults.images.forEach((result, index) => {

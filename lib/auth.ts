@@ -2,6 +2,7 @@
 
 import { createServerClient } from '@/lib/supabase'
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 
 // Password validation helper
 function validatePassword(password: string): { isValid: boolean; message?: string } {
@@ -180,6 +181,10 @@ export async function signIn(prevState: unknown, formData: FormData) {
     console.log('🔥 User metadata:', data.user?.user_metadata)
     console.log('🔥 Detected userType:', userType)
     
+    // Revalidate the authentication state to ensure cookies are fresh
+    revalidatePath('/', 'layout')
+    revalidatePath('/dashboard/creator', 'page')
+    
     // Default to general dashboard if no specific user type, otherwise use specific dashboard
     const defaultRedirect = userType === 'creator' 
       ? '/dashboard/creator' 
@@ -189,7 +194,8 @@ export async function signIn(prevState: unknown, formData: FormData) {
     const finalRedirect = redirectTo || defaultRedirect
     
     console.log('🔥 Final redirect path:', finalRedirect)
-
+    
+    // Return success with redirect path - client will handle the redirect
     return {
       success: true,
       message: 'Successfully signed in! Redirecting...',

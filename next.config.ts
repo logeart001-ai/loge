@@ -35,7 +35,7 @@ const nextConfig: NextConfig = {
       ...(supabaseHost
         ? ([{ protocol: 'https' as const, hostname: supabaseHost, pathname: '/storage/v1/object/**' }])
         : []),
-      // Placeholder services for development/testing
+      // Placeholder services for development/testing (including SVGs)
       { protocol: 'https' as const, hostname: 'placehold.co', pathname: '/**' },
       { protocol: 'https' as const, hostname: 'via.placeholder.com', pathname: '/**' },
       { protocol: 'https' as const, hostname: 'picsum.photos', pathname: '/**' },
@@ -46,6 +46,10 @@ const nextConfig: NextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
+    // Allow SVG optimization
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   
   // Headers for caching
@@ -66,6 +70,16 @@ const nextConfig: NextConfig = {
           {
             key: 'Cache-Control',
             value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      // Allow SVGs from external sources
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: "img-src 'self' data: https://placehold.co https://via.placeholder.com https://picsum.photos https://*.supabase.co;",
           },
         ],
       },

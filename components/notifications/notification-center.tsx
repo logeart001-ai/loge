@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { createClient } from '@/lib/supabase'
-import { formatDistanceToNow } from 'date-fns'
+// import { formatDistanceToNow } from 'date-fns'
 
 interface Notification {
   id: string
@@ -305,7 +305,7 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
                       
                       <div className="flex items-center justify-between mt-2">
                         <p className="text-xs text-gray-500">
-                          {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
+                          {new Date(notification.created_at).toLocaleDateString()}
                         </p>
                         
                         <div className="flex items-center gap-1">

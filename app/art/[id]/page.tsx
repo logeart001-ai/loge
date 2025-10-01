@@ -7,8 +7,8 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { getArtworkById } from '@/lib/supabase-queries'
 
-export default async function ArtworkDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params
+export default async function ArtworkDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
 
   const artwork = await getArtworkById(id)
   if (!artwork) return notFound()

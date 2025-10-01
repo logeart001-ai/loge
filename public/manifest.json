@@ -1,0 +1,79 @@
+{
+  "name": "Loge Arts - African Creativity Marketplace",
+  "short_name": "Loge Arts",
+  "description": "Discover authentic art, fashion, and literature from Africa's most talented creators",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#f97316",
+  "orientation": "portrait-primary",
+  "categories": ["shopping", "lifestyle", "entertainment"],
+  "lang": "en",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/image/logelogo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/image/logelogo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/image/screenshot-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/image/screenshot-mobile.png",
+      "sizes": "375x667",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Browse Art",
+      "short_name": "Art",
+      "description": "Browse artwork collection",
+      "url": "/art",
+      "icons": [
+        {
+          "src": "/image/logelogo.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Discover Creators",
+      "short_name": "Creators",
+      "description": "Meet talented African creators",
+      "url": "/creators",
+      "icons": [
+        {
+          "src": "/image/logelogo.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Upcoming Events",
+      "short_name": "Events",
+      "description": "Art exhibitions and workshops",
+      "url": "/events",
+      "icons": [
+        {
+          "src": "/image/logelogo.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}
