@@ -39,7 +39,7 @@ export async function middleware(request: NextRequest) {
     }
 
     return response
-  } catch (error) {
+  } catch {
     // If there's an error with auth, redirect to signin
     if (request.nextUrl.pathname.startsWith('/dashboard')) {
       return NextResponse.redirect(new URL('/auth/signin', request.url))
