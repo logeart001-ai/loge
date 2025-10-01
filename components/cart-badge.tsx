@@ -9,7 +9,7 @@ export function CartBadge() {
 
   useEffect(() => {
     if (!loading) {
-      setCount(cart?.itemCount || cart?.items.length || 0)
+      setCount(cart?.count || cart?.items.length || 0)
     }
   }, [cart, loading])
 

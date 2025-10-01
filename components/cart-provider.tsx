@@ -1,9 +1,9 @@
 "use client"
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react'
-import { getActiveCart, addItemToCart, updateCartItemQuantity, removeCartItem, clearCart, ActiveCart } from '@/lib/supabase-queries'
+import { getCart, addToCart, updateCartItem, removeCartItem, Cart } from '@/lib/cart'
 
 interface CartContextValue {
-  cart: ActiveCart | null
+  cart: Cart | null
   loading: boolean
   refreshing: boolean
   addItem: (artworkId: string, qty?: number) => Promise<void>
@@ -16,18 +16,18 @@ interface CartContextValue {
 const CartContext = createContext<CartContextValue | undefined>(undefined)
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [cart, setCart] = useState<ActiveCart | null>(null)
+  const [cart, setCart] = useState<Cart | null>(null)
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
 
   const load = useCallback(async () => {
     try {
       setLoading(true)
-      const c = await getActiveCart()
+      const c = await getCart()
       setCart(c)
     } catch (e) {
       console.error('Failed to load active cart', e)
-      setCart(null)
+      setCart(null) // Set to null for unauthenticated users
     } finally {
       setLoading(false)
     }
@@ -39,10 +39,11 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!cart) return load()
     try {
       setRefreshing(true)
-      const c = await getActiveCart()
+      const c = await getCart()
       setCart(c)
     } catch (e) {
       console.error('Failed to refresh cart', e)
+      setCart(null)
     } finally {
       setRefreshing(false)
     }
@@ -50,7 +51,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const addItem = useCallback(async (artworkId: string, qty: number = 1) => {
     try {
-      const updated = await addItemToCart(artworkId, qty)
+      await addToCart(artworkId, qty)
+      // Refresh cart after adding
+      const updated = await getCart()
       setCart(updated)
     } catch (e) {
       console.error('Failed to add item to cart', e)
@@ -59,7 +62,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const updateItem = useCallback(async (cartItemId: string, qty: number) => {
     try {
-      const updated = await updateCartItemQuantity(cartItemId, qty)
+      await updateCartItem(cartItemId, qty)
+      // Refresh cart after updating
+      const updated = await getCart()
       setCart(updated)
     } catch (e) {
       console.error('Failed to update cart item', e)
@@ -68,7 +73,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const removeItem = useCallback(async (cartItemId: string) => {
     try {
-      const updated = await removeCartItem(cartItemId)
+      await removeCartItem(cartItemId)
+      // Refresh cart after removing
+      const updated = await getCart()
       setCart(updated)
     } catch (e) {
       console.error('Failed to remove cart item', e)
@@ -77,12 +84,19 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const clear = useCallback(async () => {
     try {
-      const updated = await clearCart()
+      // Clear all items by removing them one by one
+      if (cart?.items) {
+        for (const item of cart.items) {
+          await removeCartItem(item.id)
+        }
+      }
+      // Refresh cart after clearing
+      const updated = await getCart()
       setCart(updated)
     } catch (e) {
       console.error('Failed to clear cart', e)
     }
-  }, [])
+  }, [cart])
 
   return (
     <CartContext.Provider value={{ cart, loading, refreshing, addItem, updateItem, removeItem, clear, refresh }}>

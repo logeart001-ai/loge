@@ -494,7 +494,7 @@ function computeCartTotals(items: CartItemRow[]): { subtotal: number; total: num
 
 async function getOrCreateActiveCartInternal(supabase: ReturnType<typeof createClient>) {
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('Not authenticated')
+  if (!user) return null
 
   // Try fetch existing active cart
   const { data: existingCart, error: cartErr } = await supabase
@@ -561,22 +561,24 @@ async function fetchCartWithItems(supabase: ReturnType<typeof createClient>, car
   }
 }
 
-export async function getActiveCart(): Promise<ActiveCart> {
+export async function getActiveCart(): Promise<ActiveCart | null> {
   try {
     const supabase = createClient()
     const cart = await getOrCreateActiveCartInternal(supabase)
+    if (!cart) return null
     return await fetchCartWithItems(supabase, cart.id)
   } catch (error) {
     console.error('Unexpected error getting active cart:', error)
-    throw error
+    return null
   }
 }
 
-export async function addItemToCart(artworkId: string, quantity: number = 1): Promise<ActiveCart> {
+export async function addItemToCart(artworkId: string, quantity: number = 1): Promise<ActiveCart | null> {
   try {
     if (quantity <= 0) throw new Error('Quantity must be positive')
     const supabase = createClient()
     const cart = await getOrCreateActiveCartInternal(supabase)
+    if (!cart) throw new Error('Not authenticated')
 
     // Check if item already exists
     const { data: existingItem, error: existingErr } = await supabase
@@ -635,10 +637,11 @@ export async function addItemToCart(artworkId: string, quantity: number = 1): Pr
   }
 }
 
-export async function updateCartItemQuantity(cartItemId: string, quantity: number): Promise<ActiveCart> {
+export async function updateCartItemQuantity(cartItemId: string, quantity: number): Promise<ActiveCart | null> {
   try {
     const supabase = createClient()
     const cart = await getOrCreateActiveCartInternal(supabase)
+    if (!cart) throw new Error('Not authenticated')
 
     if (quantity <= 0) {
       const { error: delErr } = await supabase
@@ -669,10 +672,11 @@ export async function updateCartItemQuantity(cartItemId: string, quantity: numbe
   }
 }
 
-export async function removeCartItem(cartItemId: string): Promise<ActiveCart> {
+export async function removeCartItem(cartItemId: string): Promise<ActiveCart | null> {
   try {
     const supabase = createClient()
     const cart = await getOrCreateActiveCartInternal(supabase)
+    if (!cart) throw new Error('Not authenticated')
 
     const { error: delErr } = await supabase
       .from('cart_items')
@@ -692,10 +696,11 @@ export async function removeCartItem(cartItemId: string): Promise<ActiveCart> {
   }
 }
 
-export async function clearCart(): Promise<ActiveCart> {
+export async function clearCart(): Promise<ActiveCart | null> {
   try {
     const supabase = createClient()
     const cart = await getOrCreateActiveCartInternal(supabase)
+    if (!cart) throw new Error('Not authenticated')
     const { error: delErr } = await supabase
       .from('cart_items')
       .delete()
