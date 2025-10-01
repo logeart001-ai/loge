@@ -1,5 +1,3 @@
-'use server'
-
 interface PaystackInitializeResponse {
   status: boolean
   message: string

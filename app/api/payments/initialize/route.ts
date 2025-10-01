@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const cartItems = cart.cart_items as Array<{
+    const cartItems = (cart.cart_items || []) as unknown as Array<{
       id: string
       artwork_id: string
       quantity: number

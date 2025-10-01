@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Navbar } from '@/components/navbar'
 import { WhatsAppButton } from '@/components/whatsapp-button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { MessageCircle, Mail, Phone, Clock, HelpCircle, ShoppingCart, CreditCard, Package, Users } from 'lucide-react'
+import { MessageCircle, Mail, Phone, HelpCircle, ShoppingCart, Package, Users } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: "Customer Support — L'oge Arts",
@@ -84,10 +84,17 @@ export default function SupportPage() {
   const contactMethods = [
     {
       icon: MessageCircle,
-      title: 'WhatsApp',
-      description: 'Chat with us instantly',
-      value: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '+2348130864548',
+      title: 'Live Chat',
+      description: 'Chat with us in real-time',
+      value: 'Click the green chat button',
       action: 'primary',
+    },
+    {
+      icon: MessageCircle,
+      title: 'WhatsApp',
+      description: 'Message us on WhatsApp',
+      value: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '+2348130864548',
+      action: 'whatsapp',
     },
     {
       icon: Mail,
@@ -103,12 +110,6 @@ export default function SupportPage() {
       value: '+234 813 086 4548',
       link: 'tel:+2348130864548',
     },
-    {
-      icon: Clock,
-      title: 'Business Hours',
-      description: 'Monday - Friday',
-      value: '9:00 AM - 6:00 PM WAT',
-    },
   ]
 
   return (
@@ -122,8 +123,11 @@ export default function SupportPage() {
           <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">
             How Can We Help You?
           </h1>
-          <p className="text-lg text-gray-600 mb-8">
+          <p className="text-lg text-gray-600 mb-4">
             Get quick answers to your questions or reach out to our support team
+          </p>
+          <p className="text-sm text-gray-500 mb-8">
+            💬 Click the green chat button at the bottom right to start a conversation instantly
           </p>
           <div className="flex justify-center">
             <WhatsAppButton
@@ -143,8 +147,8 @@ export default function SupportPage() {
               <Card key={index} className="hover:shadow-lg transition-shadow">
                 <CardContent className="p-6 text-center">
                   <div className="flex justify-center mb-4">
-                    <div className={`p-3 rounded-full ${method.action === 'primary' ? 'bg-green-100' : 'bg-orange-100'}`}>
-                      <method.icon className={`h-6 w-6 ${method.action === 'primary' ? 'text-green-600' : 'text-orange-600'}`} />
+                    <div className={`p-3 rounded-full ${method.action === 'primary' || method.action === 'whatsapp' ? 'bg-green-100' : 'bg-orange-100'}`}>
+                      <method.icon className={`h-6 w-6 ${method.action === 'primary' || method.action === 'whatsapp' ? 'text-green-600' : 'text-orange-600'}`} />
                     </div>
                   </div>
                   <h3 className="font-semibold text-lg mb-2">{method.title}</h3>
@@ -156,6 +160,8 @@ export default function SupportPage() {
                     >
                       {method.value}
                     </a>
+                  ) : method.action === 'primary' ? (
+                    <p className="text-green-600 font-medium text-sm">{method.value}</p>
                   ) : (
                     <p className="text-gray-900 font-medium">{method.value}</p>
                   )}

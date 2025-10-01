@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Playfair_Display, Inter, Dancing_Script } from 'next/font/google';
 import "./globals.css";
 import { CartProvider } from '@/components/cart-provider'
-import { WhatsAppFloatingButton } from '@/components/whatsapp-button'
+import { WhatsAppChatWidget } from '@/components/whatsapp-chat-widget'
 // import { PerformanceMonitor } from '@/components/performance/performance-monitor'
 // import { CriticalCSS } from '@/components/performance/critical-css'
 // import { ServiceWorkerRegistration } from '@/components/performance/service-worker-registration'
@@ -80,10 +80,7 @@ export default function RootLayout({
       <body className="antialiased font-body">
         <CartProvider>
           {children}
-          <WhatsAppFloatingButton 
-            phoneNumber={process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}
-            position="bottom-right"
-          />
+          <WhatsAppChatWidget />
         </CartProvider>
       </body>
     </html>
