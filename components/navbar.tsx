@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { OptimizedImage } from '@/components/optimized-image'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Menu, X, User, LogOut, ShoppingCart } from 'lucide-react'
 import { createClient } from '@/lib/supabase-client'
@@ -100,7 +100,7 @@ export function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <OptimizedImage
+            <Image
               src="/image/logelogo.png"
               alt="L'oge Arts logo"
               width={64}

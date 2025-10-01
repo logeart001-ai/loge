@@ -1,14 +1,58 @@
 "use client"
 
+import { useState } from 'react'
 import { Navbar } from '@/components/navbar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import Link from 'next/link'
 import { useCart } from '@/components/cart-provider'
 import { CartRow } from '@/components/cart/cart-row'
+import { useUser } from '@/lib/use-user'
+import { Loader2 } from 'lucide-react'
 
 export default function CartPage() {
   const { cart, loading } = useCart()
+  const { user } = useUser()
+  const [checkingOut, setCheckingOut] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const handleCheckout = async () => {
+    if (!cart || !user?.email) {
+      setError('Please sign in to proceed with checkout')
+      return
+    }
+
+    setCheckingOut(true)
+    setError(null)
+
+    try {
+      const response = await fetch('/api/payments/initialize', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          cart_id: cart.id,
+          email: user.email,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to initialize payment')
+      }
+
+      // Redirect to Paystack payment page
+      if (data.data?.authorization_url) {
+        window.location.href = data.data.authorization_url
+      }
+    } catch (err) {
+      console.error('Checkout error:', err)
+      setError(err instanceof Error ? err.message : 'Failed to proceed to checkout')
+      setCheckingOut(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -49,8 +93,24 @@ export default function CartPage() {
                     <span>Subtotal</span>
                     <span className="font-semibold">₦{cart.subtotal.toLocaleString()}</span>
                   </div>
-                  <Button className="w-full bg-orange-600 hover:bg-orange-700" disabled>
-                    Checkout (coming soon)
+                  {error && (
+                    <div className="text-red-600 text-sm bg-red-50 p-3 rounded-md">
+                      {error}
+                    </div>
+                  )}
+                  <Button 
+                    className="w-full bg-orange-600 hover:bg-orange-700" 
+                    disabled={checkingOut}
+                    onClick={handleCheckout}
+                  >
+                    {checkingOut ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Processing...
+                      </>
+                    ) : (
+                      'Proceed to Checkout'
+                    )}
                   </Button>
                   <Link href="/art" className="block text-center text-sm text-gray-600 hover:text-gray-800">
                     Continue shopping
