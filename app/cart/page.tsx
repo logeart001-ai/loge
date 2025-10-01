@@ -35,10 +35,10 @@ export default function CartPage() {
                 <CartRow key={item.id} item={{
                   id: item.id,
                   artwork_id: item.artwork_id,
-                  unit_price: Number(item.unit_price ?? item.artwork?.price ?? 0),
+                  unit_price: Number(item.unit_price ?? 0),
                   quantity: item.quantity,
-                  title: item.artwork?.title || 'Artwork',
-                  thumbnail_url: item.artwork?.thumbnail_url || null
+                  title: item.title || 'Artwork',
+                  thumbnail_url: item.thumbnail_url || null
                 }} />
               ))}
             </div>
