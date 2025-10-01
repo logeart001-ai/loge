@@ -2,7 +2,7 @@ import { requireAuth } from '@/lib/auth'
 import { createServerClient } from '@/lib/supabase'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import Image from 'next/image'
+import { OptimizedImage } from '@/components/optimized-image'
 import Link from 'next/link'
 
 interface WishlistRow {
@@ -93,14 +93,11 @@ export default async function CollectorWishlistPage() {
                 {items.map(({ artworks }) => (
                   <div key={artworks.id} className="border rounded-lg overflow-hidden bg-white">
                     <div className="relative w-full h-40 bg-gray-100">
-                      <Image
+                      <OptimizedImage
                         src={artworks.thumbnail_url || artworks.image_urls?.[0] || '/placeholder.svg'}
                         alt={artworks.title}
                         fill
                         className="object-cover"
-                        loading="lazy"
-                        placeholder="blur"
-                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+Kcp/9k="
                       />
                     </div>
                     <div className="p-4">

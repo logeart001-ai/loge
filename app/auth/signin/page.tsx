@@ -19,11 +19,30 @@ function SignInForm() {
   const router = useRouter()
 
   useEffect(() => {
-    if (state?.success && state?.redirectTo) {
+    console.log('🔥 SignIn useEffect triggered', { 
+      state, 
+      hasState: !!state,
+      stateSuccess: state?.success,
+      stateRedirectTo: state?.redirectTo,
+      stateError: state?.error 
+    })
+    
+    if (state?.success) {
+      console.log('🔥 Success detected! Redirecting to:', state?.redirectTo || '/dashboard')
+      const redirectPath = state?.redirectTo || '/dashboard'
+      
+      // Use window.location.replace for more reliable redirect
       const timer = setTimeout(() => {
-        router.push(state.redirectTo)
-      }, 2000)
+        console.log('🔥 Executing window.location redirect to:', redirectPath)
+        window.location.replace(redirectPath)
+      }, 1500)
       return () => clearTimeout(timer)
+    } else if (state?.error) {
+      console.log('🔥 Error detected:', state.error)
+    } else if (state === null) {
+      console.log('🔥 State is null (initial state)')
+    } else {
+      console.log('🔥 Unknown state:', state)
     }
     
     // Show resend form if email not confirmed
@@ -48,10 +67,23 @@ function SignInForm() {
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center">
-            <div className="flex items-center justify-center space-x-2">
+            <div className="flex items-center justify-center space-x-2 mb-4">
               <Loader2 className="h-4 w-4 animate-spin" />
               <span>Redirecting...</span>
             </div>
+            <p className="text-sm text-gray-600 mb-4">
+              If you are not redirected automatically, click the button below:
+            </p>
+            <Button 
+              onClick={() => {
+                const redirectPath = state?.redirectTo || '/dashboard'
+                console.log('🔥 Manual redirect to:', redirectPath)
+                window.location.href = redirectPath
+              }}
+              className="w-full"
+            >
+              Go to Dashboard
+            </Button>
           </CardContent>
         </Card>
       </div>

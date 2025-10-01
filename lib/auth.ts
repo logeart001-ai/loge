@@ -143,7 +143,7 @@ export async function signIn(prevState: unknown, formData: FormData) {
     })
 
     if (error) {
-      console.log('Auth error:', error.message, error)
+      console.log('🔥 Auth error:', error.message, error)
       
       // Handle specific error cases
       if (error.message.includes('Invalid login credentials')) {
@@ -169,10 +169,26 @@ export async function signIn(prevState: unknown, formData: FormData) {
       }
     }
 
+    console.log('🔥 Sign in successful! User data:', {
+      id: data.user?.id,
+      email: data.user?.email,
+      metadata: data.user?.user_metadata
+    })
+
     // Determine redirect URL
-    const userType = data.user?.user_metadata?.user_type
-    const defaultRedirect = userType === 'creator' ? '/dashboard/creator' : '/dashboard/collector'
+    const userType = data.user?.user_metadata?.user_type || data.user?.user_metadata?.role
+    console.log('🔥 User metadata:', data.user?.user_metadata)
+    console.log('🔥 Detected userType:', userType)
+    
+    // Default to general dashboard if no specific user type, otherwise use specific dashboard
+    const defaultRedirect = userType === 'creator' 
+      ? '/dashboard/creator' 
+      : userType === 'collector' 
+        ? '/dashboard/collector' 
+        : '/dashboard'
     const finalRedirect = redirectTo || defaultRedirect
+    
+    console.log('🔥 Final redirect path:', finalRedirect)
 
     return {
       success: true,

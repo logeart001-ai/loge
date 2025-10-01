@@ -32,8 +32,9 @@ export async function middleware(request: NextRequest) {
       request.nextUrl.pathname.startsWith('/auth/signin') ||
       request.nextUrl.pathname.startsWith('/auth/signup')
     )) {
-      const userType = user.user_metadata?.user_type
-      const dashboardUrl = userType === 'creator' ? '/dashboard/creator' : '/dashboard/collector'
+      const userType = user.user_metadata?.user_type || user.user_metadata?.role
+      const dashboardUrl = userType === 'creator' ? '/dashboard/creator' : 
+                          userType === 'collector' ? '/dashboard/collector' : '/dashboard'
       return NextResponse.redirect(new URL(dashboardUrl, request.url))
     }
 

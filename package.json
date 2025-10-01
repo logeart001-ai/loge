@@ -7,7 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "verify-db": "node verify-db.js"
+    "verify-db": "node verify-db.js",
+    "optimize-images": "node scripts/optimize-images.js",
+    "analyze": "ANALYZE=true npm run build",
+    "lighthouse": "lhci autorun",
+    "update-user": "node scripts/update-user-metadata.js"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.7",
@@ -27,12 +31,14 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@lhci/cli": "^0.15.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.2.4",
+    "sharp": "^0.34.4",
     "supabase": "^2.40.7",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.6",

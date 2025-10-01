@@ -698,4 +698,4 @@ BEGIN
         fashion_data.collection_name,
         fashion_data.work_type,
         fashion_data.fabric_materials,
-        fashion_da
+        fashion_data.techniq

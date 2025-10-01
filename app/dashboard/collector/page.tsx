@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Heart, ShoppingBag, User, Bell, Settings, LogOut } from 'lucide-react'
 import Link from 'next/link'
-import Image from 'next/image'
+import { OptimizedImage } from '@/components/optimized-image'
 
 async function getCollectorStats(userId: string) {
   try {
@@ -82,7 +82,7 @@ export default async function CollectorDashboard() {
       <header className="bg-white border-b border-gray-200 px-4 py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
-            <Image src="/image/logelogo.png" alt="L&apos;oge Arts logo" width={64} height={64} />
+            <OptimizedImage src="/image/logelogo.png" alt="L&apos;oge Arts logo" width={64} height={64} priority />
             <span className="brand-text font-bold text-lg">L&apos;oge Arts</span>
           </Link>
           
@@ -107,7 +107,7 @@ export default async function CollectorDashboard() {
                 <div className="flex items-center space-x-3 mb-6">
                   <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
                     {user.user_metadata?.avatar_url ? (
-                      <Image
+                      <OptimizedImage
                         src={user.user_metadata.avatar_url || "/placeholder.svg"}
                         alt={user.user_metadata?.full_name || 'Profile avatar'}
                         width={48}

@@ -1,5 +1,6 @@
 import { createServerClient } from '@/lib/supabase'
 import { createClient } from '@/lib/supabase-client'
+import { withCache } from '@/lib/cache'
 
 // Server-side queries with proper error handling
 export async function getArtworkById(id: string) {
@@ -25,67 +26,73 @@ export async function getArtworkById(id: string) {
 }
 
 export async function getFeaturedArtworks(limit: number = 12) {
-  try {
-    const supabase = await createServerClient()
-    
-    // Primary query expecting is_available & is_featured columns
-    const primary = await supabase
-      .from('artworks')
-      .select(`
-        *
-      `)
-      .eq('is_available', true)
-      .eq('is_featured', true)
-      .order('created_at', { ascending: false })
-      .limit(limit)
-
-    if (primary.error) {
-      const rawErr = primary.error as unknown
-      const msg = (typeof rawErr === 'object' && rawErr && 'message' in rawErr)
-        ? (rawErr as { message?: string }).message || ''
-        : String(rawErr)
-      const missingAvailable = /column .*is_available.* does not exist/i.test(msg)
-      const missingFeatured = /column .*is_featured.* does not exist/i.test(msg)
-      if (missingAvailable || missingFeatured) {
-        console.warn('[getFeaturedArtworks] Missing columns:', { missingAvailable, missingFeatured, msg })
-        // Fallback: drop the missing filters progressively
-        let fallbackQuery = supabase
+  return withCache(
+    `featured-artworks-${limit}`,
+    async () => {
+      try {
+        const supabase = await createServerClient()
+        
+        // Primary query expecting is_available & is_featured columns
+        const primary = await supabase
           .from('artworks')
-          .select(`*`)
+          .select(`
+            *
+          `)
+          .eq('is_available', true)
+          .eq('is_featured', true)
           .order('created_at', { ascending: false })
           .limit(limit)
-        // If is_featured exists but is_available missing, still filter by is_featured
-        if (!missingFeatured) fallbackQuery = fallbackQuery.eq('is_featured', true)
-        const fallback = await fallbackQuery
-        if (fallback.error) {
-          console.error('Fallback featured artworks query failed:', JSON.stringify(fallback.error, null, 2))
+
+        if (primary.error) {
+          const rawErr = primary.error as unknown
+          const msg = (typeof rawErr === 'object' && rawErr && 'message' in rawErr)
+            ? (rawErr as { message?: string }).message || ''
+            : String(rawErr)
+          const missingAvailable = /column .*is_available.* does not exist/i.test(msg)
+          const missingFeatured = /column .*is_featured.* does not exist/i.test(msg)
+          if (missingAvailable || missingFeatured) {
+            console.warn('[getFeaturedArtworks] Missing columns:', { missingAvailable, missingFeatured, msg })
+            // Fallback: drop the missing filters progressively
+            let fallbackQuery = supabase
+              .from('artworks')
+              .select(`*`)
+              .order('created_at', { ascending: false })
+              .limit(limit)
+            // If is_featured exists but is_available missing, still filter by is_featured
+            if (!missingFeatured) fallbackQuery = fallbackQuery.eq('is_featured', true)
+            const fallback = await fallbackQuery
+            if (fallback.error) {
+              console.error('Fallback featured artworks query failed:', JSON.stringify(fallback.error, null, 2))
+              return []
+            }
+            return fallback.data || []
+          }
+          console.error('Error fetching featured artworks:', JSON.stringify(primary.error, null, 2))
           return []
         }
-        return fallback.data || []
-      }
-      console.error('Error fetching featured artworks:', JSON.stringify(primary.error, null, 2))
-      return []
-    }
-    
-    // If query succeeded but returned no rows, attempt a softer fallback (maybe filters too strict)
-    if ((primary.data?.length || 0) === 0) {
-      const soft = await supabase
-        .from('artworks')
-        .select(`*`)
-        .order('created_at', { ascending: false })
-        .limit(limit)
-      if (soft.error) {
-        console.error('Soft fallback featured artworks query failed:', JSON.stringify(soft.error, null, 2))
+        
+        // If query succeeded but returned no rows, attempt a softer fallback (maybe filters too strict)
+        if ((primary.data?.length || 0) === 0) {
+          const soft = await supabase
+            .from('artworks')
+            .select(`*`)
+            .order('created_at', { ascending: false })
+            .limit(limit)
+          if (soft.error) {
+            console.error('Soft fallback featured artworks query failed:', JSON.stringify(soft.error, null, 2))
+            return []
+          }
+          return soft.data || []
+        }
+        
+        return primary.data || []
+      } catch (error) {
+        console.error('Unexpected error fetching featured artworks:', JSON.stringify(error, null, 2))
         return []
       }
-      return soft.data || []
-    }
-    
-    return primary.data || []
-  } catch (error) {
-    console.error('Unexpected error fetching featured artworks:', JSON.stringify(error, null, 2))
-    return []
-  }
+    },
+    300 // 5 minutes cache
+  )
 }
 
 export async function getArtworksByCategory(

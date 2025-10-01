@@ -1,7 +1,7 @@
 import { requireAuth } from '@/lib/auth'
 import { createServerClient } from '@/lib/supabase'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import Image from 'next/image'
+import { OptimizedImage } from '@/components/optimized-image'
 import Link from 'next/link'
 
 interface FollowingRow {
@@ -73,15 +73,12 @@ export default async function CollectorFollowingPage() {
                 {rows.map((row) => (
                   <div key={row.following_id} className="border rounded-lg bg-white p-4 flex items-center gap-4">
                     <div className="w-14 h-14 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
-                      <Image
+                      <OptimizedImage
                         src={'/placeholder.svg'}
                         alt={row.following_id}
                         width={56}
                         height={56}
                         className="object-cover"
-                        loading="lazy"
-                        placeholder="blur"
-                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+Kcp/9k="
                       />
                     </div>
                     <div className="flex-1">

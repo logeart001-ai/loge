@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import Image from 'next/image'
+import { OptimizedImage } from '@/components/optimized-image'
 import { useState } from 'react'
 import { useCart } from '@/components/cart-provider'
 
@@ -46,7 +46,7 @@ export function CartRow({ item }: { item: CartRowItem }) {
       <CardContent className="p-4 flex items-center gap-4">
         <div className="relative w-20 h-20 bg-white rounded overflow-hidden">
           {item.thumbnail_url ? (
-            <Image src={item.thumbnail_url} alt={item.title} fill className="object-contain" />
+            <OptimizedImage src={item.thumbnail_url} alt={item.title} fill className="object-contain" />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-gray-400">No image</div>
           )}

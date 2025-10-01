@@ -8,7 +8,7 @@ import { AddToCartButton } from '@/components/add-to-cart-button'
 import { toggleArtworkAvailability } from '@/lib/artwork-actions'
 import { Eye, Edit, Trash2 } from 'lucide-react'
 import Link from 'next/link'
-import Image from 'next/image'
+import { OptimizedImage } from '@/components/optimized-image'
 
 interface ArtworkCardProps {
   artwork: {
@@ -53,23 +53,21 @@ export function ArtworkCard({ artwork, isCreatorView = false }: ArtworkCardProps
         {/* Image */}
         <div className="relative h-48 overflow-hidden">
           {isCreatorView ? (
-            <Image
+            <OptimizedImage
               src={artwork.thumbnail_url || artwork.image_urls?.[0] || "/placeholder.svg?height=300&width=400&text=Artwork"}
               alt={artwork.title}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-300"
               sizes="(min-width: 768px) 33vw, 100vw"
-              priority={false}
             />
           ) : (
             <Link href={`/art/${artwork.id}`} className="block">
-              <Image
+              <OptimizedImage
                 src={artwork.thumbnail_url || artwork.image_urls?.[0] || "/placeholder.svg?height=300&width=400&text=Artwork"}
                 alt={artwork.title}
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
                 sizes="(min-width: 768px) 33vw, 100vw"
-                priority={false}
               />
             </Link>
           )}

@@ -1,5 +1,5 @@
-import Image from 'next/image'
 import Link from 'next/link'
+import { OptimizedImage } from '@/components/optimized-image'
 import { notFound } from 'next/navigation'
 import { Navbar } from '@/components/navbar'
 import { Button } from '@/components/ui/button'
@@ -27,12 +27,13 @@ export default async function ArtworkDetailPage({ params }: { params: { id: stri
               <CardContent className="p-0">
                 <div className="relative w-full h-[320px] md:h-[480px] bg-white">
                   {images.length > 0 ? (
-                    <Image
+                    <OptimizedImage
                       src={images[0]}
                       alt={artwork.title}
                       fill
                       className="object-contain"
                       sizes="(min-width: 1024px) 50vw, 100vw"
+                      priority
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -73,7 +74,7 @@ export default async function ArtworkDetailPage({ params }: { params: { id: stri
             {artwork.creator && (
               <div className="flex items-center gap-3 mb-8">
                 <div className="relative w-10 h-10 rounded-full overflow-hidden bg-gray-200">
-                  <Image
+                  <OptimizedImage
                     src={artwork.creator.avatar_url || '/image/Creator Avatars.png'}
                     alt={artwork.creator.full_name}
                     fill

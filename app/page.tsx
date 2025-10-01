@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { Button } from '@/components/ui/button'
+import { OptimizedImage } from '@/components/optimized-image'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
@@ -265,23 +265,22 @@ export default async function HomePage() {
                           return (
                             <>
                               {/* Background cover layer for a full, rich fill without cropping the foreground */}
-                              <Image
+                              <OptimizedImage
                                 src={src}
                                 alt=""
                                 fill
-                                aria-hidden="true"
                                 sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                                 className="object-cover scale-110 blur-xl opacity-40"
                                 priority={false}
                               />
                               {/* Foreground full image, never cropped */}
-                              <Image
+                              <OptimizedImage
                                 src={src}
                                 alt={artwork.title}
                                 fill
                                 sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                                 className="object-contain object-center drop-shadow-sm"
-                                priority={idx < 6}
+                                priority={idx < 3}
                               />
                             </>
                           )
@@ -383,15 +382,12 @@ export default async function HomePage() {
                     <Card className="text-center hover:shadow-md transition-transform hover:-translate-y-1">
                       <CardContent className="p-4 md:p-5">
                         <div className="relative mb-4 w-16 h-16 md:w-18 md:h-18 mx-auto">
-                          <Image
+                          <OptimizedImage
                             src={getCreatorImageSrc(creator)}
                             alt={creator.full_name}
                             fill
                             className="rounded-full object-cover"
                             sizes="(min-width: 768px) 72px, 64px"
-                            loading="lazy"
-                            placeholder="blur"
-                            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+Kcp/9k="
                           />
                           {creator.is_verified && (
                             <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2">
@@ -515,7 +511,7 @@ export default async function HomePage() {
                 <Card className="hover:shadow-lg transition-transform hover:-translate-y-1 pt-0">
                   <CardContent className="p-0">
                     <div className="relative h-48 bg-gray-200 rounded-t-lg overflow-hidden">
-                      <Image
+                      <OptimizedImage
                         src={post.featured_image_url || "/image/Blog Post Featured Images.png"}
                         alt={post.title}
                         fill
@@ -526,15 +522,12 @@ export default async function HomePage() {
 
                     <div className="p-6">
                       <div className="flex items-center gap-2 mb-3">
-                        <Image
+                        <OptimizedImage
                           src={post.author?.avatar_url || "/image/Blog Author Avatars.png"}
                           alt={post.author?.full_name || 'Author avatar'}
                           width={32}
                           height={32}
                           className="rounded-full object-cover"
-                          loading="lazy"
-                          placeholder="blur"
-                          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+Kcp/9k="
                         />
                         <div>
                           <div className="text-sm font-medium text-gray-900">
@@ -653,7 +646,7 @@ export default async function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-1">
             <div className="flex items-center space-x-2 mb-4">
-              <Image src="/image/logelogo.png" alt="L&apos;oge Arts logo" width={64} height={64} />
+              <OptimizedImage src="/image/logelogo.png" alt="L&apos;oge Arts logo" width={64} height={64} priority />
               <span className="font-semibold text-lg">L&apos;oge Arts</span>
             </div>
             <p className="text-gray-400 text-sm mb-6">

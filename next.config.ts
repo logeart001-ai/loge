@@ -9,6 +9,25 @@ try {
 }
 
 const nextConfig: NextConfig = {
+  // Performance optimizations
+  experimental: {
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-select'],
+    turbo: {
+      rules: {
+        '*.svg': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
+      },
+    },
+  },
+  
+  // Compiler optimizations
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  
+  // Image optimizations
   images: {
     // Optimize remote images from Supabase Storage and allow placeholder services
     remotePatterns: [
@@ -24,7 +43,35 @@ const nextConfig: NextConfig = {
       { protocol: 'https' as const, hostname: '*.supabase.co', pathname: '/**' },
     ],
     formats: ['image/avif', 'image/webp'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
   },
+  
+  // Headers for caching
+  async headers() {
+    return [
+      {
+        source: '/image/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/video/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ];
+  },
+  
   // Enable file watching polling for OneDrive compatibility
   webpack: (config, { dev }) => {
     if (dev) {
@@ -33,6 +80,30 @@ const nextConfig: NextConfig = {
         aggregateTimeout: 300,
       }
     }
+    
+    // Production optimizations
+    if (!dev) {
+      config.optimization = {
+        ...config.optimization,
+        splitChunks: {
+          chunks: 'all',
+          cacheGroups: {
+            vendor: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendors',
+              chunks: 'all',
+            },
+            common: {
+              name: 'common',
+              minChunks: 2,
+              chunks: 'all',
+              enforce: true,
+            },
+          },
+        },
+      };
+    }
+    
     return config
   },
 };

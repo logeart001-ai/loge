@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Upload, DollarSign, Eye, TrendingUp, Settings, LogOut, Plus, Package, BarChart3 } from 'lucide-react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import Image from 'next/image'
+import { OptimizedImage } from '@/components/optimized-image'
 
 async function getCreatorStats(userId: string) {
   const supabase = await createServerClient()
@@ -72,7 +72,7 @@ export default async function CreatorDashboard() {
       <header className="bg-white border-b border-gray-200 px-4 py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
-            <Image src="/image/logelogo.png" alt="L'oge Arts logo" width={64} height={64} />
+            <OptimizedImage src="/image/logelogo.png" alt="L'oge Arts logo" width={64} height={64} priority />
             <span className="brand-text font-bold text-lg">L&apos;oge Arts</span>
           </Link>
           
@@ -97,7 +97,7 @@ export default async function CreatorDashboard() {
                 <div className="flex items-center space-x-3 mb-6">
                   <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
                     {user.user_metadata?.avatar_url ? (
-                      <Image src={user.user_metadata.avatar_url || "/placeholder.svg"} alt={user.user_metadata?.full_name || 'Profile avatar'} width={48} height={48} className="rounded-full object-cover" />
+                      <OptimizedImage src={user.user_metadata.avatar_url || "/placeholder.svg"} alt={user.user_metadata?.full_name || 'Profile avatar'} width={48} height={48} className="rounded-full object-cover" />
                     ) : (
                       <Upload className="w-6 h-6 text-gray-600" />
                     )}
@@ -260,7 +260,7 @@ export default async function CreatorDashboard() {
                     {stats.recentArtworks.map((artwork: { id: string; image_urls?: string[]; title: string; category: string; price: number; is_available: boolean }) => (
                       <div key={artwork.id} className="border rounded-lg p-4">
                         <div className="relative w-full h-32 bg-gray-200 rounded-lg mb-3 overflow-hidden">
-                          <Image
+                          <OptimizedImage
                             src={artwork.image_urls?.[0] || "/placeholder.svg"}
                             alt={artwork.title}
                             fill
