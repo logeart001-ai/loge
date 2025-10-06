@@ -254,7 +254,7 @@ export default async function HomePage() {
 
           {artworks.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-              {artworks.map((artwork, idx) => (
+              {artworks.map((artwork: ArtworkLike & { id: string; price?: number; original_price?: number; category?: string; creator?: { full_name?: string; rating?: number } }, idx: number) => (
                 <Reveal key={artwork.id} delay={([0, 100, 200] as const)[idx % 3]}>
                   <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 pt-0">
                     <CardContent className="p-0">
@@ -276,7 +276,7 @@ export default async function HomePage() {
                               {/* Foreground full image, never cropped */}
                               <OptimizedImage
                                 src={src}
-                                alt={artwork.title}
+                                alt={artwork.title || 'Artwork'}
                                 fill
                                 sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                                 className="object-contain object-center drop-shadow-sm"
@@ -308,7 +308,7 @@ export default async function HomePage() {
                             <p className="text-gray-600 text-xs">by {artwork.creator?.full_name}</p>
                           </div>
                           <Badge variant="secondary" className="ml-2 text-xs">
-                            {artwork.category.replace('_', ' ')}
+                            {(artwork.category || 'art').replace('_', ' ')}
                           </Badge>
                         </div>
 
@@ -377,14 +377,14 @@ export default async function HomePage() {
 
             {creators.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-                {creators.map((creator, idx) => (
+                {creators.map((creator: { id: string; full_name?: string | null; avatar_url?: string | null; is_verified?: boolean; bio?: string | null; specialty?: string; location?: string; rating?: number; discipline?: string | null; artworks?: any[] }, idx: number) => (
                   <Reveal key={creator.id} delay={([0, 100, 200] as const)[idx % 3]}>
                     <Card className="text-center hover:shadow-md transition-transform hover:-translate-y-1">
                       <CardContent className="p-4 md:p-5">
                         <div className="relative mb-4 w-16 h-16 md:w-18 md:h-18 mx-auto">
                           <OptimizedImage
                             src={getCreatorImageSrc(creator)}
-                            alt={creator.full_name}
+                            alt={creator.full_name || 'Creator'}
                             fill
                             className="rounded-full object-cover"
                             sizes="(min-width: 768px) 72px, 64px"
@@ -406,7 +406,7 @@ export default async function HomePage() {
                         </div>
 
                         <p className="text-gray-600 text-xs mb-3 line-clamp-1">
-                          {creator.bio || creator.discipline}
+                          {creator.bio || creator.specialty}
                         </p>
 
                         <div className="flex items-center justify-center gap-3 mb-4">
@@ -506,7 +506,19 @@ export default async function HomePage() {
 
         {posts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-            {posts.map((post, idx) => (
+            {posts.map((post: {
+              id: string;
+              title?: string | null;
+              excerpt?: string | null;
+              featured_image_url?: string | null;
+              slug?: string;
+              published_at?: string;
+              tags?: string[];
+              author?: {
+                full_name?: string | null;
+                avatar_url?: string | null;
+              } | null;
+            }, idx: number) => (
               <Reveal key={post.id} delay={([0, 100, 200] as const)[idx % 3]}>
                 <Card className="hover:shadow-lg transition-transform hover:-translate-y-1 pt-0">
                   <CardContent className="p-0">

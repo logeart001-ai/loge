@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
 
     // Initialize Paystack transaction
     const reference = `ORDER_${order.id}_${Date.now()}`
-    const paystackResponse = await paystackService.initializeTransaction({
+    const paystackResponse = await paystackService.instance.initializeTransaction({
       email,
       amount: toKobo(totalAmount),
       reference,

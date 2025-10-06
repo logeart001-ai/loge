@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Verify payment with Paystack
-    const verification = await paystackService.verifyTransaction(reference)
+    const verification = await paystackService.instance.verifyTransaction(reference)
 
     if (!verification.status) {
       return NextResponse.json(

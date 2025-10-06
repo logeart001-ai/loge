@@ -2,16 +2,29 @@ import { createServerClient } from '@/lib/supabase'
 import { createClient } from '@/lib/supabase-client'
 import { withCache } from '@/lib/cache'
 
+// Timeout wrapper to prevent hanging queries
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number = 5000): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => 
+      setTimeout(() => reject(new Error('Query timeout')), timeoutMs)
+    ),
+  ])
+}
+
 // Server-side queries with proper error handling
 export async function getArtworkById(id: string) {
   try {
     const supabase = await createServerClient()
 
-    const { data, error } = await supabase
-      .from('artworks')
-      .select(`*`)
-      .eq('id', id)
-      .single()
+    const { data, error } = await withTimeout(
+      supabase
+        .from('artworks')
+        .select(`*`)
+        .eq('id', id)
+        .single(),
+      3000 // 3 second timeout
+    )
 
     if (error) {
       console.error('Error fetching artwork by id:', error)
@@ -32,16 +45,19 @@ export async function getFeaturedArtworks(limit: number = 12) {
       try {
         const supabase = await createServerClient()
         
-        // Primary query expecting is_available & is_featured columns
-        const primary = await supabase
-          .from('artworks')
-          .select(`
-            *
-          `)
-          .eq('is_available', true)
-          .eq('is_featured', true)
-          .order('created_at', { ascending: false })
-          .limit(limit)
+        // Primary query expecting is_available & is_featured columns with timeout
+        const primary = await withTimeout(
+          supabase
+            .from('artworks')
+            .select(`
+              *
+            `)
+            .eq('is_available', true)
+            .eq('is_featured', true)
+            .order('created_at', { ascending: false })
+            .limit(limit),
+          3000 // 3 second timeout
+        )
 
         if (primary.error) {
           const rawErr = primary.error as unknown
@@ -60,7 +76,7 @@ export async function getFeaturedArtworks(limit: number = 12) {
               .limit(limit)
             // If is_featured exists but is_available missing, still filter by is_featured
             if (!missingFeatured) fallbackQuery = fallbackQuery.eq('is_featured', true)
-            const fallback = await fallbackQuery
+            const fallback = await withTimeout(fallbackQuery, 3000)
             if (fallback.error) {
               console.error('Fallback featured artworks query failed:', JSON.stringify(fallback.error, null, 2))
               return []
@@ -73,11 +89,14 @@ export async function getFeaturedArtworks(limit: number = 12) {
         
         // If query succeeded but returned no rows, attempt a softer fallback (maybe filters too strict)
         if ((primary.data?.length || 0) === 0) {
-          const soft = await supabase
-            .from('artworks')
-            .select(`*`)
-            .order('created_at', { ascending: false })
-            .limit(limit)
+          const soft = await withTimeout(
+            supabase
+              .from('artworks')
+              .select(`*`)
+              .order('created_at', { ascending: false })
+              .limit(limit),
+            3000
+          )
           if (soft.error) {
             console.error('Soft fallback featured artworks query failed:', JSON.stringify(soft.error, null, 2))
             return []
@@ -127,14 +146,17 @@ export async function getFeaturedCreators(limit: number = 6) {
   try {
     const supabase = await createServerClient()
 
-    // Attempt query with is_featured filter
-    const { data, error } = await supabase
-      .from('user_profiles')
-      .select(`*`)
-      .eq('role', 'creator')
-      .eq('is_featured', true)
-      .order('rating', { ascending: false })
-      .limit(limit)
+    // Attempt query with is_featured filter with timeout
+    const { data, error } = await withTimeout(
+      supabase
+        .from('user_profiles')
+        .select(`*`)
+        .eq('role', 'creator')
+        .eq('is_featured', true)
+        .order('rating', { ascending: false })
+        .limit(limit),
+      3000 // 3 second timeout
+    )
 
     if (error) {
       // Potential causes: column does not exist, RLS restriction, or other failure
@@ -145,12 +167,15 @@ export async function getFeaturedCreators(limit: number = 6) {
       const isMissingCol = /column .*is_featured.* does not exist/i.test(msg)
       if (isMissingCol) {
         console.warn('[getFeaturedCreators] is_featured column missing; falling back to role-only filter.')
-        const fallback = await supabase
-          .from('user_profiles')
-          .select(`*`)
-          .eq('role', 'creator')
-          .order('rating', { ascending: false })
-          .limit(limit)
+        const fallback = await withTimeout(
+          supabase
+            .from('user_profiles')
+            .select(`*`)
+            .eq('role', 'creator')
+            .order('rating', { ascending: false })
+            .limit(limit),
+          3000
+        )
         if (fallback.error) {
           console.error('Fallback featured creators query failed:', JSON.stringify(fallback.error, null, 2))
           return []
@@ -175,12 +200,15 @@ export async function getUpcomingEvents(limit: number = 6) {
     // NOTE: Current schema (see 06-check-and-create-missing.sql) uses event_date (not start_date) 
     // and does not define is_published, is_free, ticket_price. We adapt gracefully here.
     const nowIso = new Date().toISOString()
-    const { data, error } = await supabase
-      .from('events')
-      .select('*')
-      .gte('event_date', nowIso)
-      .order('event_date', { ascending: true })
-      .limit(limit)
+    const { data, error } = await withTimeout(
+      supabase
+        .from('events')
+        .select('*')
+        .gte('event_date', nowIso)
+        .order('event_date', { ascending: true })
+        .limit(limit),
+      3000 // 3 second timeout
+    )
 
     if (error) {
       console.error('Error fetching upcoming events:', error?.message || error, error)
@@ -227,18 +255,21 @@ export async function getBlogPosts(limit: number = 6) {
   try {
     const supabase = await createServerClient()
     
-    const { data, error } = await supabase
-      .from('blog_posts')
-      .select(`
-        *,
-        author:user_profiles!author_id (
-          full_name,
-          avatar_url
-        )
-      `)
-      .eq('is_published', true)
-      .order('published_at', { ascending: false })
-      .limit(limit)
+    const { data, error } = await withTimeout(
+      supabase
+        .from('blog_posts')
+        .select(`
+          *,
+          author:user_profiles!author_id (
+            full_name,
+            avatar_url
+          )
+        `)
+        .eq('is_published', true)
+        .order('published_at', { ascending: false })
+        .limit(limit),
+      3000 // 3 second timeout
+    )
 
     if (error) {
       console.error('Error fetching blog posts:', error)

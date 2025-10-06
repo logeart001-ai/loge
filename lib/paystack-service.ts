@@ -30,6 +30,9 @@ export class PaystackService {
 
   constructor() {
     this.secretKey = process.env.PAYSTACK_SECRET_KEY || ''
+  }
+
+  private checkConfiguration() {
     if (!this.secretKey) {
       throw new Error('PAYSTACK_SECRET_KEY is not configured')
     }
@@ -40,6 +43,7 @@ export class PaystackService {
     method: 'GET' | 'POST' = 'GET',
     body?: Record<string, unknown>
   ): Promise<T> {
+    this.checkConfiguration()
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method,
       headers: {
@@ -144,8 +148,21 @@ export class PaystackService {
   }
 }
 
+// Factory function to create service instance
+export function createPaystackService(): PaystackService {
+  return new PaystackService()
+}
+
 // Export singleton instance
-export const paystackService = new PaystackService()
+let _paystackService: PaystackService | null = null
+export const paystackService = {
+  get instance(): PaystackService {
+    if (!_paystackService) {
+      _paystackService = createPaystackService()
+    }
+    return _paystackService
+  }
+} as { instance: PaystackService }
 
 /**
  * Helper function to convert amount to kobo

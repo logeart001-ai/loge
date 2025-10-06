@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Inter, Dancing_Script } from 'next/font/google';
 import "./globals.css";
 import { CartProvider } from '@/components/cart-provider'
@@ -26,12 +26,18 @@ const dancingScript = Dancing_Script({
   variable: '--font-dancing',
 });
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#f97316',
+}
+
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
   title: "L'oge Arts",
   description: "Celebrating contemporary African artistry across mediums.",
   manifest: "/manifest.json",
-  themeColor: "#f97316",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=5",
   icons: {
     icon: [
       { url: "/image/logelogo.png?v=1", type: "image/png", sizes: "32x32" },
