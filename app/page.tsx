@@ -525,7 +525,7 @@ export default async function HomePage() {
                     <div className="relative h-48 bg-gray-200 rounded-t-lg overflow-hidden">
                       <OptimizedImage
                         src={post.featured_image_url || "/image/Blog Post Featured Images.png"}
-                        alt={post.title}
+                        alt={post.title || 'Blog post'}
                         fill
                         className="object-cover rounded-t-lg"
                         sizes="(min-width: 768px) 33vw, 100vw"
@@ -546,7 +546,7 @@ export default async function HomePage() {
                             {post.author?.full_name}
                           </div>
                           <div className="text-xs text-gray-600">
-                            {new Date(post.published_at).toLocaleDateString()}
+                            {post.published_at ? new Date(post.published_at).toLocaleDateString() : 'Recent'}
                           </div>
                         </div>
                       </div>

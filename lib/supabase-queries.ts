@@ -2,29 +2,16 @@ import { createServerClient } from '@/lib/supabase'
 import { createClient } from '@/lib/supabase-client'
 import { withCache } from '@/lib/cache'
 
-// Timeout wrapper to prevent hanging queries
-function withTimeout<T>(promise: Promise<T>, timeoutMs: number = 5000): Promise<T> {
-  return Promise.race([
-    promise,
-    new Promise<T>((_, reject) => 
-      setTimeout(() => reject(new Error('Query timeout')), timeoutMs)
-    ),
-  ])
-}
-
 // Server-side queries with proper error handling
 export async function getArtworkById(id: string) {
   try {
     const supabase = await createServerClient()
 
-    const { data, error } = await withTimeout(
-      supabase
-        .from('artworks')
-        .select(`*`)
-        .eq('id', id)
-        .single(),
-      3000 // 3 second timeout
-    )
+    const { data, error } = await supabase
+      .from('artworks')
+      .select(`*`)
+      .eq('id', id)
+      .single()
 
     if (error) {
       console.error('Error fetching artwork by id:', error)
@@ -38,80 +25,73 @@ export async function getArtworkById(id: string) {
   }
 }
 
-export async function getFeaturedArtworks(limit: number = 12) {
-  return withCache(
-    `featured-artworks-${limit}`,
-    async () => {
-      try {
-        const supabase = await createServerClient()
-        
-        // Primary query expecting is_available & is_featured columns with timeout
-        const primary = await withTimeout(
-          supabase
-            .from('artworks')
-            .select(`
-              *
-            `)
-            .eq('is_available', true)
-            .eq('is_featured', true)
-            .order('created_at', { ascending: false })
-            .limit(limit),
-          3000 // 3 second timeout
-        )
+export async function getFeaturedArtworks(limit = 8) {
+  return withCache('featured-artworks', async () => {
+    try {
+      const supabase = await createServerClient()
 
-        if (primary.error) {
-          const rawErr = primary.error as unknown
-          const msg = (typeof rawErr === 'object' && rawErr && 'message' in rawErr)
-            ? (rawErr as { message?: string }).message || ''
-            : String(rawErr)
-          const missingAvailable = /column .*is_available.* does not exist/i.test(msg)
-          const missingFeatured = /column .*is_featured.* does not exist/i.test(msg)
-          if (missingAvailable || missingFeatured) {
-            console.warn('[getFeaturedArtworks] Missing columns:', { missingAvailable, missingFeatured, msg })
-            // Fallback: drop the missing filters progressively
-            let fallbackQuery = supabase
-              .from('artworks')
-              .select(`*`)
-              .order('created_at', { ascending: false })
-              .limit(limit)
-            // If is_featured exists but is_available missing, still filter by is_featured
-            if (!missingFeatured) fallbackQuery = fallbackQuery.eq('is_featured', true)
-            const fallback = await withTimeout(fallbackQuery, 3000)
-            if (fallback.error) {
-              console.error('Fallback featured artworks query failed:', JSON.stringify(fallback.error, null, 2))
-              return []
-            }
-            return fallback.data || []
-          }
-          console.error('Error fetching featured artworks:', JSON.stringify(primary.error, null, 2))
-          return []
+      // Primary query - featured artworks
+      try {
+        const { data, error } = await supabase
+          .from('artworks')
+          .select(`*`)
+          .eq('is_available', true)
+          .eq('is_featured', true)
+          .order('created_at', { ascending: false })
+          .limit(limit)
+
+        if (!error && data && data.length > 0) {
+          return data
         }
-        
-        // If query succeeded but returned no rows, attempt a softer fallback (maybe filters too strict)
-        if ((primary.data?.length || 0) === 0) {
-          const soft = await withTimeout(
-            supabase
-              .from('artworks')
-              .select(`*`)
-              .order('created_at', { ascending: false })
-              .limit(limit),
-            3000
-          )
-          if (soft.error) {
-            console.error('Soft fallback featured artworks query failed:', JSON.stringify(soft.error, null, 2))
-            return []
-          }
-          return soft.data || []
-        }
-        
-        return primary.data || []
-      } catch (error) {
-        console.error('Unexpected error fetching featured artworks:', JSON.stringify(error, null, 2))
-        return []
+
+        console.warn('Featured artworks query returned no results or error:', error)
+      } catch (queryError) {
+        console.warn('Featured artworks query failed:', queryError)
       }
-    },
-    300 // 5 minutes cache
-  )
+
+      // Fallback 1: Try just available artworks
+      try {
+        const { data: fallbackData, error: fallbackError } = await supabase
+          .from('artworks')
+          .select(`*`)
+          .eq('is_available', true)
+          .order('created_at', { ascending: false })
+          .limit(limit)
+
+        if (!fallbackError && fallbackData && fallbackData.length > 0) {
+          console.log('Using fallback artworks (available only)')
+          return fallbackData
+        }
+
+        console.warn('Fallback query returned no results or error:', fallbackError)
+      } catch (fallbackError) {
+        console.warn('Fallback artworks query failed:', fallbackError)
+      }
+
+      // Last resort: Get any artworks
+      try {
+        const { data: softData, error: softError } = await supabase
+          .from('artworks')
+          .select(`*`)
+          .order('created_at', { ascending: false })
+          .limit(limit)
+
+        if (!softError && softData) {
+          console.log('Using soft fallback (any artworks)')
+          return softData
+        }
+
+        console.warn('Soft fallback returned error:', softError)
+      } catch (softError) {
+        console.warn('Soft fallback query failed:', softError)
+      }
+
+      return []
+    } catch (error) {
+      console.error('Unexpected error in getFeaturedArtworks:', error)
+      return []
+    }
+  }, 300) // 5 minutes
 }
 
 export async function getArtworksByCategory(
@@ -142,121 +122,83 @@ export async function getArtworksByCategory(
   }
 }
 
-export async function getFeaturedCreators(limit: number = 6) {
-  try {
-    const supabase = await createServerClient()
+export async function getFeaturedCreators(limit = 6) {
+  return withCache('featured-creators', async () => {
+    try {
+      const supabase = await createServerClient()
 
-    // Attempt query with is_featured filter with timeout
-    const { data, error } = await withTimeout(
-      supabase
+      const { data, error } = await supabase
         .from('user_profiles')
         .select(`*`)
         .eq('role', 'creator')
         .eq('is_featured', true)
         .order('rating', { ascending: false })
-        .limit(limit),
-      3000 // 3 second timeout
-    )
+        .limit(limit)
 
-    if (error) {
-      // Potential causes: column does not exist, RLS restriction, or other failure
-      const rawErr: unknown = error
-      const msg = (typeof rawErr === 'object' && rawErr && 'message' in rawErr)
-        ? (rawErr as { message?: string }).message || ''
-        : String(rawErr)
-      const isMissingCol = /column .*is_featured.* does not exist/i.test(msg)
-      if (isMissingCol) {
-        console.warn('[getFeaturedCreators] is_featured column missing; falling back to role-only filter.')
-        const fallback = await withTimeout(
-          supabase
+      if (error) {
+        console.error('Error fetching featured creators:', error)
+
+        // Fallback: Try any creators with good ratings
+        try {
+          const { data: fallbackData, error: fallbackError } = await supabase
             .from('user_profiles')
             .select(`*`)
             .eq('role', 'creator')
             .order('rating', { ascending: false })
-            .limit(limit),
-          3000
-        )
-        if (fallback.error) {
-          console.error('Fallback featured creators query failed:', JSON.stringify(fallback.error, null, 2))
-          return []
+            .limit(limit)
+
+          if (!fallbackError && fallbackData) {
+            console.log('Using fallback creators (by rating)')
+            return fallbackData
+          }
+        } catch (fallbackError) {
+          console.warn('Fallback creators query failed:', fallbackError)
         }
-        return fallback.data || []
+
+        return []
       }
-      console.error('Error fetching featured creators:', JSON.stringify(error, null, 2))
+
+      return data || []
+    } catch (error) {
+      console.error('Unexpected error fetching featured creators:', error)
       return []
     }
-
-    return data || []
-  } catch (error) {
-    console.error('Unexpected error fetching featured creators:', JSON.stringify(error, null, 2))
-    return []
-  }
+  }, 300) // 5 minutes
 }
 
-export async function getUpcomingEvents(limit: number = 6) {
-  try {
-    const supabase = await createServerClient()
+export async function getUpcomingEvents(limit = 6) {
+  return withCache('upcoming-events', async () => {
+    try {
+      const supabase = await createServerClient()
+      const now = new Date()
+      const nowIso = now.toISOString()
 
-    // NOTE: Current schema (see 06-check-and-create-missing.sql) uses event_date (not start_date) 
-    // and does not define is_published, is_free, ticket_price. We adapt gracefully here.
-    const nowIso = new Date().toISOString()
-    const { data, error } = await withTimeout(
-      supabase
+      const { data, error } = await supabase
         .from('events')
         .select('*')
         .gte('event_date', nowIso)
         .order('event_date', { ascending: true })
-        .limit(limit),
-      3000 // 3 second timeout
-    )
+        .limit(limit)
 
-    if (error) {
-      console.error('Error fetching upcoming events:', error?.message || error, error)
+      if (error) {
+        console.error('Error fetching upcoming events:', error)
+        return []
+      }
+
+      return data || []
+    } catch (error) {
+      console.error('Unexpected error fetching upcoming events:', error)
       return []
     }
-
-    // Backward compatibility mapping so UI that expects start_date, is_free, ticket_price still works
-    type RawEvent = {
-      id: string
-      title: string
-      description?: string | null
-      event_type: string
-      event_date: string
-      location?: string | null
-      image_url?: string | null
-      registration_url?: string | null
-      is_featured?: boolean | null
-      created_at?: string
-      updated_at?: string
-      // Potential legacy / extended fields
-      start_date?: string
-      is_free?: boolean
-      ticket_price?: number | null
-      is_published?: boolean
-    }
-
-    const adapted = (data as RawEvent[] | null | undefined)?.map(evt => ({
-      ...evt,
-      start_date: evt.start_date ?? evt.event_date,
-      is_free: typeof evt.is_free === 'boolean' ? evt.is_free : true,
-      ticket_price: typeof evt.ticket_price === 'number' ? evt.ticket_price : null,
-      is_published: typeof evt.is_published === 'boolean' ? evt.is_published : true
-    })) || []
-
-    return adapted
-  } catch (error) {
-    const err = error as Error
-    console.error('Unexpected error fetching upcoming events:', err.message, err)
-    return []
-  }
+  }, 300) // 5 minutes
 }
 
-export async function getBlogPosts(limit: number = 6) {
-  try {
-    const supabase = await createServerClient()
-    
-    const { data, error } = await withTimeout(
-      supabase
+export async function getBlogPosts(limit = 6) {
+  return withCache('blog-posts', async () => {
+    try {
+      const supabase = await createServerClient()
+
+      const { data, error } = await supabase
         .from('blog_posts')
         .select(`
           *,
@@ -267,20 +209,19 @@ export async function getBlogPosts(limit: number = 6) {
         `)
         .eq('is_published', true)
         .order('published_at', { ascending: false })
-        .limit(limit),
-      3000 // 3 second timeout
-    )
+        .limit(limit)
 
-    if (error) {
-      console.error('Error fetching blog posts:', error)
+      if (error) {
+        console.error('Error fetching blog posts:', error)
+        return []
+      }
+
+      return data || []
+    } catch (error) {
+      console.error('Unexpected error fetching blog posts:', error)
       return []
     }
-    
-    return data || []
-  } catch (error) {
-    console.error('Unexpected error fetching blog posts:', error)
-    return []
-  }
+  }, 300) // 5 minutes
 }
 
 // Client-side queries with proper error handling
