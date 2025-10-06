@@ -2,7 +2,6 @@
 
 import { MessageCircle, X } from 'lucide-react'
 import { useState } from 'react'
-import Image from 'next/image'
 
 interface WhatsAppFloatingButtonProps {
   phoneNumber?: string
