@@ -377,7 +377,18 @@ export default async function HomePage() {
 
             {creators.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-                {creators.map((creator: { id: string; full_name?: string | null; avatar_url?: string | null; is_verified?: boolean; bio?: string | null; specialty?: string; location?: string; rating?: number; discipline?: string | null; artworks?: any[] }, idx: number) => (
+                {creators.map((creator: { 
+                  id: string; 
+                  full_name?: string | null; 
+                  avatar_url?: string | null; 
+                  is_verified?: boolean; 
+                  bio?: string | null; 
+                  specialty?: string; 
+                  location?: string; 
+                  rating?: number; 
+                  discipline?: string | null; 
+                  artworks?: unknown[] 
+                }, idx: number) => (
                   <Reveal key={creator.id} delay={([0, 100, 200] as const)[idx % 3]}>
                     <Card className="text-center hover:shadow-md transition-transform hover:-translate-y-1">
                       <CardContent className="p-4 md:p-5">
