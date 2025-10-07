@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
+
+export const dynamic = 'force-dynamic'
 
 export async function GET() {
   const diagnostics: {
     timestamp: string
     environment: string | undefined
-    checks: Record<string, boolean | string>
+    checks: Record<string, boolean | string | undefined>
     errors: string[]
   } = {
     timestamp: new Date().toISOString(),
@@ -19,21 +21,30 @@ export async function GET() {
     errors: []
   }
 
-  // Test Supabase connection
+  // Test Supabase connection using basic client (not server client)
   try {
-    const supabase = await createServerClient()
-    const { data, error } = await supabase.auth.getSession()
-    
-    if (error) {
-      diagnostics.errors.push(`Auth session error: ${error.message}`)
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+    if (!supabaseUrl || !supabaseAnonKey) {
+      diagnostics.errors.push('Missing Supabase environment variables')
     } else {
-      diagnostics.checks = {
-        ...diagnostics.checks,
-        supabaseConnection: true,
-        hasSession: !!data.session,
+      // Use basic Supabase client for diagnostics
+      const supabase = createClient(supabaseUrl, supabaseAnonKey)
+      
+      // Test connection with a simple query
+      const { data, error } = await supabase.auth.getSession()
+      
+      if (error) {
+        diagnostics.checks.supabaseConnection = false
+        diagnostics.errors.push(`Auth session error: ${error.message}`)
+      } else {
+        diagnostics.checks.supabaseConnection = true
+        diagnostics.checks.hasSession = !!data.session
       }
     }
   } catch (error) {
+    diagnostics.checks.supabaseConnection = false
     diagnostics.errors.push(`Supabase client error: ${error instanceof Error ? error.message : 'Unknown'}`)
   }
 
