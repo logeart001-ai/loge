@@ -1,6 +1,7 @@
 "use client"
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { getCart, addToCart, updateCartItem, removeCartItem, Cart } from '@/lib/cart'
+import { useUser } from '@/lib/use-user'
 
 interface CartContextValue {
   cart: Cart | null
@@ -19,8 +20,16 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [cart, setCart] = useState<Cart | null>(null)
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
+  const { user, loading: userLoading } = useUser()
 
   const load = useCallback(async () => {
+    // Only fetch cart if user is authenticated
+    if (!user) {
+      setCart(null)
+      setLoading(false)
+      return
+    }
+
     try {
       setLoading(true)
       const c = await getCart()
@@ -31,11 +40,24 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [user])
 
-  useEffect(() => { load() }, [load])
+  // Fetch cart only when user authentication status changes
+  useEffect(() => {
+    // Wait for user loading to complete before attempting to load cart
+    if (!userLoading) {
+      load()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, userLoading]) // Only depend on user and userLoading, not load function
 
   const refresh = useCallback(async () => {
+    // Only refresh cart if user is authenticated
+    if (!user) {
+      setCart(null)
+      return
+    }
+
     if (!cart) return load()
     try {
       setRefreshing(true)
@@ -47,9 +69,15 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setRefreshing(false)
     }
-  }, [cart, load])
+  }, [cart, load, user])
 
   const addItem = useCallback(async (artworkId: string, qty: number = 1) => {
+    // Require authentication to add items
+    if (!user) {
+      console.warn('User must be logged in to add items to cart')
+      return
+    }
+
     try {
       await addToCart(artworkId, qty)
       // Refresh cart after adding
@@ -58,9 +86,15 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (e) {
       console.error('Failed to add item to cart', e)
     }
-  }, [])
+  }, [user])
 
   const updateItem = useCallback(async (cartItemId: string, qty: number) => {
+    // Require authentication to update items
+    if (!user) {
+      console.warn('User must be logged in to update cart items')
+      return
+    }
+
     try {
       await updateCartItem(cartItemId, qty)
       // Refresh cart after updating
@@ -69,9 +103,15 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (e) {
       console.error('Failed to update cart item', e)
     }
-  }, [])
+  }, [user])
 
   const removeItem = useCallback(async (cartItemId: string) => {
+    // Require authentication to remove items
+    if (!user) {
+      console.warn('User must be logged in to remove cart items')
+      return
+    }
+
     try {
       await removeCartItem(cartItemId)
       // Refresh cart after removing
@@ -80,9 +120,15 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (e) {
       console.error('Failed to remove cart item', e)
     }
-  }, [])
+  }, [user])
 
   const clear = useCallback(async () => {
+    // Require authentication to clear cart
+    if (!user) {
+      console.warn('User must be logged in to clear cart')
+      return
+    }
+
     try {
       // Clear all items by removing them one by one
       if (cart?.items) {
@@ -96,7 +142,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (e) {
       console.error('Failed to clear cart', e)
     }
-  }, [cart])
+  }, [cart, user])
 
   return (
     <CartContext.Provider value={{ cart, loading, refreshing, addItem, updateItem, removeItem, clear, refresh }}>
