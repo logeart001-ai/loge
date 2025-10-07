@@ -165,8 +165,18 @@ export async function signIn(prevState: unknown, formData: FormData) {
         }
       }
       
+      // Log the full error for debugging
+      console.error('🔥 Full auth error details:', JSON.stringify(error, null, 2))
+      
       return {
         error: error.message
+      }
+    }
+
+    if (!data.user || !data.session) {
+      console.error('🔥 No user or session returned from signInWithPassword')
+      return {
+        error: 'Authentication failed. Please try again.'
       }
     }
 
@@ -202,9 +212,13 @@ export async function signIn(prevState: unknown, formData: FormData) {
       redirectTo: finalRedirect
     }
   } catch (error) {
-    console.error('Signin error:', error)
+    console.error('🔥 Signin catch block error:', error)
+    console.error('🔥 Error type:', error instanceof Error ? error.constructor.name : typeof error)
+    console.error('🔥 Error message:', error instanceof Error ? error.message : String(error))
+    console.error('🔥 Error stack:', error instanceof Error ? error.stack : 'No stack trace')
+    
     return {
-      error: 'An unexpected error occurred. Please try again.'
+      error: 'An unexpected error occurred. Please try again. If the problem persists, contact support.'
     }
   }
 }

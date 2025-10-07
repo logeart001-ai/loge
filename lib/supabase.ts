@@ -46,7 +46,18 @@ export async function createServerClient() {
         getAll: () => safeGetAll(),
         setAll: (cookiesToSet) => {
           cookiesToSet.forEach(({ name, value, options }) => {
-            try { safeSet(name, value, options) } catch { /* ignore */ }
+            try { 
+              // Ensure proper cookie options for production
+              const cookieOptions = {
+                ...options,
+                path: '/',
+                sameSite: 'lax' as const,
+                secure: process.env.NODE_ENV === 'production',
+              }
+              safeSet(name, value, cookieOptions) 
+            } catch (error) { 
+              console.error('Failed to set cookie:', name, error)
+            }
           })
         }
       }

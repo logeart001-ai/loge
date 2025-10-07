@@ -153,18 +153,67 @@ export function ProjectSubmissionForm({ creatorType }: ProjectSubmissionFormProp
     setFormData(prev => ({ ...prev, [field]: array }))
   }
 
+  const validateForm = (): { isValid: boolean; errors: string[] } => {
+    const errors: string[] = []
+
+    // Basic required fields
+    if (!formData.title.trim()) errors.push('Title is required')
+    if (!formData.description.trim()) errors.push('Description is required')
+    if (!formData.price || parseFloat(formData.price) <= 0) errors.push('Valid price is required')
+
+    // Creator type specific validations
+    if (creatorType === 'artist') {
+      if (!formData.medium?.trim()) errors.push('Medium is required for artists')
+      if (!formData.dimensions?.trim()) errors.push('Dimensions are required for artists')
+    } else if (creatorType === 'writer') {
+      if (!formData.genre?.trim()) errors.push('Genre is required for writers')
+      if (!formData.format?.trim()) errors.push('Format is required for writers')
+      if (!formData.word_count || parseInt(formData.word_count) <= 0) errors.push('Word count is required for writers')
+    } else if (creatorType === 'fashion_designer') {
+      if (!formData.collection_name?.trim()) errors.push('Collection name is required for fashion designers')
+      if (!formData.work_type?.trim()) errors.push('Work type is required for fashion designers')
+      if (!formData.fabric_materials || formData.fabric_materials.length === 0) {
+        errors.push('At least one fabric material is required for fashion designers')
+      }
+    }
+
+    // Media validation - at least one image required
+    if (uploadedFiles.images.length === 0) {
+      errors.push('At least one image is required')
+    }
+
+    // Agreements
+    if (!formData.original_work_confirmed) errors.push('You must confirm this is your original work')
+    if (!formData.terms_agreed) errors.push('You must agree to the terms and conditions')
+
+    return {
+      isValid: errors.length === 0,
+      errors
+    }
+  }
+
   const submitProject = async () => {
-    if (!formData.original_work_confirmed || !formData.terms_agreed) {
-      alert('Please confirm the agreements before submitting')
+    // Validate form
+    const validation = validateForm()
+    if (!validation.isValid) {
+      alert('Please fix the following errors:\n\n' + validation.errors.join('\n'))
       return
     }
 
     setLoading(true)
     try {
+      console.log('Starting submission process...')
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
+      console.log('User authenticated:', user.id)
 
       // Create main submission
+      console.log('Creating main submission with data:', {
+        creator_type: creatorType,
+        title: formData.title,
+        price: formData.price
+      })
+      
       const { data: submission, error: submissionError } = await supabase
         .from('project_submissions')
         .insert({
@@ -187,7 +236,11 @@ export function ProjectSubmissionForm({ creatorType }: ProjectSubmissionFormProp
         .select()
         .single()
 
-      if (submissionError) throw submissionError
+      if (submissionError) {
+        console.error('Submission error details:', submissionError)
+        throw new Error(`Failed to create submission: ${submissionError.message}`)
+      }
+      console.log('Main submission created:', submission.id)
 
       // Upload files if any
       if (Object.values(uploadedFiles).some(files => files.length > 0)) {
@@ -207,7 +260,7 @@ export function ProjectSubmissionForm({ creatorType }: ProjectSubmissionFormProp
 
       // Create type-specific submission
       if (creatorType === 'artist') {
-        await supabase
+        const { error: artistError } = await supabase
           .from('artist_submissions')
           .insert({
             submission_id: submission.id,
@@ -219,8 +272,9 @@ export function ProjectSubmissionForm({ creatorType }: ProjectSubmissionFormProp
             materials: formData.materials,
             techniques: formData.techniques
           })
+        if (artistError) throw new Error(`Artist submission error: ${artistError.message}`)
       } else if (creatorType === 'writer') {
-        await supabase
+        const { error: writerError } = await supabase
           .from('writer_submissions')
           .insert({
             submission_id: submission.id,
@@ -232,8 +286,9 @@ export function ProjectSubmissionForm({ creatorType }: ProjectSubmissionFormProp
             isbn: formData.isbn,
             publication_date: formData.publication_date || null
           })
+        if (writerError) throw new Error(`Writer submission error: ${writerError.message}`)
       } else if (creatorType === 'fashion_designer') {
-        await supabase
+        const { error: fashionError } = await supabase
           .from('fashion_submissions')
           .insert({
             submission_id: submission.id,
@@ -244,23 +299,29 @@ export function ProjectSubmissionForm({ creatorType }: ProjectSubmissionFormProp
             color_options: formData.color_options,
             production_time_days: formData.production_time_days ? parseInt(formData.production_time_days) : null
           })
+        if (fashionError) throw new Error(`Fashion submission error: ${fashionError.message}`)
       }
 
-      // Send confirmation email
-      const { emailService } = await import('@/lib/email-service')
-      const { data: profileData } = await supabase
-        .from('user_profiles')
-        .select('full_name, email')
-        .eq('id', user.id)
-        .single()
+      // Send confirmation email (non-blocking)
+      try {
+        const { emailService } = await import('@/lib/email-service')
+        const { data: profileData } = await supabase
+          .from('user_profiles')
+          .select('full_name, email')
+          .eq('id', user.id)
+          .single()
 
-      if (profileData) {
-        await emailService.sendSubmissionConfirmation(profileData.email, {
-          creatorName: profileData.full_name,
-          submissionTitle: formData.title,
-          submissionId: submission.id,
-          reviewDate: new Date().toISOString()
-        })
+        if (profileData) {
+          await emailService.sendSubmissionConfirmation(profileData.email, {
+            creatorName: profileData.full_name,
+            submissionTitle: formData.title,
+            submissionId: submission.id,
+            reviewDate: new Date().toISOString()
+          })
+        }
+      } catch (emailError) {
+        // Log email error but don't fail the submission
+        console.warn('Failed to send confirmation email:', emailError)
       }
 
       alert('Project submitted successfully! You will receive a confirmation email shortly.')
@@ -288,7 +349,8 @@ export function ProjectSubmissionForm({ creatorType }: ProjectSubmissionFormProp
 
     } catch (error) {
       console.error('Error submitting project:', error)
-      alert('Error submitting project. Please try again.')
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+      alert(`Error submitting project: ${errorMessage}. Please try again.`)
     } finally {
       setLoading(false)
     }
@@ -371,12 +433,15 @@ export function ProjectSubmissionForm({ creatorType }: ProjectSubmissionFormProp
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <Label htmlFor="price">Price</Label>
+                  <Label htmlFor="price">Price *</Label>
                   <Input
                     id="price"
                     type="number"
+                    min="0"
+                    step="0.01"
                     value={formData.price}
                     onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
+                    required
                     placeholder="0.00"
                   />
                 </div>
@@ -423,21 +488,23 @@ export function ProjectSubmissionForm({ creatorType }: ProjectSubmissionFormProp
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="medium">Medium</Label>
+                      <Label htmlFor="medium">Medium *</Label>
                       <Input
                         id="medium"
                         value={formData.medium || ''}
                         onChange={(e) => setFormData(prev => ({ ...prev, medium: e.target.value }))}
                         placeholder="e.g., Oil on canvas, Digital collage"
+                        required
                       />
                     </div>
                     <div>
-                      <Label htmlFor="dimensions">Dimensions</Label>
+                      <Label htmlFor="dimensions">Dimensions *</Label>
                       <Input
                         id="dimensions"
                         value={formData.dimensions || ''}
                         onChange={(e) => setFormData(prev => ({ ...prev, dimensions: e.target.value }))}
                         placeholder="e.g., 24x36 inches"
+                        required
                       />
                     </div>
                   </div>
@@ -501,10 +568,11 @@ export function ProjectSubmissionForm({ creatorType }: ProjectSubmissionFormProp
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="genre">Genre</Label>
+                      <Label htmlFor="genre">Genre *</Label>
                       <Select
                         value={formData.genre || ''}
                         onValueChange={(value) => setFormData(prev => ({ ...prev, genre: value }))}
+                        required
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select genre" />
@@ -520,10 +588,11 @@ export function ProjectSubmissionForm({ creatorType }: ProjectSubmissionFormProp
                       </Select>
                     </div>
                     <div>
-                      <Label htmlFor="format">Format</Label>
+                      <Label htmlFor="format">Format *</Label>
                       <Select
                         value={formData.format || ''}
                         onValueChange={(value) => setFormData(prev => ({ ...prev, format: value }))}
+                        required
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select format" />
@@ -541,13 +610,15 @@ export function ProjectSubmissionForm({ creatorType }: ProjectSubmissionFormProp
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <Label htmlFor="word_count">Word Count</Label>
+                      <Label htmlFor="word_count">Word Count *</Label>
                       <Input
                         id="word_count"
                         type="number"
+                        min="1"
                         value={formData.word_count || ''}
                         onChange={(e) => setFormData(prev => ({ ...prev, word_count: e.target.value }))}
                         placeholder="50000"
+                        required
                       />
                     </div>
                     <div>
@@ -598,19 +669,21 @@ export function ProjectSubmissionForm({ creatorType }: ProjectSubmissionFormProp
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="collection_name">Collection Name</Label>
+                      <Label htmlFor="collection_name">Collection Name *</Label>
                       <Input
                         id="collection_name"
                         value={formData.collection_name || ''}
                         onChange={(e) => setFormData(prev => ({ ...prev, collection_name: e.target.value }))}
                         placeholder="Collection or project name"
+                        required
                       />
                     </div>
                     <div>
-                      <Label htmlFor="work_type">Type of Work</Label>
+                      <Label htmlFor="work_type">Type of Work *</Label>
                       <Select
                         value={formData.work_type || ''}
                         onValueChange={(value) => setFormData(prev => ({ ...prev, work_type: value }))}
+                        required
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select type" />
@@ -628,12 +701,13 @@ export function ProjectSubmissionForm({ creatorType }: ProjectSubmissionFormProp
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="fabric_materials">Fabric/Materials (comma-separated)</Label>
+                      <Label htmlFor="fabric_materials">Fabric/Materials * (comma-separated)</Label>
                       <Input
                         id="fabric_materials"
                         value={formData.fabric_materials?.join(', ') || ''}
                         onChange={(e) => handleArrayInput('fabric_materials', e.target.value)}
                         placeholder="cotton, silk, Ankara, adire"
+                        required
                       />
                     </div>
                     <div>
@@ -683,7 +757,7 @@ export function ProjectSubmissionForm({ creatorType }: ProjectSubmissionFormProp
                       className="flex items-center gap-2 mb-2"
                     >
                     <ImageIcon className="w-4 h-4" aria-hidden="true" />
-                    Images (3 frames suggested)
+                    Images * (At least 1 required, 3 frames suggested)
                   </Label>
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
                     <input
