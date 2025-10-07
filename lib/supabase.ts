@@ -21,48 +21,54 @@ export async function createServerClient() {
   if (!cookiesFn) {
     throw new Error('createServerClient called in a non-server context')
   }
-  // Await the cookies function for Next.js 15 compatibility
-  const cookieStore = await cookiesFn()
   
-  // Narrow structural typing instead of any to satisfy linting.
-  interface CookieStoreLike {
-    getAll?: () => { name: string; value: string }[]
-    set?: (name: string, value: string, options?: CookieSetOptions) => void
-  }
-  
-  const typedCookieStore = cookieStore as unknown as CookieStoreLike
-  const cookieGetAll = typedCookieStore.getAll
-  const safeGetAll = typeof cookieGetAll === 'function' ? () => cookieGetAll.call(typedCookieStore) : () => []
-  type CookieSetOptions = { path?: string; domain?: string; maxAge?: number; expires?: Date; httpOnly?: boolean; secure?: boolean; sameSite?: 'lax' | 'strict' | 'none' | boolean }
-  const cookieSet = typedCookieStore.set
-  const safeSet = typeof cookieSet === 'function'
-    ? (name: string, value: string, options?: CookieSetOptions) => cookieSet.call(typedCookieStore, name, value, options)
-    : () => {}
-  return createSupabaseServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll: () => safeGetAll(),
-        setAll: (cookiesToSet) => {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            try { 
-              // Ensure proper cookie options for production
-              const cookieOptions = {
-                ...options,
-                path: '/',
-                sameSite: 'lax' as const,
-                secure: process.env.NODE_ENV === 'production',
+  try {
+    // Await the cookies function for Next.js 15 compatibility
+    const cookieStore = await cookiesFn()
+    
+    // Narrow structural typing instead of any to satisfy linting.
+    interface CookieStoreLike {
+      getAll?: () => { name: string; value: string }[]
+      set?: (name: string, value: string, options?: CookieSetOptions) => void
+    }
+    
+    const typedCookieStore = cookieStore as unknown as CookieStoreLike
+    const cookieGetAll = typedCookieStore.getAll
+    const safeGetAll = typeof cookieGetAll === 'function' ? () => cookieGetAll.call(typedCookieStore) : () => []
+    type CookieSetOptions = { path?: string; domain?: string; maxAge?: number; expires?: Date; httpOnly?: boolean; secure?: boolean; sameSite?: 'lax' | 'strict' | 'none' | boolean }
+    const cookieSet = typedCookieStore.set
+    const safeSet = typeof cookieSet === 'function'
+      ? (name: string, value: string, options?: CookieSetOptions) => cookieSet.call(typedCookieStore, name, value, options)
+      : () => {}
+    return createSupabaseServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll: () => safeGetAll(),
+          setAll: (cookiesToSet) => {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              try { 
+                // Ensure proper cookie options for production
+                const cookieOptions = {
+                  ...options,
+                  path: '/',
+                  sameSite: 'lax' as const,
+                  secure: process.env.NODE_ENV === 'production',
+                }
+                safeSet(name, value, cookieOptions) 
+              } catch (error) { 
+                console.error('Failed to set cookie:', name, error)
               }
-              safeSet(name, value, cookieOptions) 
-            } catch (error) { 
-              console.error('Failed to set cookie:', name, error)
-            }
-          })
+            })
+          }
         }
       }
-    }
-  )
+    )
+  } catch (error) {
+    console.error('Failed to create server client:', error)
+    throw error
+  }
 }
 
 export function createClient() {

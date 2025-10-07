@@ -135,6 +135,14 @@ export async function signIn(prevState: unknown, formData: FormData) {
     }
   }
 
+  // Validate environment variables
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    console.error('Missing Supabase environment variables')
+    return {
+      error: 'Configuration error. Please contact support.'
+    }
+  }
+
   try {
     const supabase = await createServerClient()
     
@@ -217,8 +225,23 @@ export async function signIn(prevState: unknown, formData: FormData) {
     console.error('🔥 Error message:', error instanceof Error ? error.message : String(error))
     console.error('🔥 Error stack:', error instanceof Error ? error.stack : 'No stack trace')
     
+    // Check if it's a network error
+    if (error instanceof Error) {
+      if (error.message.includes('fetch') || error.message.includes('network')) {
+        return {
+          error: 'Network error. Please check your connection and try again.'
+        }
+      }
+      
+      if (error.message.includes('cookies')) {
+        return {
+          error: 'Session error. Please clear your browser cookies and try again.'
+        }
+      }
+    }
+    
     return {
-      error: 'An unexpected error occurred. Please try again. If the problem persists, contact support.'
+      error: `An unexpected error occurred: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again or contact support.`
     }
   }
 }
