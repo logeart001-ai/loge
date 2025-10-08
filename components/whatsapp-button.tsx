@@ -10,7 +10,7 @@ interface WhatsAppFloatingButtonProps {
 }
 
 export function WhatsAppFloatingButton({
-  phoneNumber = '+2348130864548',
+  phoneNumber = '+2348083737756',
   message = 'Hello! I need help with L\'oge Arts.',
   position = 'bottom-right',
 }: WhatsAppFloatingButtonProps) {
@@ -88,7 +88,7 @@ export function WhatsAppFloatingButton({
 
 // Compact version for dashboard
 export function WhatsAppButton({
-  phoneNumber = '+2348130864548',
+  phoneNumber = '+2348083737756',
   message = 'Hello! I need help with L\'oge Arts.',
   variant = 'default',
 }: {

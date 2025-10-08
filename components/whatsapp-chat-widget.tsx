@@ -27,7 +27,7 @@ export function WhatsAppChatWidget() {
   const [userName, setUserName] = useState('')
   const [isNameSet, setIsNameSet] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '+2348130864548'
+  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '+2348083737756'
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })

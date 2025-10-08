@@ -93,7 +93,7 @@ export default function SupportPage() {
       icon: MessageCircle,
       title: 'WhatsApp',
       description: 'Message us on WhatsApp',
-      value: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '+2348130864548',
+      value: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '+2348083737756',
       action: 'whatsapp',
     },
     {
@@ -107,8 +107,8 @@ export default function SupportPage() {
       icon: Phone,
       title: 'Phone',
       description: 'Call us directly',
-      value: '+234 813 086 4548',
-      link: 'tel:+2348130864548',
+      value: '+234 808 373 7756',
+      link: 'tel:+2348083737756',
     },
   ]
 
