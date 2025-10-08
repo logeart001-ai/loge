@@ -8,12 +8,13 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { signIn, resendConfirmation } from '@/lib/auth'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Eye, EyeOff } from 'lucide-react'
 
 function SignInForm() {
   const [state, action, isPending] = useActionState(signIn, null)
   const [resendState, resendAction, isResending] = useActionState(resendConfirmation, null)
   const [showResendForm, setShowResendForm] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const [userEmail, setUserEmail] = useState('')
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -133,14 +134,30 @@ function SignInForm() {
                     Forgot password?
                   </Link>
                 </div>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  required
-                  disabled={isPending}
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Enter your password"
+                    required
+                    disabled={isPending}
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-0 top-0 h-full px-3 flex items-center justify-center hover:bg-gray-100 rounded-r-md transition-colors"
+                    onClick={() => setShowPassword(!showPassword)}
+                    disabled={isPending}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4 text-gray-500 hover:text-gray-700" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-gray-500 hover:text-gray-700" />
+                    )}
+                  </button>
+                </div>
               </div>
               {state?.error && (
                 <div className="text-red-600 text-sm bg-red-50 p-3 rounded-md">

@@ -111,21 +111,21 @@ export default function ResetPasswordPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   disabled={isPending}
+                  className="pr-10"
                 />
-                <Button
+                <button
                   type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  className="absolute right-0 top-0 h-full px-3 flex items-center justify-center hover:bg-gray-100 rounded-r-md transition-colors"
                   onClick={() => setShowPassword(!showPassword)}
                   disabled={isPending}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-4 w-4 text-gray-400" />
+                    <EyeOff className="h-4 w-4 text-gray-500 hover:text-gray-700" />
                   ) : (
-                    <Eye className="h-4 w-4 text-gray-400" />
+                    <Eye className="h-4 w-4 text-gray-500 hover:text-gray-700" />
                   )}
-                </Button>
+                </button>
               </div>
               
               {password && (
@@ -171,22 +171,21 @@ export default function ResetPasswordPage() {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   disabled={isPending}
-                  className={!passwordsMatch ? 'border-red-300' : ''}
+                  className={`pr-10 ${!passwordsMatch ? 'border-red-300' : ''}`}
                 />
-                <Button
+                <button
                   type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  className="absolute right-0 top-0 h-full px-3 flex items-center justify-center hover:bg-gray-100 rounded-r-md transition-colors"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   disabled={isPending}
+                  aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
                 >
                   {showConfirmPassword ? (
-                    <EyeOff className="h-4 w-4 text-gray-400" />
+                    <EyeOff className="h-4 w-4 text-gray-500 hover:text-gray-700" />
                   ) : (
-                    <Eye className="h-4 w-4 text-gray-400" />
+                    <Eye className="h-4 w-4 text-gray-500 hover:text-gray-700" />
                   )}
-                </Button>
+                </button>
               </div>
               {!passwordsMatch && confirmPassword && (
                 <p className="text-sm text-red-600">Passwords do not match</p>
