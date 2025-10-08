@@ -35,8 +35,15 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const c = await getCart()
       setCart(c)
     } catch (e) {
-      console.error('Failed to load active cart', e)
-      setCart(null) // Set to null for unauthenticated users
+      // Handle authentication errors gracefully
+      const error = e as Error
+      if (error.message?.includes('Not authenticated') || error.message?.includes('Unauthorized')) {
+        console.log('User not authenticated, cart will remain empty')
+        setCart(null)
+      } else {
+        console.error('Failed to load active cart', e)
+        setCart(null)
+      }
     } finally {
       setLoading(false)
     }
@@ -64,8 +71,15 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const c = await getCart()
       setCart(c)
     } catch (e) {
-      console.error('Failed to refresh cart', e)
-      setCart(null)
+      // Handle authentication errors gracefully
+      const error = e as Error
+      if (error.message?.includes('Not authenticated') || error.message?.includes('Unauthorized')) {
+        console.log('User not authenticated, cart will remain empty')
+        setCart(null)
+      } else {
+        console.error('Failed to refresh cart', e)
+        setCart(null)
+      }
     } finally {
       setRefreshing(false)
     }
@@ -75,6 +89,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Require authentication to add items
     if (!user) {
       console.warn('User must be logged in to add items to cart')
+      alert('Please sign in to add items to your cart')
       return
     }
 
@@ -84,7 +99,13 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const updated = await getCart()
       setCart(updated)
     } catch (e) {
-      console.error('Failed to add item to cart', e)
+      const error = e as Error
+      if (error.message?.includes('Not authenticated') || error.message?.includes('Unauthorized')) {
+        alert('Please sign in to add items to your cart')
+      } else {
+        console.error('Failed to add item to cart', e)
+        alert('Failed to add item to cart. Please try again.')
+      }
     }
   }, [user])
 
