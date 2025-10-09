@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { signIn, resendConfirmation } from '@/lib/auth'
 import { Loader2, Eye, EyeOff } from 'lucide-react'
+import { GoogleSignInButton } from '@/components/google-signin-button'
 
 function SignInForm() {
   const [state, action, isPending] = useActionState(signIn, null)
@@ -174,6 +175,26 @@ function SignInForm() {
                   'Sign In'
                 )}
               </Button>
+
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-white px-2 text-gray-500">
+                    Or continue with
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <GoogleSignInButton userType="creator" variant="outline">
+                  <span className="text-xs">Creator</span>
+                </GoogleSignInButton>
+                <GoogleSignInButton userType="collector" variant="outline">
+                  <span className="text-xs">Collector</span>
+                </GoogleSignInButton>
+              </div>
             </form>
           ) : (
             <div className="space-y-4">

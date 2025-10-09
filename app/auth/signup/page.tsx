@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { signUp } from '@/lib/auth'
 import { Loader2, Eye, EyeOff, Check, X } from 'lucide-react'
+import { GoogleSignInButton } from '@/components/google-signin-button'
 
 // Define the signup response type
 type SignUpResponse = 
@@ -114,6 +115,26 @@ export default function SignUpPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <GoogleSignInButton userType="creator" variant="outline" className="w-full">
+              <span className="text-xs">Creator</span>
+            </GoogleSignInButton>
+            <GoogleSignInButton userType="collector" variant="outline" className="w-full">
+              <span className="text-xs">Collector</span>
+            </GoogleSignInButton>
+          </div>
+
+          <div className="relative mb-6">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-gray-500">
+                Or continue with email
+              </span>
+            </div>
+          </div>
+
           <form action={action} className="space-y-4" onSubmit={(e) => {
             console.log('🚀 Form submission started');
             // Check if all required fields are filled

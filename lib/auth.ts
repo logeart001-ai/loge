@@ -3,6 +3,7 @@
 import { createServerClient } from '@/lib/supabase'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
+import { headers } from 'next/headers'
 
 // Password validation helper
 function validatePassword(password: string): { isValid: boolean; message?: string } {
@@ -449,4 +450,32 @@ export async function updateUserProfile(prevState: unknown, formData: FormData) 
       error: 'An unexpected error occurred'
     }
   }
+}
+
+export async function signInWithGoogle(userType: 'creator' | 'collector') {
+  const supabase = await createServerClient()
+  const headersList = await headers()
+  const origin = headersList.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${origin}/auth/callback?user_type=${userType}`,
+      queryParams: {
+        access_type: 'offline',
+        prompt: 'consent',
+      },
+    },
+  })
+
+  if (error) {
+    console.error('🔥 Google sign in error:', error)
+    return { error: error.message }
+  }
+
+  if (data.url) {
+    redirect(data.url)
+  }
+
+  return { error: 'Failed to initiate Google sign in' }
 }
