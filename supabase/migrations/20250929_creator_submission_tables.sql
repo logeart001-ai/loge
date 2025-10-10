@@ -170,7 +170,7 @@ CREATE TABLE IF NOT EXISTS submission_reviews (
 -- 8. Creator Onboarding Progress
 CREATE TABLE IF NOT EXISTS creator_onboarding (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  creator_id UUID REFERENCES user_profiles(id) ON DELETE CASCADE,
+  creator_id UUID REFERENCES user_profiles(id) ON DELETE CASCADE UNIQUE,
   
   -- Onboarding Steps
   profile_completed BOOLEAN DEFAULT false,
