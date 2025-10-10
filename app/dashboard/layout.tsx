@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { requireAuth } from '@/lib/auth'
 import { Button } from '@/components/ui/button'
+import { NotificationCenter } from '@/components/notification-center'
 
 type UserType = 'creator' | 'collector'
 
@@ -24,11 +25,14 @@ export default async function DashboardLayout({
             </Link>
             <div className="text-sm text-gray-600">Dashboard</div>
           </div>
-          <Link href={homeHref}>
-            <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-white">
-              Dashboard Home
-            </Button>
-          </Link>
+          <div className="flex items-center gap-3">
+            <NotificationCenter userId={user.id} />
+            <Link href={homeHref}>
+              <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-white">
+                Dashboard Home
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
       <div>{children}</div>
