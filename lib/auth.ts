@@ -81,13 +81,17 @@ export async function signUp(prevState: unknown, formData: FormData) {
     console.log('🔥 Starting Supabase auth.signUp...')
     const supabase = await createServerClient()
     
+    // Map 'collector' to 'buyer' for database compatibility
+    const mappedRole = userType === 'collector' ? 'buyer' : userType
+    
     const { data, error } = await supabase.auth.signUp({
       email: email.toLowerCase().trim(),
       password,
       options: {
         data: {
           full_name: fullName.trim(),
-          role: userType, // Pass the role to the trigger
+          user_type: mappedRole, // Use user_type to match what the trigger expects
+          role: mappedRole, // Also pass role for backwards compatibility
         }
       }
     })
@@ -205,9 +209,10 @@ export async function signIn(prevState: unknown, formData: FormData) {
     revalidatePath('/dashboard/creator', 'page')
     
     // Default to general dashboard if no specific user type, otherwise use specific dashboard
+    // Handle both 'buyer' and 'collector' as they mean the same thing
     const defaultRedirect = userType === 'creator' 
       ? '/dashboard/creator' 
-      : userType === 'collector' 
+      : (userType === 'collector' || userType === 'buyer')
         ? '/dashboard/collector' 
         : '/dashboard'
     const finalRedirect = redirectTo || defaultRedirect
