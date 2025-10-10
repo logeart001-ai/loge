@@ -1,49 +1,54 @@
 import { requireAuth } from '@/lib/auth'
-import { createClient } from '@supabase/supabase-js'
+import { createServerClient } from '@/lib/supabase'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 
-type OrderRow = {
+type Order = {
   id: string
   order_number?: string | null
   total_amount?: number | string | null
   status?: string | null
   created_at: string
+  order_items?: OrderItem[]
 }
 
-async function getOrders(userId: string) {
+type OrderItem = {
+  id: string
+  artwork_id: string
+  artwork_title?: string | null
+  quantity: number
+  price_at_purchase: number
+}
+
+async function getOrders(userId: string): Promise<Order[]> {
   try {
-    // TEMPORARY FIX: Use service role to bypass RLS infinite recursion
-    // This bypasses the problematic RLS policies until they can be fixed
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+    const supabase = await createServerClient()
     
-    const supabase = createClient(supabaseUrl, serviceRoleKey)
-    
-    console.log('Orders query - Using service role to bypass RLS issue')
-    
-    // Direct query with user filter using service role
+    // Now using proper RLS - buyers can see their own orders
     const { data, error } = await supabase
       .from('orders')
-      .select('*')
+      .select(`
+        *,
+        order_items (
+          id,
+          artwork_id,
+          artwork_title,
+          quantity,
+          price_at_purchase
+        )
+      `)
       .eq('buyer_id', userId)
       .order('created_at', { ascending: false })
 
-    console.log('Orders query result:', { 
-      dataCount: data?.length || 0, 
-      errorMessage: error?.message,
-      userId: userId
-    })
-
     if (error) {
-      console.error('Error fetching orders with service role:', error.message)
-      return [] as OrderRow[]
+      console.error('Error fetching orders:', error.message)
+      return []
     }
     
-    return (data as OrderRow[]) || []
+    return data || []
   } catch (err) {
     console.error('Exception in getOrders:', err)
-    return [] as OrderRow[]
+    return []
   }
 }
 
@@ -53,7 +58,6 @@ export default async function CollectorOrdersPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* TODO: Fix RLS policies to remove service role dependency */}
       <header className="bg-white border-b border-gray-200 px-4 py-3">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-xl font-semibold">Collection History</h1>
@@ -70,7 +74,7 @@ export default async function CollectorOrdersPage() {
               <div className="text-center py-12 text-gray-500">No artworks collected yet.</div>
             ) : (
               <div className="space-y-4">
-                {orders.map((order) => (
+                {orders.map((order: Order) => (
                   <div key={order.id} className="flex items-center gap-4 p-4 border rounded-lg bg-white">
                     <div className="flex-1">
                       <div className="font-medium">Order {order.order_number || order.id.slice(0, 8)}</div>

@@ -1,5 +1,5 @@
 import { requireAuth } from '@/lib/auth'
-import { createClient } from '@supabase/supabase-js'
+import { createServerClient } from '@/lib/supabase'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 
@@ -10,41 +10,56 @@ type OrderRow = {
   status?: string | null
   created_at: string
   buyer_id?: string | null
+  order_items?: OrderItemRow[]
+}
+
+type OrderItemRow = {
+  id: string
+  order_id: string
+  artwork_id: string
+  artwork_title?: string | null
+  quantity: number
+  price_at_purchase: number
+  creator_id: string
 }
 
 async function getCreatorOrders(userId: string) {
   try {
-    // TEMPORARY: Use service role to bypass RLS issues (similar to collector orders)
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
-    
-    const supabase = createClient(supabaseUrl, serviceRoleKey)
+    const supabase = await createServerClient()
 
-    // Query orders that contain items from this creator
+    // Use the helper function from SQL migration to get creator's orders
+    // This function uses SECURITY DEFINER to safely bypass RLS
     const { data, error } = await supabase
-      .from('orders')
-      .select(`
-        *,
-        order_items!inner(creator_id)
-      `)
-      .eq('order_items.creator_id', userId)
-      .order('created_at', { ascending: false })
-
-    console.log('Creator orders query result:', { 
-      dataCount: data?.length || 0, 
-      errorMessage: error?.message,
-      userId: userId
-    })
+      .rpc('get_creator_orders', { creator_uuid: userId })
 
     if (error) {
       console.error('Error fetching creator orders:', error.message)
-      return [] as OrderRow[]
+      return []
     }
     
-    return (data as OrderRow[]) || []
+    // Now get the order items for each order
+    if (data && data.length > 0) {
+      const orderIds = data.map((order: OrderRow) => order.id)
+      
+      const { data: itemsData, error: itemsError } = await supabase
+        .from('order_items')
+        .select('*')
+        .in('order_id', orderIds)
+        .eq('creator_id', userId)
+      
+      if (!itemsError && itemsData) {
+        // Attach items to orders
+        return data.map((order: OrderRow) => ({
+          ...order,
+          order_items: itemsData.filter((item: OrderItemRow) => item.order_id === order.id)
+        }))
+      }
+    }
+    
+    return data || []
   } catch (err) {
     console.error('Exception in getCreatorOrders:', err)
-    return [] as OrderRow[]
+    return []
   }
 }
 
@@ -70,7 +85,7 @@ export default async function CreatorOrdersPage() {
               <div className="text-center py-12 text-gray-500">No sales yet.</div>
             ) : (
               <div className="space-y-4">
-                {orders.map((order) => (
+                {orders.map((order: OrderRow) => (
                   <div key={order.id} className="flex items-center gap-4 p-4 border rounded-lg bg-white">
                     <div className="flex-1">
                       <div className="font-medium">Order {order.order_number || order.id.slice(0, 8)}</div>
