@@ -83,14 +83,20 @@ export async function POST(request: NextRequest) {
       return sum + (price * item.quantity)
     }, 0)
 
+    // Generate order number
+    const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`
+
     // Create order
     const { data: order, error: orderError } = await supabase
       .from('orders')
       .insert({
+        order_number: orderNumber,
         buyer_id: user.id,
         total_amount: totalAmount,
+        subtotal: totalAmount,
         order_status: 'pending',
         payment_status: 'pending',
+        shipping_address: {}, // TODO: Add shipping address collection
       })
       .select()
       .single()

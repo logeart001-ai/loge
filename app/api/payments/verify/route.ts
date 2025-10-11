@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase'
 import { paystackService, fromKobo } from '@/lib/paystack-service'
+import { processOrderCompletion } from '@/lib/order-processing'
 
 export async function GET(request: NextRequest) {
   try {
@@ -82,50 +83,23 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Get order items to create wallet transactions for creators
+    // Get order items for wallet transactions and notifications
     const { data: orderItems, error: itemsError } = await supabase
       .from('order_items')
-      .select('*, artworks(creator_id, title)')
+      .select('*')
       .eq('order_id', order.id)
 
-    if (!itemsError && orderItems) {
-      // Group by creator and create wallet transactions
-      const creatorTotals = new Map<string, number>()
-      
-      for (const item of orderItems) {
-        const creatorId = (item.artworks as { creator_id: string } | null)?.creator_id
-        if (creatorId) {
-          const currentTotal = creatorTotals.get(creatorId) || 0
-          const itemPrice = typeof item.unit_price === 'string' 
-            ? parseFloat(item.unit_price) 
-            : item.unit_price
-          creatorTotals.set(creatorId, currentTotal + (itemPrice * item.quantity))
-        }
-      }
-
-      // Create wallet transactions for each creator
-      for (const [creatorId, amount] of creatorTotals) {
-        await supabase
-          .from('wallet_transactions')
-          .insert({
-            user_id: creatorId,
-            amount,
-            transaction_type: 'credit',
-            status: 'completed',
-            description: `Payment for order #${order.id}`,
-            reference: `ORDER_${order.id}`,
-          })
-      }
+    if (itemsError || !orderItems) {
+      console.error('Error fetching order items:', itemsError)
+      return NextResponse.json(
+        { error: 'Failed to fetch order items' },
+        { status: 500 }
+      )
     }
 
-    // Mark cart as completed
+    // Process order completion (wallet, notifications, cart)
     const metadata = paymentData.metadata as { cart_id?: string } | undefined
-    if (metadata?.cart_id) {
-      await supabase
-        .from('carts')
-        .update({ status: 'completed' })
-        .eq('id', metadata.cart_id)
-    }
+    await processOrderCompletion(supabase, order, orderItems, metadata?.cart_id)
 
     return NextResponse.json({
       success: true,
