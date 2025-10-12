@@ -87,23 +87,13 @@ BEGIN
   END IF;
 END $$;
 
--- 5. Create reviews table (only if artworks exists)
+-- 5. Skip artwork reviews table since reviews table already exists for creator reviews
 DO $$ 
 BEGIN
-  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'artworks') THEN
-    CREATE TABLE IF NOT EXISTS reviews (
-      id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-      artwork_id UUID REFERENCES artworks(id) ON DELETE CASCADE,
-      user_id UUID REFERENCES user_profiles(id) ON DELETE CASCADE,
-      rating INTEGER CHECK (rating >= 1 AND rating <= 5),
-      comment TEXT,
-      created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-      updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-      UNIQUE(artwork_id, user_id)
-    );
-    RAISE NOTICE '✅ Reviews table created';
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'reviews') THEN
+    RAISE NOTICE '✅ Reviews table already exists (creator reviews, not artwork reviews)';
   ELSE
-    RAISE NOTICE '⚠️  Skipping reviews - artworks table does not exist';
+    RAISE NOTICE '⚠️  Reviews table does not exist';
   END IF;
 END $$;
 
@@ -120,48 +110,59 @@ CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_is_read ON notifications(is_read);
 CREATE INDEX IF NOT EXISTS idx_notifications_type ON notifications(type);
 
--- Conditional indexes for artwork-related tables
+-- Conditional indexes for artwork-related tables (only if both artworks and target tables exist)
 DO $$ 
 BEGIN
-  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'wishlists') THEN
+  -- Only create wishlist indexes if both artworks and wishlists tables exist
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'artworks') 
+     AND EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'wishlists') THEN
     CREATE INDEX IF NOT EXISTS idx_wishlists_user_id ON wishlists(user_id);
     CREATE INDEX IF NOT EXISTS idx_wishlists_artwork_id ON wishlists(artwork_id);
+    RAISE NOTICE '✅ Wishlist indexes created';
+  ELSE
+    RAISE NOTICE '⚠️  Skipping wishlist indexes - missing dependencies';
   END IF;
   
-  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'artwork_views') THEN
+  -- Only create artwork_views indexes if both artworks and artwork_views tables exist
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'artworks')
+     AND EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'artwork_views') THEN
     CREATE INDEX IF NOT EXISTS idx_artwork_views_artwork_id ON artwork_views(artwork_id);
     CREATE INDEX IF NOT EXISTS idx_artwork_views_viewed_at ON artwork_views(viewed_at);
+    RAISE NOTICE '✅ Artwork views indexes created';
+  ELSE
+    RAISE NOTICE '⚠️  Skipping artwork views indexes - missing dependencies';
   END IF;
   
-  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'reviews') THEN
-    CREATE INDEX IF NOT EXISTS idx_reviews_artwork_id ON reviews(artwork_id);
-    CREATE INDEX IF NOT EXISTS idx_reviews_user_id ON reviews(user_id);
-  END IF;
+  -- Skip artwork review indexes since reviews table is for creator reviews (no artwork_id column)
+  RAISE NOTICE '⚠️  Skipping artwork review indexes - reviews table is for creator reviews';
 END $$;
 
 -- ============================================
--- ENABLE RLS
+-- ENABLE RLS (only for tables that actually exist)
 -- ============================================
 DO $$ 
 BEGIN
-  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'wishlists') THEN
-    ALTER TABLE wishlists ENABLE ROW LEVEL SECURITY;
-  END IF;
-  
+  -- Enable RLS for follows (should always exist)
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'follows') THEN
     ALTER TABLE follows ENABLE ROW LEVEL SECURITY;
+    RAISE NOTICE '✅ RLS enabled for follows';
   END IF;
   
+  -- Enable RLS for notifications (should always exist)
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'notifications') THEN
     ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+    RAISE NOTICE '✅ RLS enabled for notifications';
+  END IF;
+  
+  -- Enable RLS for artwork-dependent tables only if they were created
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'wishlists') THEN
+    ALTER TABLE wishlists ENABLE ROW LEVEL SECURITY;
+    RAISE NOTICE '✅ RLS enabled for wishlists';
   END IF;
   
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'artwork_views') THEN
     ALTER TABLE artwork_views ENABLE ROW LEVEL SECURITY;
-  END IF;
-  
-  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'reviews') THEN
-    ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
+    RAISE NOTICE '✅ RLS enabled for artwork_views';
   END IF;
 END $$;
 
@@ -197,16 +198,6 @@ BEGIN
     CREATE POLICY "Anyone can create artwork views" ON artwork_views
       FOR INSERT WITH CHECK (true);
   END IF;
-  
-  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'reviews') THEN
-    DROP POLICY IF EXISTS "Users can manage their own reviews" ON reviews;
-    CREATE POLICY "Users can manage their own reviews" ON reviews
-      FOR ALL USING (auth.uid() = user_id);
-      
-    DROP POLICY IF EXISTS "Public can view reviews" ON reviews;
-    CREATE POLICY "Public can view reviews" ON reviews
-      FOR SELECT USING (true);
-  END IF;
 END $$;
 
 COMMIT;
@@ -224,7 +215,7 @@ SELECT
   '✅ Created Successfully' as status
 FROM information_schema.tables 
 WHERE table_schema = 'public' 
-AND table_name IN ('wishlists', 'follows', 'notifications', 'artwork_views', 'reviews')
+AND table_name IN ('wishlists', 'follows', 'notifications', 'artwork_views')
 ORDER BY table_name;
 
 -- Show what was skipped (if any)
