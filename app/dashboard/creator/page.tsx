@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Upload, DollarSign, Eye, TrendingUp, Settings, LogOut, Plus, Package, BarChart3, MessageCircle, FileText, Clock, CheckCircle, XCircle } from 'lucide-react'
+import { Upload, DollarSign, Eye, TrendingUp, Settings, LogOut, Plus, Package, BarChart3, MessageCircle, FileText, Clock, CheckCircle, XCircle, Wallet } from 'lucide-react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { OptimizedImage } from '@/components/optimized-image'
@@ -141,6 +141,10 @@ export default async function CreatorDashboard() {
                   <Link href="/dashboard/creator/orders" className="flex items-center space-x-2 p-2 text-gray-600 hover:bg-gray-50 rounded">
                     <DollarSign className="w-4 h-4" />
                     <span>Orders & Sales</span>
+                  </Link>
+                  <Link href="/dashboard/creator/wallet" className="flex items-center space-x-2 p-2 text-gray-600 hover:bg-gray-50 rounded">
+                    <Wallet className="w-4 h-4" />
+                    <span>Wallet & Earnings</span>
                   </Link>
                   <Link href="/dashboard/creator/analytics" className="flex items-center space-x-2 p-2 text-gray-600 hover:bg-gray-50 rounded">
                     <TrendingUp className="w-4 h-4" />
