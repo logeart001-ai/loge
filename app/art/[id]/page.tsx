@@ -6,6 +6,10 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { getArtworkById } from '@/lib/supabase-queries'
+import { ArtworkViewTracker } from '@/components/artwork-view-tracker'
+import { WishlistButton } from '@/components/wishlist-button'
+import { FollowButton } from '@/components/follow-button'
+import { ArtworkAnalytics } from '@/components/artwork-analytics'
 
 export default async function ArtworkDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -18,6 +22,9 @@ export default async function ArtworkDetailPage({ params }: { params: Promise<{ 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
+      
+      {/* Track artwork views */}
+      <ArtworkViewTracker artworkId={artwork.id} />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -88,7 +95,11 @@ export default async function ArtworkDetailPage({ params }: { params: Promise<{ 
                     <div className="text-sm text-gray-600">{artwork.creator.location}</div>
                   )}
                 </div>
-                <div className="ml-auto">
+                <div className="ml-auto flex gap-2">
+                  <FollowButton 
+                    creatorId={artwork.creator.id} 
+                    creatorName={artwork.creator.full_name}
+                  />
                   <Link href={`/creators/${artwork.creator.id}`}>
                     <Button variant="outline" size="sm">View Artist</Button>
                   </Link>
@@ -98,9 +109,19 @@ export default async function ArtworkDetailPage({ params }: { params: Promise<{ 
 
             <div className="flex gap-3">
               <AddToCartButton artworkId={artwork.id} />
-              <Button variant="outline">Save</Button>
+              <WishlistButton 
+                artworkId={artwork.id} 
+                artworkTitle={artwork.title}
+                className="flex-shrink-0"
+              />
             </div>
           </div>
+        </div>
+        
+        {/* Artwork Analytics Section */}
+        <div className="mt-12">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Artwork Insights</h2>
+          <ArtworkAnalytics artworkId={artwork.id} />
         </div>
       </div>
     </div>
