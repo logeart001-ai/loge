@@ -8,8 +8,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { ArrowLeft, Upload, X, Plus } from 'lucide-react'
+import { ArrowLeft, Upload, X } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase'
 
 interface ArtworkFormData {
@@ -53,11 +54,11 @@ export default function NewArtworkPage() {
       const isValidSize = file.size <= 10 * 1024 * 1024 // 10MB
       return isImage && isValidSize
     })
-    
+
     if (validImages.length !== files.length) {
       alert('Some files were skipped. Please upload only images under 10MB.')
     }
-    
+
     setImages(prev => [...prev, ...validImages].slice(0, 5)) // Max 5 images
   }
 
@@ -72,23 +73,23 @@ export default function NewArtworkPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!formData.title || !formData.description || !formData.category || !formData.price) {
       alert('Please fill in all required fields')
       return
     }
-    
+
     if (images.length === 0) {
       alert('Please upload at least one image')
       return
     }
 
     setLoading(true)
-    
+
     try {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
-      
+
       if (!user) {
         alert('Please sign in to upload artwork')
         return
@@ -98,7 +99,7 @@ export default function NewArtworkPage() {
       // In production, you'd upload files to Supabase Storage first
       const imageUrls = images.map((_, index) => `/placeholder-artwork-${index + 1}.jpg`)
 
-      const { data: artwork, error } = await supabase
+      const { error } = await supabase
         .from('artworks')
         .insert({
           creator_id: user.id,
@@ -131,7 +132,7 @@ export default function NewArtworkPage() {
 
       alert('Artwork uploaded successfully!')
       router.push('/dashboard/creator/artworks')
-      
+
     } catch (error) {
       console.error('Error uploading artwork:', error)
       alert('An error occurred. Please try again.')
@@ -183,7 +184,7 @@ export default function NewArtworkPage() {
                     onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
                     required
                   >
-                    <SelectTrigger>
+                    <SelectTrigger id="category" aria-label="Select artwork category">
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -230,7 +231,7 @@ export default function NewArtworkPage() {
                     value={formData.currency}
                     onValueChange={(value) => setFormData(prev => ({ ...prev, currency: value }))}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger id="currency" aria-label="Select currency">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -276,6 +277,7 @@ export default function NewArtworkPage() {
                       onChange={handleImageUpload}
                       className="hidden"
                       id="image-upload"
+                      aria-label="Upload artwork images"
                     />
                     <Label htmlFor="image-upload" className="cursor-pointer">
                       <Button type="button" variant="outline" asChild>
@@ -289,15 +291,20 @@ export default function NewArtworkPage() {
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                     {images.map((image, index) => (
                       <div key={index} className="relative">
-                        <img
+                        <Image
                           src={URL.createObjectURL(image)}
                           alt={`Preview ${index + 1}`}
+                          width={96}
+                          height={96}
                           className="w-full h-24 object-cover rounded-lg"
+                          unoptimized
                         />
                         <button
                           type="button"
                           onClick={() => removeImage(index)}
                           className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                          aria-label={`Remove image ${index + 1}`}
+                          title={`Remove image ${index + 1}`}
                         >
                           <X className="w-3 h-3" />
                         </button>
