@@ -9,6 +9,17 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { OptimizedImage } from '@/components/optimized-image'
 
+interface Submission {
+  id: string
+  title: string
+  creator_type?: string
+  status: string
+  submission_date?: string
+  created_at: string
+  price?: number
+  currency?: string
+}
+
 async function getCreatorStats(userId: string) {
   const supabase = await createServerClient()
   
@@ -312,7 +323,7 @@ export default async function CreatorDashboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
-                      {stats.submissions.slice(0, 5).map((submission: any) => (
+                      {stats.submissions.slice(0, 5).map((submission: Submission) => (
                         <div key={submission.id} className="flex items-center gap-3 text-sm p-3 bg-gray-50 rounded-lg">
                           {submission.status === 'approved' || submission.status === 'published' ? (
                             <CheckCircle className="w-4 h-4 text-green-600" />
@@ -409,7 +420,7 @@ export default async function CreatorDashboard() {
                   <CardContent>
                     {stats.submissions.length > 0 ? (
                       <div className="space-y-4">
-                        {stats.submissions.map((submission: any) => (
+                        {stats.submissions.map((submission: Submission) => (
                           <div
                             key={submission.id}
                             className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50"
