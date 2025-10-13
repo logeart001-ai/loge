@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Navbar } from '@/components/navbar'
 import { BackgroundVideo } from '@/components/background-video'
+import { HomeSearch } from '@/components/home-search'
 import {
   getFeaturedArtworks,
   getFeaturedCreators,
@@ -235,7 +236,24 @@ export default async function HomePage() {
         </div>
       </section>
 
-
+      {/* Search Section */}
+      <section className="py-12 md:py-16 bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Reveal>
+            <div className="text-center mb-8">
+              <h2 className="section-title text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+                Discover African Creativity
+              </h2>
+              <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+                Search thousands of unique artworks and connect with talented creators across the continent
+              </p>
+            </div>
+          </Reveal>
+          <Reveal delay={100}>
+            <HomeSearch />
+          </Reveal>
+        </div>
+      </section>
 
       {/* Featured Art Expression */}
       <section className="py-12 md:py-16 bg-gray-50">

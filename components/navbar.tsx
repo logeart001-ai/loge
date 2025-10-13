@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { Menu, X, User, LogOut, ShoppingCart } from 'lucide-react'
+import { Menu, X, User, LogOut, ShoppingCart, Search } from 'lucide-react'
 import { createClient } from '@/lib/supabase-client'
 
 export function Navbar() {
@@ -132,6 +132,10 @@ export function Navbar() {
             </Link>
             <Link href="/support" className="text-gray-700 hover:text-orange-500 font-medium">
               Support
+            </Link>
+            <Link href="/search" className="text-gray-700 hover:text-orange-500 font-medium flex items-center space-x-1">
+              <Search className="h-4 w-4" />
+              <span>Search</span>
             </Link>
             {!loading && user && inDashboard && (
               <Link
@@ -262,6 +266,14 @@ export function Navbar() {
                 onClick={() => setIsOpen(false)}
               >
                 Support
+              </Link>
+              <Link
+                href="/search"
+                className="flex items-center space-x-2 px-3 py-2 text-gray-700 hover:text-orange-500 font-medium"
+                onClick={() => setIsOpen(false)}
+              >
+                <Search className="h-4 w-4" />
+                <span>Search</span>
               </Link>
               <Link
                 href="/cart"

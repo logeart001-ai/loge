@@ -1,325 +1,323 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useTransition } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
-import { 
-  Filter, 
-  X, 
-  ChevronDown,
-  DollarSign,
-  Grid3X3,
-  MapPin,
-  CheckCircle2
-} from 'lucide-react'
-
-interface FilterOptions {
-  categories: string[]
-  minPrice: string
-  maxPrice: string
-  availability: 'all' | 'available' | 'sold'
-  sortBy: 'relevance' | 'price-low' | 'price-high' | 'newest' | 'popular'
-  searchType: 'all' | 'artworks' | 'creators'
-}
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { X, SlidersHorizontal } from 'lucide-react'
 
 interface SearchFiltersProps {
-  onFilterChange: (filters: FilterOptions) => void
-  initialFilters: FilterOptions
+  searchParams: {
+    q?: string
+    category?: string
+    minPrice?: string
+    maxPrice?: string
+    type?: string
+    sort?: string
+    discipline?: string
+    location?: string
+    verified?: string
+  }
 }
 
-const CATEGORIES = [
-  { value: 'art', label: 'Art' },
-  { value: 'fashion', label: 'Fashion' },
-  { value: 'books', label: 'Books' },
-  { value: 'events', label: 'Events' }
-]
-
-const SORT_OPTIONS = [
-  { value: 'relevance', label: 'Most Relevant' },
-  { value: 'price-low', label: 'Price: Low to High' },
-  { value: 'price-high', label: 'Price: High to Low' },
-  { value: 'newest', label: 'Newest First' },
-  { value: 'popular', label: 'Most Popular' }
-]
-
-const SEARCH_TYPES = [
-  { value: 'all', label: 'All' },
-  { value: 'artworks', label: 'Artworks' },
-  { value: 'creators', label: 'Creators' }
-]
-
-export function SearchFilters({ onFilterChange, initialFilters }: SearchFiltersProps) {
-  const [showFilters, setShowFilters] = useState(false)
-  const [filters, setFilters] = useState<FilterOptions>(initialFilters)
+export default function SearchFilters({ searchParams }: SearchFiltersProps) {
   const router = useRouter()
-  const searchParams = useSearchParams()
+  const currentParams = useSearchParams()
+  const [isPending, startTransition] = useTransition()
 
-  useEffect(() => {
-    onFilterChange(filters)
-  }, [filters, onFilterChange])
+  const searchType = searchParams.type || 'artworks'
 
-  const updateFilter = <K extends keyof FilterOptions>(
-    key: K,
-    value: FilterOptions[K]
-  ) => {
-    setFilters(prev => ({ ...prev, [key]: value }))
-  }
-
-  const toggleCategory = (category: string) => {
-    setFilters(prev => ({
-      ...prev,
-      categories: prev.categories.includes(category)
-        ? prev.categories.filter(c => c !== category)
-        : [...prev.categories, category]
-    }))
-  }
-
-  const clearFilters = () => {
-    const defaultFilters: FilterOptions = {
-      categories: [],
-      minPrice: '',
-      maxPrice: '',
-      availability: 'all',
-      sortBy: 'relevance',
-      searchType: 'all'
-    }
-    setFilters(defaultFilters)
+  const updateFilter = (key: string, value: string | null) => {
+    const params = new URLSearchParams(currentParams)
     
-    // Keep only the search query
-    const query = searchParams.get('q')
-    if (query) {
-      router.push(`/search?q=${encodeURIComponent(query)}`)
+    if (value && value !== 'all') {
+      params.set(key, value)
+    } else {
+      params.delete(key)
     }
+    
+    startTransition(() => {
+      router.push(`/search?${params.toString()}`)
+    })
+  }
+
+  const clearAllFilters = () => {
+    const params = new URLSearchParams()
+    params.set('type', searchType)
+    if (searchParams.q) {
+      params.set('q', searchParams.q)
+    }
+    
+    startTransition(() => {
+      router.push(`/search?${params.toString()}`)
+    })
   }
 
   const hasActiveFilters = 
-    filters.categories.length > 0 ||
-    filters.minPrice !== '' ||
-    filters.maxPrice !== '' ||
-    filters.availability !== 'all' ||
-    filters.searchType !== 'all'
+    searchParams.category ||
+    searchParams.minPrice ||
+    searchParams.maxPrice ||
+    searchParams.discipline ||
+    searchParams.location ||
+    searchParams.verified ||
+    searchParams.sort
 
   return (
-    <div className="space-y-4">
-      {/* Top Bar with Search Type and Sort */}
-      <div className="flex flex-wrap items-center gap-4 justify-between">
-        <div className="flex items-center gap-2">
-          {/* Search Type Selector */}
-          <div className="flex rounded-lg border border-gray-300 overflow-hidden">
-            {SEARCH_TYPES.map((type) => (
-              <button
-                key={type.value}
-                onClick={() => updateFilter('searchType', type.value as FilterOptions['searchType'])}
-                className={`px-4 py-2 text-sm font-medium transition-colors ${
-                  filters.searchType === type.value
-                    ? 'bg-orange-500 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                {type.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Filter Toggle Button */}
-          <Button
-            onClick={() => setShowFilters(!showFilters)}
-            variant="outline"
-            className="gap-2"
-          >
-            <Filter className="w-4 h-4" />
+    <Card className="sticky top-6">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <SlidersHorizontal className="w-5 h-5" />
             Filters
-            {hasActiveFilters && (
-              <Badge variant="secondary" className="ml-1 px-1.5 py-0">
-                {filters.categories.length + 
-                  (filters.minPrice ? 1 : 0) + 
-                  (filters.maxPrice ? 1 : 0) + 
-                  (filters.availability !== 'all' ? 1 : 0)}
-              </Badge>
-            )}
-          </Button>
-        </div>
-
-        {/* Sort By */}
-        <div className="flex items-center gap-2">
-          <label htmlFor="sort-select" className="text-sm text-gray-600">Sort by:</label>
-          <select
-            id="sort-select"
-            value={filters.sortBy}
-            onChange={(e) => updateFilter('sortBy', e.target.value as FilterOptions['sortBy'])}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
-          >
-            {SORT_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* Expanded Filters */}
-      {showFilters && (
-        <div className="bg-white border border-gray-200 rounded-lg p-6 space-y-6">
-          <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-              <Filter className="w-5 h-5" />
-              Filter Options
-            </h3>
-            {hasActiveFilters && (
-              <Button
-                onClick={clearFilters}
-                variant="ghost"
-                size="sm"
-                className="text-orange-600 hover:text-orange-700"
-              >
-                <X className="w-4 h-4 mr-1" />
-                Clear All
-              </Button>
-            )}
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {/* Categories */}
-            {filters.searchType !== 'creators' && (
-              <div className="space-y-3">
-                <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                  <Grid3X3 className="w-4 h-4" />
-                  Categories
-                </label>
-                <div className="space-y-2">
-                  {CATEGORIES.map((category) => (
-                    <label
-                      key={category.value}
-                      className="flex items-center gap-2 cursor-pointer"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={filters.categories.includes(category.value)}
-                        onChange={() => toggleCategory(category.value)}
-                        className="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
-                      />
-                      <span className="text-sm text-gray-700">{category.label}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Price Range */}
-            {filters.searchType !== 'creators' && (
-              <div className="space-y-3">
-                <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                  <DollarSign className="w-4 h-4" />
-                  Price Range (₦)
-                </label>
-                <div className="space-y-2">
-                  <input
-                    type="number"
-                    placeholder="Min price"
-                    value={filters.minPrice}
-                    onChange={(e) => updateFilter('minPrice', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
-                  />
-                  <input
-                    type="number"
-                    placeholder="Max price"
-                    value={filters.maxPrice}
-                    onChange={(e) => updateFilter('maxPrice', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Availability */}
-            {filters.searchType !== 'creators' && (
-              <div className="space-y-3">
-                <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4" />
-                  Availability
-                </label>
-                <div className="space-y-2">
-                  {[
-                    { value: 'all', label: 'All Artworks' },
-                    { value: 'available', label: 'Available Only' },
-                    { value: 'sold', label: 'Sold Items' }
-                  ].map((option) => (
-                    <label
-                      key={option.value}
-                      className="flex items-center gap-2 cursor-pointer"
-                    >
-                      <input
-                        type="radio"
-                        name="availability"
-                        value={option.value}
-                        checked={filters.availability === option.value}
-                        onChange={(e) => updateFilter('availability', e.target.value as FilterOptions['availability'])}
-                        className="w-4 h-4 text-orange-500 border-gray-300 focus:ring-orange-500"
-                      />
-                      <span className="text-sm text-gray-700">{option.label}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Active Filters Summary */}
+          </CardTitle>
           {hasActiveFilters && (
-            <div className="pt-4 border-t">
-              <div className="flex flex-wrap gap-2">
-                {filters.categories.map((cat) => (
-                  <Badge key={cat} variant="secondary" className="gap-1">
-                    {CATEGORIES.find(c => c.value === cat)?.label}
-                    <button
-                      onClick={() => toggleCategory(cat)}
-                      className="ml-1 hover:text-orange-600"
-                      aria-label={`Remove ${cat} filter`}
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </Badge>
-                ))}
-                {filters.minPrice && (
-                  <Badge variant="secondary" className="gap-1">
-                    Min: ₦{filters.minPrice}
-                    <button
-                      onClick={() => updateFilter('minPrice', '')}
-                      className="ml-1 hover:text-orange-600"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </Badge>
-                )}
-                {filters.maxPrice && (
-                  <Badge variant="secondary" className="gap-1">
-                    Max: ₦{filters.maxPrice}
-                    <button
-                      onClick={() => updateFilter('maxPrice', '')}
-                      className="ml-1 hover:text-orange-600"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </Badge>
-                )}
-                {filters.availability !== 'all' && (
-                  <Badge variant="secondary" className="gap-1">
-                    {filters.availability === 'available' ? 'Available' : 'Sold'}
-                    <button
-                      onClick={() => updateFilter('availability', 'all')}
-                      className="ml-1 hover:text-orange-600"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </Badge>
-                )}
-              </div>
-            </div>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={clearAllFilters}
+              disabled={isPending}
+            >
+              <X className="w-4 h-4 mr-1" />
+              Clear
+            </Button>
           )}
         </div>
-      )}
-    </div>
+      </CardHeader>
+
+      <CardContent className="space-y-6">
+        {/* Sort By - Common for both types */}
+        <div className="space-y-2">
+          <Label>Sort By</Label>
+          <Select
+            value={searchParams.sort || 'relevant'}
+            onValueChange={(value) => updateFilter('sort', value)}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="relevant">Most Relevant</SelectItem>
+              <SelectItem value="recent">Most Recent</SelectItem>
+              {searchType === 'artworks' && (
+                <>
+                  <SelectItem value="price-asc">Price: Low to High</SelectItem>
+                  <SelectItem value="price-desc">Price: High to Low</SelectItem>
+                  <SelectItem value="popular">Most Popular</SelectItem>
+                </>
+              )}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Artwork Filters */}
+        {searchType === 'artworks' && (
+          <>
+            {/* Category */}
+            <div className="space-y-2">
+              <Label>Category</Label>
+              <Select
+                value={searchParams.category || 'all'}
+                onValueChange={(value) => updateFilter('category', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="All Categories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  <SelectItem value="painting">Painting</SelectItem>
+                  <SelectItem value="sculpture">Sculpture</SelectItem>
+                  <SelectItem value="digital_art">Digital Art</SelectItem>
+                  <SelectItem value="photography">Photography</SelectItem>
+                  <SelectItem value="mixed_media">Mixed Media</SelectItem>
+                  <SelectItem value="textile">Textile Art</SelectItem>
+                  <SelectItem value="fashion">Fashion</SelectItem>
+                  <SelectItem value="art">Art</SelectItem>
+                  <SelectItem value="books">Books</SelectItem>
+                  <SelectItem value="events">Events</SelectItem>
+                </SelectContent>
+              </Select>
+              {searchParams.category && searchParams.category !== 'all' && (
+                <Badge variant="secondary" className="mt-2">
+                  {searchParams.category}
+                  <button
+                    onClick={() => updateFilter('category', null)}
+                    className="ml-2 hover:text-red-600"
+                    aria-label="Remove category filter"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </Badge>
+              )}
+            </div>
+
+            {/* Price Range */}
+            <div className="space-y-3">
+              <Label>Price Range (₦)</Label>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <Input
+                    type="number"
+                    placeholder="Min"
+                    value={searchParams.minPrice || ''}
+                    onChange={(e) => updateFilter('minPrice', e.target.value || null)}
+                    min="0"
+                  />
+                </div>
+                <div>
+                  <Input
+                    type="number"
+                    placeholder="Max"
+                    value={searchParams.maxPrice || ''}
+                    onChange={(e) => updateFilter('maxPrice', e.target.value || null)}
+                    min="0"
+                  />
+                </div>
+              </div>
+              
+              {/* Quick Price Ranges */}
+              <div className="flex flex-wrap gap-2 mt-2">
+                <Badge
+                  variant="outline"
+                  className="cursor-pointer hover:bg-gray-100"
+                  onClick={() => {
+                    updateFilter('minPrice', '0')
+                    updateFilter('maxPrice', '10000')
+                  }}
+                >
+                  Under ₦10k
+                </Badge>
+                <Badge
+                  variant="outline"
+                  className="cursor-pointer hover:bg-gray-100"
+                  onClick={() => {
+                    updateFilter('minPrice', '10000')
+                    updateFilter('maxPrice', '50000')
+                  }}
+                >
+                  ₦10k - ₦50k
+                </Badge>
+                <Badge
+                  variant="outline"
+                  className="cursor-pointer hover:bg-gray-100"
+                  onClick={() => {
+                    updateFilter('minPrice', '50000')
+                    updateFilter('maxPrice', '100000')
+                  }}
+                >
+                  ₦50k - ₦100k
+                </Badge>
+                <Badge
+                  variant="outline"
+                  className="cursor-pointer hover:bg-gray-100"
+                  onClick={() => {
+                    updateFilter('minPrice', '100000')
+                    updateFilter('maxPrice', null)
+                  }}
+                >
+                  Above ₦100k
+                </Badge>
+              </div>
+
+              {(searchParams.minPrice || searchParams.maxPrice) && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full mt-2"
+                  onClick={() => {
+                    updateFilter('minPrice', null)
+                    updateFilter('maxPrice', null)
+                  }}
+                >
+                  Clear Price Range
+                </Button>
+              )}
+            </div>
+          </>
+        )}
+
+        {/* Creator Filters */}
+        {searchType === 'creators' && (
+          <>
+            {/* Discipline */}
+            <div className="space-y-2">
+              <Label>Discipline</Label>
+              <Select
+                value={searchParams.discipline || 'all'}
+                onValueChange={(value) => updateFilter('discipline', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="All Disciplines" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Disciplines</SelectItem>
+                  <SelectItem value="painting">Painting</SelectItem>
+                  <SelectItem value="sculpture">Sculpture</SelectItem>
+                  <SelectItem value="digital_art">Digital Art</SelectItem>
+                  <SelectItem value="photography">Photography</SelectItem>
+                  <SelectItem value="mixed_media">Mixed Media</SelectItem>
+                  <SelectItem value="textile">Textile Art</SelectItem>
+                  <SelectItem value="fashion">Fashion Design</SelectItem>
+                  <SelectItem value="illustration">Illustration</SelectItem>
+                </SelectContent>
+              </Select>
+              {searchParams.discipline && searchParams.discipline !== 'all' && (
+                <Badge variant="secondary" className="mt-2">
+                  {searchParams.discipline}
+                  <button
+                    onClick={() => updateFilter('discipline', null)}
+                    className="ml-2 hover:text-red-600"
+                    aria-label="Remove discipline filter"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </Badge>
+              )}
+            </div>
+
+            {/* Location */}
+            <div className="space-y-2">
+              <Label>Location</Label>
+              <Input
+                type="text"
+                placeholder="e.g., Lagos, Nigeria"
+                value={searchParams.location || ''}
+                onChange={(e) => updateFilter('location', e.target.value || null)}
+              />
+              {searchParams.location && (
+                <Badge variant="secondary" className="mt-2">
+                  {searchParams.location}
+                  <button
+                    onClick={() => updateFilter('location', null)}
+                    className="ml-2 hover:text-red-600"
+                    aria-label="Remove location filter"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </Badge>
+              )}
+            </div>
+
+            {/* Verified Only */}
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="verified"
+                checked={searchParams.verified === 'true'}
+                onChange={(e) => updateFilter('verified', e.target.checked ? 'true' : null)}
+                className="w-4 h-4 rounded border-gray-300"
+                aria-label="Show only verified creators"
+              />
+              <Label htmlFor="verified" className="cursor-pointer">
+                Verified Creators Only
+              </Label>
+            </div>
+          </>
+        )}
+      </CardContent>
+    </Card>
   )
 }
