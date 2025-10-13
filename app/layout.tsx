@@ -3,6 +3,7 @@ import { Playfair_Display, Inter, Dancing_Script } from 'next/font/google';
 import "./globals.css";
 import { CartProvider } from '@/components/cart-provider'
 import { WhatsAppChatWidget } from '@/components/whatsapp-chat-widget'
+import { Toaster } from 'sonner'
 // import { PerformanceMonitor } from '@/components/performance/performance-monitor'
 // import { CriticalCSS } from '@/components/performance/critical-css'
 // import { ServiceWorkerRegistration } from '@/components/performance/service-worker-registration'
@@ -87,6 +88,7 @@ export default function RootLayout({
         <CartProvider>
           {children}
           <WhatsAppChatWidget />
+          <Toaster position="top-right" richColors />
         </CartProvider>
       </body>
     </html>
