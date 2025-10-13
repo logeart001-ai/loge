@@ -92,12 +92,10 @@ async function createSampleData() {
       const orderDate = new Date()
       orderDate.setDate(orderDate.getDate() - daysAgo)
       
-      // Create order
+      // Create order (simplified - only required fields)
       const orderData = {
         creator_id: creator.id,
         buyer_id: collector?.id || null,
-        buyer_email: collector?.email || 'guest@example.com',
-        buyer_name: collector?.full_name || 'Guest Buyer',
         total_amount: parseFloat(artwork.price),
         status: 'delivered',
         payment_status: 'paid',

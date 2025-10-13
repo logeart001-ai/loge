@@ -223,10 +223,12 @@ export default async function CreatorAnalyticsPage() {
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <Link href="/dashboard/creator">
-                <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                  <ArrowLeft className="w-5 h-5" />
-                </button>
+              <Link 
+                href="/dashboard/creator"
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors inline-block"
+                aria-label="Back to dashboard"
+              >
+                <ArrowLeft className="w-5 h-5" />
               </Link>
               <h1 className="text-3xl font-bold text-gray-900">Analytics Dashboard</h1>
             </div>
@@ -344,15 +346,14 @@ export default async function CreatorAnalyticsPage() {
                     return (
                       <div
                         key={index}
-                        className="flex-1 group relative"
-                        style={{ height: '100%' }}
+                        className="flex-1 group relative h-full"
                       >
                         <div
                           className="w-full bg-blue-500 rounded-t hover:bg-blue-600 transition-colors cursor-pointer"
                           style={{ 
                             height: `${height}%`,
                             marginTop: `${100 - height}%`
-                          }}
+                          } as React.CSSProperties}
                           title={`${new Date(day.date).toLocaleDateString()}: ${formatCurrency(day.amount)} (${day.count} orders)`}
                         />
                         
@@ -426,6 +427,7 @@ export default async function CreatorAnalyticsPage() {
                       </div>
                       
                       {artwork.image_url && (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img 
                           src={artwork.image_url} 
                           alt={artwork.title}
@@ -501,7 +503,7 @@ export default async function CreatorAnalyticsPage() {
                       <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden">
                         <div 
                           className="absolute inset-y-0 left-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full"
-                          style={{ width: `${category.percentage}%` }}
+                          style={{ width: `${category.percentage}%` } as React.CSSProperties}
                         />
                       </div>
                       
