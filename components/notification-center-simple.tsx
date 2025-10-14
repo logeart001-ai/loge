@@ -14,7 +14,7 @@ interface Notification {
   type: string
   title: string
   message: string
-  data: any
+  data: Record<string, unknown> | null
   is_read: boolean
   created_at: string
 }
@@ -30,13 +30,6 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
   const [open, setOpen] = useState(false)
 
   const supabase = createClient()
-
-  useEffect(() => {
-    if (!userId) return
-    
-    fetchNotifications()
-    setupRealtimeSubscription()
-  }, [userId])
 
   const fetchNotifications = async () => {
     try {
@@ -93,6 +86,15 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
       channel.unsubscribe()
     }
   }
+
+  useEffect(() => {
+    if (!userId) return
+    
+    fetchNotifications()
+    const cleanup = setupRealtimeSubscription()
+    return cleanup
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId])
 
   const markAsRead = async (notificationId: string) => {
     try {

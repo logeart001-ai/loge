@@ -26,72 +26,70 @@ export async function getArtworkById(id: string) {
 }
 
 export async function getFeaturedArtworks(limit = 8) {
-  return withCache('featured-artworks', async () => {
+  try {
+    const supabase = await createServerClient()
+
+    // Primary query - featured artworks
     try {
-      const supabase = await createServerClient()
+      const { data, error } = await supabase
+        .from('artworks')
+        .select(`*`)
+        .eq('is_available', true)
+        .eq('is_featured', true)
+        .order('created_at', { ascending: false })
+        .limit(limit)
 
-      // Primary query - featured artworks
-      try {
-        const { data, error } = await supabase
-          .from('artworks')
-          .select(`*`)
-          .eq('is_available', true)
-          .eq('is_featured', true)
-          .order('created_at', { ascending: false })
-          .limit(limit)
-
-        if (!error && data && data.length > 0) {
-          return data
-        }
-
-        console.warn('Featured artworks query returned no results or error:', error)
-      } catch (queryError) {
-        console.warn('Featured artworks query failed:', queryError)
+      if (!error && data && data.length > 0) {
+        return data
       }
 
-      // Fallback 1: Try just available artworks
-      try {
-        const { data: fallbackData, error: fallbackError } = await supabase
-          .from('artworks')
-          .select(`*`)
-          .eq('is_available', true)
-          .order('created_at', { ascending: false })
-          .limit(limit)
-
-        if (!fallbackError && fallbackData && fallbackData.length > 0) {
-          console.log('Using fallback artworks (available only)')
-          return fallbackData
-        }
-
-        console.warn('Fallback query returned no results or error:', fallbackError)
-      } catch (fallbackError) {
-        console.warn('Fallback artworks query failed:', fallbackError)
-      }
-
-      // Last resort: Get any artworks
-      try {
-        const { data: softData, error: softError } = await supabase
-          .from('artworks')
-          .select(`*`)
-          .order('created_at', { ascending: false })
-          .limit(limit)
-
-        if (!softError && softData) {
-          console.log('Using soft fallback (any artworks)')
-          return softData
-        }
-
-        console.warn('Soft fallback returned error:', softError)
-      } catch (softError) {
-        console.warn('Soft fallback query failed:', softError)
-      }
-
-      return []
-    } catch (error) {
-      console.error('Unexpected error in getFeaturedArtworks:', error)
-      return []
+      console.warn('Featured artworks query returned no results or error:', error)
+    } catch (queryError) {
+      console.warn('Featured artworks query failed:', queryError)
     }
-  }, 300) // 5 minutes
+
+    // Fallback 1: Try just available artworks
+    try {
+      const { data: fallbackData, error: fallbackError } = await supabase
+        .from('artworks')
+        .select(`*`)
+        .eq('is_available', true)
+        .order('created_at', { ascending: false })
+        .limit(limit)
+
+      if (!fallbackError && fallbackData && fallbackData.length > 0) {
+        console.log('Using fallback artworks (available only)')
+        return fallbackData
+      }
+
+      console.warn('Fallback query returned no results or error:', fallbackError)
+    } catch (fallbackError) {
+      console.warn('Fallback artworks query failed:', fallbackError)
+    }
+
+    // Last resort: Get any artworks
+    try {
+      const { data: softData, error: softError } = await supabase
+        .from('artworks')
+        .select(`*`)
+        .order('created_at', { ascending: false })
+        .limit(limit)
+
+      if (!softError && softData) {
+        console.log('Using soft fallback (any artworks)')
+        return softData
+      }
+
+      console.warn('Soft fallback returned error:', softError)
+    } catch (softError) {
+      console.warn('Soft fallback query failed:', softError)
+    }
+
+    return []
+  } catch (error) {
+    console.error('Unexpected error in getFeaturedArtworks:', error)
+    return []
+  }
 }
 
 export async function getArtworksByCategory(
