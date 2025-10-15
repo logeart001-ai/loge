@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase-client'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -12,10 +12,6 @@ import { Label } from '@/components/ui/label'
 import { 
   Flag, 
   Eye, 
-  Trash2, 
-  CheckCircle, 
-  XCircle, 
-  AlertTriangle,
   MessageSquare,
   Image as ImageIcon,
   FileText,
@@ -35,7 +31,17 @@ interface ReportedContent {
     full_name: string
     email: string
   }
-  content_details?: any
+  content_details?: {
+    title?: string
+    description?: string
+    content?: string
+    comment?: string
+    rating?: number
+    image_urls?: string[]
+    creator?: { full_name: string }
+    author?: { full_name: string }
+    reviewer?: { full_name: string }
+  }
 }
 
 interface ModerationAction {
@@ -59,6 +65,7 @@ export function ContentModeration() {
 
   useEffect(() => {
     fetchReports()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter])
 
   const fetchReports = async () => {
@@ -248,7 +255,7 @@ export function ContentModeration() {
       .eq('id', report.content_id)
       .single()
 
-    return data?.[creatorField]
+    return data ? (data as Record<string, string>)[creatorField] : null
   }
 
   const getStatusBadge = (status: string) => {
@@ -365,8 +372,10 @@ export function ContentModeration() {
                         </DialogHeader>
                         <div className="space-y-4">
                           <div>
-                            <Label>Moderation Action</Label>
+                            <Label htmlFor="moderation-action">Moderation Action</Label>
                             <select
+                              id="moderation-action"
+                              aria-label="Select moderation action"
                               value={moderationAction.action}
                               onChange={(e) => setModerationAction(prev => ({ 
                                 ...prev, 

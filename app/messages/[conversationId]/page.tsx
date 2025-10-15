@@ -5,9 +5,9 @@ import { getMessages, getConversation, markMessagesAsRead } from '@/lib/message-
 import { ConversationClient } from '@/components/conversation-client'
 
 interface PageProps {
-  params: {
+  params: Promise<{
     conversationId: string
-  }
+  }>
 }
 
 async function ConversationContent({ conversationId }: { conversationId: string }) {
@@ -42,8 +42,8 @@ async function ConversationContent({ conversationId }: { conversationId: string 
   }
 }
 
-export default function ConversationPage({ params }: PageProps) {
-  const { conversationId } = params
+export default async function ConversationPage({ params }: PageProps) {
+  const { conversationId } = await params
 
   return (
     <div className="h-screen flex flex-col">
