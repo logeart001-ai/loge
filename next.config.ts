@@ -10,10 +10,20 @@ try {
 }
 
 const nextConfig: NextConfig = {
-  // Temporarily disable experimental features to fix module issues
-  // experimental: {
-  //   optimizePackageImports: ['lucide-react'],
-  // },
+  // Enable experimental features for better performance
+  experimental: {
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-tabs', '@radix-ui/react-dialog'],
+    // Improve OneDrive/network drive performance
+    turbo: {
+      // Reduce file system operations
+      resolveAlias: {
+        // Directly map common paths
+        '@/components': './components',
+        '@/lib': './lib',
+        '@/app': './app',
+      },
+    },
+  },
   
   // Compiler optimizations
   compiler: {
@@ -79,13 +89,34 @@ const nextConfig: NextConfig = {
     ];
   },
   
-  // Enable file watching polling for OneDrive compatibility
-  webpack: (config, { dev }) => {
+  // Optimize webpack for OneDrive/network drives
+  webpack: (config, { dev, isServer }) => {
     if (dev) {
+      // Optimize file watching for OneDrive
       config.watchOptions = {
-        poll: 1000,
-        aggregateTimeout: 300,
+        poll: 2000, // Increased from 1000 for better OneDrive compatibility
+        aggregateTimeout: 500, // Increased debounce time
+        ignored: [
+          '**/node_modules/**',
+          '**/.git/**',
+          '**/.next/**',
+          '**/public/video/**', // Ignore large video files
+        ],
       }
+      
+      // Reduce bundle size in development
+      config.optimization = {
+        ...config.optimization,
+        removeAvailableModules: false,
+        removeEmptyChunks: false,
+        splitChunks: false,
+      }
+    }
+    
+    // Optimize module resolution
+    config.resolve = {
+      ...config.resolve,
+      symlinks: false, // Speeds up module resolution
     }
     
     return config

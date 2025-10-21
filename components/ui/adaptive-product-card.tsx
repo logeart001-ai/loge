@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { OptimizedImage } from "@/components/optimized-image"
@@ -6,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Heart, Star, ShoppingCart, Bookmark } from "lucide-react"
 import Link from "next/link"
 
-interface ProductCardProps {
+interface AdaptiveProductCardProps {
   id: string
   title: string
   description?: string
@@ -19,12 +21,16 @@ interface ProductCardProps {
     name: string
     avatar?: string
     rating?: number
+    reviewCount?: number
   }
   category?: string
+  medium?: string
+  dimensions?: string
   badges?: Array<{
     text: string
     variant?: 'default' | 'secondary' | 'destructive' | 'outline'
   }>
+  stockInfo?: string
   href: string
   onAddToCart?: () => void
   onToggleWishlist?: () => void
@@ -32,7 +38,7 @@ interface ProductCardProps {
   className?: string
 }
 
-export function ProductCard({
+export function AdaptiveProductCard({
   id,
   title,
   description,
@@ -43,19 +49,30 @@ export function ProductCard({
   imageAlt,
   creator,
   category,
+  medium = "Oil on Canvas",
+  dimensions = "60×80 cm",
   badges = [],
+  stockInfo = "Only 9 vibes left",
   href,
   onAddToCart,
   onToggleWishlist,
   isInWishlist = false,
   className
-}: ProductCardProps) {
+}: AdaptiveProductCardProps) {
+  // Calculate if we need extra space for content
+  const hasOriginalPrice = !!originalPrice
+  const hasDescription = !!description
+  const hasCreatorRating = !!(creator?.rating)
+  const needsExtraSpace = hasOriginalPrice || hasDescription || hasCreatorRating
+
   return (
     <div
       className={cn(
         "group bg-white rounded-2xl shadow-sm border border-gray-100",
         "hover:shadow-lg hover:border-gray-200 transition-all duration-300",
-        "overflow-hidden flex flex-col h-full",
+        "overflow-hidden flex flex-col",
+        // Dynamic height adjustment based on content
+        needsExtraSpace ? "min-h-[520px]" : "min-h-[480px]",
         className
       )}
     >
@@ -72,29 +89,25 @@ export function ProductCard({
         </Link>
 
         {/* Wishlist Button */}
-        {onToggleWishlist && (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault()
+        <button
+          onClick={(e) => {
+            e.preventDefault()
+            if (onToggleWishlist) {
               onToggleWishlist()
-            }}
-            className={cn(
-              "absolute top-4 right-4 p-2 rounded-full transition-all duration-200",
-              "bg-white/90 backdrop-blur-sm shadow-sm",
-              "hover:bg-white hover:shadow-md",
-              isInWishlist ? "text-red-500" : "text-gray-600 hover:text-red-500"
-            )}
-            aria-label={isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
-            aria-pressed={isInWishlist}
-            title={isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
-          >
-            <Heart className={cn("w-4 h-4", isInWishlist && "fill-current")} />
-            <span className="sr-only">
-              {isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
-            </span>
-          </button>
-        )}
+            } else {
+              console.log('Toggle wishlist:', id)
+              // Handle wishlist functionality
+            }
+          }}
+          className={cn(
+            "absolute top-4 right-4 p-2 rounded-full transition-all duration-200",
+            "bg-white/90 backdrop-blur-sm shadow-sm",
+            "hover:bg-white hover:shadow-md",
+            isInWishlist ? "text-red-500" : "text-gray-600 hover:text-red-500"
+          )}
+        >
+          <Heart className={cn("w-4 h-4", isInWishlist && "fill-current")} />
+        </button>
 
         {/* Badges */}
         {badges.length > 0 && (
@@ -112,9 +125,9 @@ export function ProductCard({
         )}
       </div>
 
-      {/* Content Container */}
+      {/* Content Container - Flexible height */}
       <div className="flex flex-col flex-1 p-6">
-        {/* Header Section */}
+        {/* Main Content Area */}
         <div className="flex-1 space-y-4">
           {/* Title */}
           <Link href={href}>
@@ -123,38 +136,41 @@ export function ProductCard({
             </h3>
           </Link>
 
-          {/* Category Badge */}
-          {category && (
-            <div className="flex items-center justify-between">
+          {/* Category and Stock Info */}
+          <div className="flex items-center justify-between">
+            {category && (
               <Badge variant="secondary" className="text-xs">
                 {category}
               </Badge>
-              <div className="text-xs text-gray-500">
-                Only 9 vibes left
-              </div>
+            )}
+            <div className="text-xs text-gray-500">
+              {stockInfo}
             </div>
-          )}
+          </div>
 
-          {/* Creator Info */}
+          {/* Creator Info with Rating */}
           {creator && (
-            <div className="flex items-center gap-2">
-              {creator.avatar && (
-                <OptimizedImage
-                  src={creator.avatar}
-                  alt={creator.name}
-                  width={20}
-                  height={20}
-                  className="rounded-full object-cover"
-                />
-              )}
-              <span className="text-sm text-gray-600">by {creator.name}</span>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                {creator.avatar && (
+                  <OptimizedImage
+                    src={creator.avatar}
+                    alt={creator.name}
+                    width={20}
+                    height={20}
+                    className="rounded-full object-cover"
+                  />
+                )}
+                <span className="text-sm text-gray-600">by {creator.name}</span>
+              </div>
+              
               {creator.rating && (
-                <div className="flex items-center gap-1 ml-auto">
+                <div className="flex items-center gap-2">
                   <div className="flex">
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
-                        className={`w-3 h-3 ${
+                        className={`w-4 h-4 ${
                           i < Math.floor(creator.rating || 0)
                             ? 'text-yellow-400 fill-current'
                             : 'text-gray-300'
@@ -162,31 +178,31 @@ export function ProductCard({
                       />
                     ))}
                   </div>
-                  <span className="text-xs text-gray-600 ml-1">
-                    {creator.rating.toFixed(1)} ({Math.floor(Math.random() * 50) + 10} reviews)
+                  <span className="text-sm text-gray-600">
+                    {creator.rating.toFixed(1)} ({creator.reviewCount || Math.floor(Math.random() * 50) + 10} reviews)
                   </span>
                 </div>
               )}
             </div>
           )}
 
-          {/* Description */}
+          {/* Description - Only if provided */}
           {description && (
             <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
               {description}
             </p>
           )}
 
-          {/* Additional Details */}
+          {/* Medium and Dimensions */}
           <div className="text-sm text-gray-600">
-            Oil on Canvas • 60×80 cm
+            {medium} • {dimensions}
           </div>
         </div>
 
-        {/* Price Section - Always at bottom with proper spacing */}
-        <div className="mt-6 space-y-4">
+        {/* Price and Actions Section - Always at bottom */}
+        <div className="mt-auto pt-4 space-y-4 border-t border-gray-100">
           {/* Price Display */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-baseline gap-3">
             <div className="font-bold text-2xl text-gray-900">
               {currency}{price.toLocaleString()}
             </div>
@@ -197,23 +213,33 @@ export function ProductCard({
             )}
           </div>
 
-          {/* Action Buttons - Properly contained */}
+          {/* Action Buttons - Properly contained with consistent height */}
           <div className="flex gap-3">
-            {onAddToCart && (
-              <Button
-                onClick={(e) => {
-                  e.preventDefault()
+            <Button
+              onClick={(e) => {
+                e.preventDefault()
+                // Handle add to cart functionality
+                if (onAddToCart) {
                   onAddToCart()
-                }}
-                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-medium h-12"
-              >
-                <ShoppingCart className="w-4 h-4 mr-2" />
-                Add to Cart
-              </Button>
-            )}
+                } else {
+                  console.log('Add to cart:', id)
+                  // You can add default cart functionality here
+                }
+              }}
+              className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-medium h-12 text-sm"
+            >
+              <ShoppingCart className="w-4 h-4 mr-2" />
+              Add to Cart
+            </Button>
             <Button
               variant="outline"
+              onClick={(e) => {
+                e.preventDefault()
+                console.log('Bookmark:', id)
+                // Handle bookmark functionality
+              }}
               className="px-4 border-gray-300 text-gray-700 hover:bg-gray-50 font-medium h-12"
+              title="Bookmark this item"
             >
               <Bookmark className="w-4 h-4" />
             </Button>

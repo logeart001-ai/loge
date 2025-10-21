@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Navbar } from '@/components/navbar'
 import { BackgroundVideo } from '@/components/background-video'
 import { HomeSearch } from '@/components/home-search'
-import { ProductCard } from '@/components/ui/product-card'
+import { ServerProductCard } from '@/components/ui/server-product-card'
 import {
   getFeaturedArtworks,
   getFeaturedCreators,
@@ -275,7 +275,7 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
               {artworks.map((artwork: ArtworkLike & { id: string; price?: number; original_price?: number; category?: string; creator?: { full_name?: string; rating?: number } }, idx: number) => (
                 <Reveal key={artwork.id} delay={([0, 100, 200] as const)[idx % 3]}>
-                  <ProductCard
+                  <ServerProductCard
                     id={artwork.id}
                     title={artwork.title || 'Untitled Artwork'}
                     description="For those who crave peace louder than the city. This view isn't just scenery, it's a whole reset."
@@ -286,22 +286,18 @@ export default async function HomePage() {
                     imageAlt={artwork.title || 'Artwork'}
                     creator={artwork.creator ? {
                       name: artwork.creator.full_name || 'Unknown Artist',
-                      rating: artwork.creator.rating
+                      rating: artwork.creator.rating,
+                      reviewCount: Math.floor(Math.random() * 50) + 10
                     } : undefined}
-                    category={artwork.category?.replace('_', ' ') || 'Art'}
+                    category={artwork.category?.replace('_', ' ') || 'Painting'}
+                    medium="Oil on Canvas"
+                    dimensions="60×80 cm"
                     badges={[
                       ...(artwork.original_price ? [{ text: 'Sale', variant: 'destructive' as const }] : []),
                       { text: 'Top Pick', variant: 'default' as const }
                     ]}
+                    stockInfo="Only 9 vibes left"
                     href={`/art/${artwork.id}`}
-                    onAddToCart={() => {
-                      // Add to cart functionality
-                      console.log('Add to cart:', artwork.id)
-                    }}
-                    onToggleWishlist={() => {
-                      // Toggle wishlist functionality
-                      console.log('Toggle wishlist:', artwork.id)
-                    }}
                   />
                 </Reveal>
               ))}
