@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase-client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+
 import { 
   Shield, 
   Copy, 
@@ -164,12 +164,12 @@ WHERE email = '${user.email}';` : ''
                   </Button>
                 </div>
               ) : (
-                <Alert>
-                  <AlertTriangle className="h-4 w-4" />
-                  <AlertDescription>
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-center gap-3">
+                  <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                  <p className="text-sm text-yellow-800">
                     Please sign in first to generate your personalized SQL script.
-                  </AlertDescription>
-                </Alert>
+                  </p>
+                </div>
               )}
             </CardContent>
           </Card>
@@ -239,13 +239,13 @@ WHERE id = 'your-user-id-here';`}
         </Card>
 
         {/* Security Note */}
-        <Alert>
-          <Shield className="h-4 w-4" />
-          <AlertDescription>
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
+          <Shield className="h-4 w-4 text-red-600 mt-0.5" />
+          <div className="text-sm text-red-800">
             <strong>Security Note:</strong> Only grant admin access to trusted users. 
             Admins have full control over the platform including user management, content moderation, and system settings.
-          </AlertDescription>
-        </Alert>
+          </div>
+        </div>
       </div>
     </div>
   )

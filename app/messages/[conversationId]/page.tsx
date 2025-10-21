@@ -4,12 +4,6 @@ import { createServerClient } from '@/lib/supabase'
 import { getMessages, getConversation, markMessagesAsRead } from '@/lib/message-actions'
 import { ConversationClient } from '@/components/conversation-client'
 
-interface PageProps {
-  params: Promise<{
-    conversationId: string
-  }>
-}
-
 async function ConversationContent({ conversationId }: { conversationId: string }) {
   const supabase = await createServerClient()
   
@@ -42,8 +36,19 @@ async function ConversationContent({ conversationId }: { conversationId: string 
   }
 }
 
-export default async function ConversationPage({ params }: PageProps) {
-  const { conversationId } = await params
+export default async function ConversationPage({
+  params,
+}: {
+  params: Promise<Record<string, string | string[]>>
+}) {
+  const resolvedParams = await params
+  const conversationId = Array.isArray(resolvedParams.conversationId)
+    ? resolvedParams.conversationId[0]
+    : resolvedParams.conversationId
+
+  if (!conversationId) {
+    redirect('/messages')
+  }
 
   return (
     <div className="h-screen flex flex-col">

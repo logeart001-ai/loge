@@ -96,18 +96,19 @@ export function Navbar() {
     <nav
       className="border-b border-gray-100 sticky top-0 z-50 backdrop-blur-md bg-white/80"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-14 sm:h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center space-x-1 sm:space-x-2">
             <Image
               src="/image/logelogo.png"
               alt="L'oge Arts logo"
-              width={64}
-              height={64}
+              width={48}
+              height={48}
+              className="sm:w-16 sm:h-16"
               priority
             />
-            <span className="brand-text font-semibold text-lg text-gray-900">L&apos;oge Arts</span>
+            <span className="brand-text font-semibold text-base sm:text-lg text-gray-900 hidden xs:block">L&apos;oge Arts</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -145,6 +146,26 @@ export function Navbar() {
                 Dashboard Home
               </Link>
             )}
+          </div>
+
+          {/* Mobile Cart & Menu */}
+          <div className="flex items-center space-x-2 md:hidden">
+            <Link href="/cart" className="relative flex items-center text-gray-700 hover:text-orange-500 p-2">
+              <ShoppingCart className="h-5 w-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-orange-600 text-white text-xs rounded-full px-1.5 py-0.5 min-w-4 text-center">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsOpen(!isOpen)}
+              className="p-2"
+            >
+              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </Button>
           </div>
 
           {/* Desktop Auth Buttons */}
@@ -201,135 +222,130 @@ export function Navbar() {
               </>
             )}
           </div>
-
-          {/* Mobile menu button */}
-          <div className="md:hidden">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsOpen(!isOpen)}
-            >
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </Button>
-          </div>
         </div>
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden border-t border-gray-100">
-            <div className="px-2 pt-2 pb-3 space-y-1">
-              <Link
-                href="/"
-                className="block px-3 py-2 text-gray-700 hover:text-orange-500 font-medium"
-                onClick={() => setIsOpen(false)}
-              >
-                Home
-              </Link>
-              <Link
-                href="/art"
-                className="block px-3 py-2 text-gray-700 hover:text-orange-500 font-medium"
-                onClick={() => setIsOpen(false)}
-              >
-                Art
-              </Link>
-              <Link
-                href="/fashion"
-                className="block px-3 py-2 text-gray-700 hover:text-orange-500 font-medium"
-                onClick={() => setIsOpen(false)}
-              >
-                Fashion
-              </Link>
-              <Link
-                href="/books"
-                className="block px-3 py-2 text-gray-700 hover:text-orange-500 font-medium"
-                onClick={() => setIsOpen(false)}
-              >
-                Books
-              </Link>
-              <Link
-                href="/events"
-                className="block px-3 py-2 text-gray-700 hover:text-orange-500 font-medium"
-                onClick={() => setIsOpen(false)}
-              >
-                Events
-              </Link>
-              <Link
-                href="/about"
-                className="block px-3 py-2 text-gray-700 hover:text-orange-500 font-medium"
-                onClick={() => setIsOpen(false)}
-              >
-                About
-              </Link>
-              <Link
-                href="/support"
-                className="block px-3 py-2 text-gray-700 hover:text-orange-500 font-medium"
-                onClick={() => setIsOpen(false)}
-              >
-                Support
-              </Link>
-              <Link
-                href="/search"
-                className="flex items-center space-x-2 px-3 py-2 text-gray-700 hover:text-orange-500 font-medium"
-                onClick={() => setIsOpen(false)}
-              >
-                <Search className="h-4 w-4" />
-                <span>Search</span>
-              </Link>
-              <Link
-                href="/cart"
-                className="block px-3 py-2 text-gray-700 hover:text-orange-500 font-medium"
-                onClick={() => setIsOpen(false)}
-              >
-                Cart {cartCount > 0 ? `(${cartCount})` : ''}
-              </Link>
-              {!loading && user && inDashboard && (
+          <div className="md:hidden border-t border-gray-100 bg-white">
+            <div className="px-3 pt-3 pb-4 space-y-1 max-h-screen overflow-y-auto">
+              {/* Main Navigation */}
+              <div className="space-y-1">
                 <Link
-                  href={user.user_metadata?.user_type === 'creator' ? '/dashboard/creator' : '/dashboard/collector'}
-                  className="block px-3 py-2 text-orange-600 font-semibold"
+                  href="/"
+                  className="flex items-center px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg font-medium transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
-                  Dashboard Home
+                  🏠 Home
                 </Link>
-              )}
-              
-              <div className="border-t pt-4 space-y-2">
+                <Link
+                  href="/art"
+                  className="flex items-center px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg font-medium transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  🎨 Art
+                </Link>
+                <Link
+                  href="/fashion"
+                  className="flex items-center px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg font-medium transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  👗 Fashion
+                </Link>
+                <Link
+                  href="/books"
+                  className="flex items-center px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg font-medium transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  📚 Books
+                </Link>
+                <Link
+                  href="/events"
+                  className="flex items-center px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg font-medium transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  🎪 Events
+                </Link>
+                <Link
+                  href="/search"
+                  className="flex items-center px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg font-medium transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <Search className="h-4 w-4 mr-2" />
+                  Search
+                </Link>
+              </div>
+
+              {/* User Section */}
+              <div className="border-t border-gray-200 pt-4 mt-4">
                 {loading ? (
-                  <div className="px-3 py-2">
-                    <div className="w-20 h-8 bg-gray-200 animate-pulse rounded"></div>
+                  <div className="px-4 py-3">
+                    <div className="w-24 h-8 bg-gray-200 animate-pulse rounded"></div>
                   </div>
                 ) : user ? (
-                  <div className="space-y-2">
+                  <div className="space-y-1">
+                    <div className="px-4 py-2 text-sm text-gray-500">
+                      Signed in as {user.user_metadata?.full_name || user.email}
+                    </div>
                     <Link
                       href={user.user_metadata?.user_type === 'creator' ? '/dashboard/creator' : '/dashboard/collector'}
-                      className="block px-3 py-2 text-gray-700 hover:text-orange-500 font-medium"
+                      className="flex items-center px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg font-medium transition-colors"
                       onClick={() => setIsOpen(false)}
                     >
+                      <User className="h-4 w-4 mr-2" />
                       Dashboard
                     </Link>
+                    {!loading && user && inDashboard && (
+                      <Link
+                        href={user.user_metadata?.user_type === 'creator' ? '/dashboard/creator' : '/dashboard/collector'}
+                        className="flex items-center px-4 py-3 text-orange-600 hover:bg-orange-50 rounded-lg font-semibold transition-colors"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        🏠 Dashboard Home
+                      </Link>
+                    )}
                     <button
                       onClick={() => {
                         handleSignOut()
                         setIsOpen(false)
                       }}
-                      className="block w-full text-left px-3 py-2 text-gray-700 hover:text-orange-500 font-medium"
+                      className="flex items-center w-full px-4 py-3 text-gray-700 hover:text-red-500 hover:bg-red-50 rounded-lg font-medium transition-colors"
                     >
+                      <LogOut className="h-4 w-4 mr-2" />
                       Sign Out
                     </button>
                   </div>
                 ) : (
-                  <>
-                    <Link href="/auth/signin">
-                      <Button variant="ghost" className="w-full justify-start" onClick={() => setIsOpen(false)}>
+                  <div className="space-y-2">
+                    <Link href="/auth/signin" onClick={() => setIsOpen(false)}>
+                      <Button variant="ghost" className="w-full justify-start text-left h-12">
                         Sign In
                       </Button>
                     </Link>
-                    <Link href="/auth/signup">
-                      <Button className="w-full bg-orange-500 hover:bg-orange-600" onClick={() => setIsOpen(false)}>
-                        Join
+                    <Link href="/auth/signup" onClick={() => setIsOpen(false)}>
+                      <Button className="w-full bg-orange-500 hover:bg-orange-600 h-12">
+                        Join L'oge Arts
                       </Button>
                     </Link>
-                  </>
+                  </div>
                 )}
+              </div>
+
+              {/* Secondary Links */}
+              <div className="border-t border-gray-200 pt-4 mt-4 space-y-1">
+                <Link
+                  href="/about"
+                  className="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-orange-500 transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  About
+                </Link>
+                <Link
+                  href="/support"
+                  className="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-orange-500 transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Support
+                </Link>
               </div>
             </div>
           </div>
