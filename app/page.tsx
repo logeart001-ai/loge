@@ -190,22 +190,22 @@ export default async function HomePage() {
             {/* CTA Buttons */}
             <div className="grid grid-cols-2 sm:flex sm:flex-row gap-3 sm:gap-4 justify-center mb-12 max-w-lg sm:max-w-none mx-auto">
               <Reveal>
-                <Link href="/art" className="col-span-1">
+                <Link href="/art">
                   <Button className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white px-4 sm:px-6 md:px-8 py-3 text-sm sm:text-base md:text-lg">
                     Explore Gallery
                   </Button>
                 </Link>
               </Reveal>
               <Reveal delay={100}>
-                <Link href="/auth/signup?type=creator" className="col-span-1">
+                <Link href="/auth/signup?type=creator">
                   <Button className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white px-4 sm:px-6 md:px-8 py-3 text-sm sm:text-base md:text-lg">
                     Join as Artist
                   </Button>
                 </Link>
               </Reveal>
               <Reveal delay={200}>
-                <Link href="/events" className="col-span-2 sm:col-span-1">
-                  <Button className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white px-4 sm:px-6 md:px-8 py-3 text-sm sm:text-base md:text-lg">
+                <Link href="/events" className="col-span-2 place-self-center sm:col-span-1">
+                  <Button className="w-auto sm:w-auto bg-orange-500 hover:bg-orange-600 text-white px-4 sm:px-6 md:px-8 py-3 text-sm sm:text-base md:text-lg">
                     Attend Events
                   </Button>
                 </Link>

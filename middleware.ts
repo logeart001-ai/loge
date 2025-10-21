@@ -1,51 +1,124 @@
-import { createMiddlewareClient } from '@/lib/supabase-middleware'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export async function middleware(request: NextRequest) {
+type SupabaseAuthCookie = {
+  access_token?: string
+  currentSession?: {
+    access_token?: string
+  }
+}
+
+type SupabaseUser = {
+  email_confirmed_at?: string | null
+  user_metadata?: Record<string, unknown>
+}
+
+const SUPABASE_AUTH_COOKIE_PREFIX = 'sb-'
+
+function getProjectRef() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  if (!supabaseUrl) {
+    return null
+  }
+
+  const stripped = supabaseUrl.replace(/^https?:\/\//, '')
+  const [ref] = stripped.split('.')
+  return ref || null
+}
+
+function parseSupabaseCookie(rawValue?: string) {
+  if (!rawValue) {
+    return null
+  }
+
+  const decoded = rawValue.startsWith('%7B') ? decodeURIComponent(rawValue) : rawValue
+
   try {
-    const response = NextResponse.next({
-      request: {
-        headers: request.headers,
+    return JSON.parse(decoded) as SupabaseAuthCookie
+  } catch {
+    return null
+  }
+}
+
+async function getSupabaseUser(request: NextRequest): Promise<SupabaseUser | null> {
+  const projectRef = getProjectRef()
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!projectRef || !supabaseUrl || !supabaseAnonKey) {
+    return null
+  }
+
+  const cookieName = `${SUPABASE_AUTH_COOKIE_PREFIX}${projectRef}-auth-token`
+  const cookieValue = request.cookies.get(cookieName)?.value
+  const parsedCookie = parseSupabaseCookie(cookieValue)
+
+  const accessToken = parsedCookie?.access_token ?? parsedCookie?.currentSession?.access_token
+
+  if (!accessToken) {
+    return null
+  }
+
+  try {
+    const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
+      headers: {
+        accept: 'application/json',
+        apikey: supabaseAnonKey,
+        authorization: `Bearer ${accessToken}`,
       },
+      // Bypass caching to always reflect the latest session state
+      cache: 'no-store',
     })
 
-    const supabase = createMiddlewareClient(request, response)
-    const { data: { user } } = await supabase.auth.getUser()
-    
-    // Protect dashboard routes
-    if (request.nextUrl.pathname.startsWith('/dashboard')) {
-      if (!user) {
-        const redirectUrl = new URL('/auth/signin', request.url)
-        redirectUrl.searchParams.set('redirectTo', request.nextUrl.pathname)
-        return NextResponse.redirect(redirectUrl)
-      }
-      
-      // Check if user has completed profile setup
-      if (user && !user.email_confirmed_at) {
-        return NextResponse.redirect(new URL('/auth/confirm-email', request.url))
-      }
-    }
-    
-    // Redirect authenticated users away from auth pages
-    if (user && (
-      request.nextUrl.pathname.startsWith('/auth/signin') ||
-      request.nextUrl.pathname.startsWith('/auth/signup')
-    )) {
-      const userType = user.user_metadata?.user_type || user.user_metadata?.role
-      const dashboardUrl = userType === 'creator' ? '/dashboard/creator' : 
-                          userType === 'collector' ? '/dashboard/collector' : '/dashboard'
-      return NextResponse.redirect(new URL(dashboardUrl, request.url))
+    if (!response.ok) {
+      return null
     }
 
-    return response
+    return (await response.json()) as SupabaseUser
   } catch {
-    // If there's an error with auth, redirect to signin
-    if (request.nextUrl.pathname.startsWith('/dashboard')) {
-      return NextResponse.redirect(new URL('/auth/signin', request.url))
-    }
-    return NextResponse.next()
+    return null
   }
+}
+
+export async function middleware(request: NextRequest) {
+  const user = await getSupabaseUser(request)
+
+  // Protect dashboard routes
+  if (request.nextUrl.pathname.startsWith('/dashboard')) {
+    if (!user) {
+      const redirectUrl = new URL('/auth/signin', request.url)
+      redirectUrl.searchParams.set('redirectTo', request.nextUrl.pathname)
+      return NextResponse.redirect(redirectUrl)
+    }
+
+    if (!user.email_confirmed_at) {
+      return NextResponse.redirect(new URL('/auth/confirm-email', request.url))
+    }
+  }
+
+  if (
+    user &&
+    (request.nextUrl.pathname.startsWith('/auth/signin') ||
+      request.nextUrl.pathname.startsWith('/auth/signup'))
+  ) {
+    const metadata = (user.user_metadata ?? {}) as { user_type?: string; role?: string }
+    const userType = metadata.user_type ?? metadata.role
+
+    const dashboardUrl =
+      userType === 'creator'
+        ? '/dashboard/creator'
+        : userType === 'collector'
+          ? '/dashboard/collector'
+          : '/dashboard'
+
+    return NextResponse.redirect(new URL(dashboardUrl, request.url))
+  }
+
+  return NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  })
 }
 
 export const config = {
