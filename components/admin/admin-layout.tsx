@@ -1,17 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { 
-  LayoutDashboard, 
-  Users, 
-  FileText, 
-  Flag, 
-  BarChart3, 
-  Settings,
-  Bell,
+  LayoutDashboard,
+  Users,
+  Flag,
+  BarChart3,
   Shield
 } from 'lucide-react'
 import { AdminDashboard } from './admin-dashboard'
@@ -73,10 +68,13 @@ export function AdminLayout() {
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="p-2 rounded-md hover:bg-gray-100"
+              aria-label="Toggle navigation menu"
+              aria-expanded={sidebarOpen}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
+              <span className="sr-only">Toggle navigation menu</span>
             </button>
           </div>
         </div>
