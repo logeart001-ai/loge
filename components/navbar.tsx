@@ -323,7 +323,7 @@ export function Navbar() {
                     </Link>
                     <Link href="/auth/signup" onClick={() => setIsOpen(false)}>
                       <Button className="w-full bg-orange-500 hover:bg-orange-600 h-12">
-                        Join L'oge Arts
+                        Join L&apos;oge Arts
                       </Button>
                     </Link>
                   </div>
