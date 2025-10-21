@@ -7,13 +7,14 @@ import { Input } from '@/components/ui/input'
 import { Navbar } from '@/components/navbar'
 import { BackgroundVideo } from '@/components/background-video'
 import { HomeSearch } from '@/components/home-search'
+import { ProductCard } from '@/components/ui/product-card'
 import {
   getFeaturedArtworks,
   getFeaturedCreators,
   getUpcomingEvents,
   getBlogPosts
 } from '@/lib/supabase-queries'
-import { Users, BookOpen, MessageCircle, FileText, Instagram, Facebook, Twitter, Star, Heart, MapPin, ArrowRight, TrendingUp } from 'lucide-react'
+import { Users, BookOpen, MessageCircle, FileText, Instagram, Facebook, Twitter, Star, MapPin, ArrowRight, TrendingUp } from 'lucide-react'
 import { Reveal } from '@/components/reveal'
 import { LazySection } from '@/components/lazy-section'
 
@@ -271,102 +272,37 @@ export default async function HomePage() {
           </div>
 
           {artworks.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
               {artworks.map((artwork: ArtworkLike & { id: string; price?: number; original_price?: number; category?: string; creator?: { full_name?: string; rating?: number } }, idx: number) => (
                 <Reveal key={artwork.id} delay={([0, 100, 200] as const)[idx % 3]}>
-                  <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 pt-0">
-                    <CardContent className="p-0">
-                      <div className="relative overflow-hidden h-40 md:h-48 bg-white">
-                        <Link href={`/art/${artwork.id}`} className="block absolute inset-0 z-10" aria-label={`View ${artwork.title}`}></Link>
-                        {(() => {
-                          const src = getArtworkImageSrc(artwork)
-                          return (
-                            <>
-                              {/* Background cover layer for a full, rich fill without cropping the foreground */}
-                              <OptimizedImage
-                                src={src}
-                                alt=""
-                                fill
-                                sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                                className="object-cover scale-110 blur-xl opacity-40"
-                                priority={false}
-                              />
-                              {/* Foreground full image, never cropped */}
-                              <OptimizedImage
-                                src={src}
-                                alt={artwork.title || 'Artwork'}
-                                fill
-                                sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                                className="object-contain object-center drop-shadow-sm"
-                                priority={idx < 3}
-                              />
-                            </>
-                          )
-                        })()}
-                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <Button size="sm" variant="secondary" className="rounded-full w-8 h-8 p-0">
-                            <Heart className="w-3 h-3" />
-                          </Button>
-                        </div>
-                        {artwork.original_price && (
-                          <Badge className="absolute top-2 left-2 bg-red-500 text-white text-xs">
-                            Sale
-                          </Badge>
-                        )}
-                      </div>
-
-                      <div className="p-3 md:p-4">
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex-1">
-                            <Link href={`/art/${artwork.id}`}>
-                              <h3 className="card-title font-bold text-sm md:text-base text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-1">
-                                {artwork.title}
-                              </h3>
-                            </Link>
-                            <p className="text-gray-600 text-xs">by {artwork.creator?.full_name}</p>
-                          </div>
-                          <Badge variant="secondary" className="ml-2 text-xs">
-                            {(artwork.category || 'art').replace('_', ' ')}
-                          </Badge>
-                        </div>
-
-                        <div className="flex items-center mb-2">
-                          <div className="flex items-center">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`w-3 h-3 ${i < Math.floor(artwork.creator?.rating || 0)
-                                  ? 'text-yellow-400 fill-current'
-                                  : 'text-gray-300'
-                                  }`}
-                              />
-                            ))}
-                            <span className="ml-1 text-xs text-gray-600">
-                              {artwork.creator?.rating?.toFixed(1) || 'New'}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-1">
-                            <span className="text-base md:text-lg font-bold text-gray-900">
-                              ₦{artwork.price?.toLocaleString()}
-                            </span>
-                            {artwork.original_price && (
-                              <span className="text-sm text-gray-500 line-through">
-                                ₦{artwork.original_price.toLocaleString()}
-                              </span>
-                            )}
-                          </div>
-                          <Link href={`/art/${artwork.id}`}>
-                            <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-xs px-2 py-1">
-                              View
-                            </Button>
-                          </Link>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <ProductCard
+                    id={artwork.id}
+                    title={artwork.title || 'Untitled Artwork'}
+                    description="For those who crave peace louder than the city. This view isn't just scenery, it's a whole reset."
+                    price={artwork.price || 0}
+                    originalPrice={artwork.original_price}
+                    currency="₦"
+                    imageUrl={getArtworkImageSrc(artwork)}
+                    imageAlt={artwork.title || 'Artwork'}
+                    creator={artwork.creator ? {
+                      name: artwork.creator.full_name || 'Unknown Artist',
+                      rating: artwork.creator.rating
+                    } : undefined}
+                    category={artwork.category?.replace('_', ' ') || 'Art'}
+                    badges={[
+                      ...(artwork.original_price ? [{ text: 'Sale', variant: 'destructive' as const }] : []),
+                      { text: 'Top Pick', variant: 'default' as const }
+                    ]}
+                    href={`/art/${artwork.id}`}
+                    onAddToCart={() => {
+                      // Add to cart functionality
+                      console.log('Add to cart:', artwork.id)
+                    }}
+                    onToggleWishlist={() => {
+                      // Toggle wishlist functionality
+                      console.log('Toggle wishlist:', artwork.id)
+                    }}
+                  />
                 </Reveal>
               ))}
             </div>
