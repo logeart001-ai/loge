@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase'
+import { createRouteHandlerClient } from '@/lib/supabase-server'
 import { paystackService, toKobo } from '@/lib/paystack-service'
 
 export async function POST(request: NextRequest) {
