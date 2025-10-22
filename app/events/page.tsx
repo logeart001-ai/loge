@@ -431,34 +431,34 @@ export default function EventsPage() {
                       </div>
                     </div>
                     
-                    <div className="p-6">
+                    <div className="p-6 overflow-hidden">
                       <div className="flex items-start justify-between mb-2">
-                        <div className="flex-1">
-                          <h3 className="font-bold text-lg text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-2">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-lg text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-2 break-words">
                             {event.title}
                           </h3>
-                          <p className="text-gray-600 text-sm mt-1">
+                          <p className="text-gray-600 text-sm mt-1 truncate">
                             by {event.organizer}
                           </p>
                         </div>
-                        <Badge variant="secondary">{event.category}</Badge>
+                        <Badge variant="secondary" className="flex-shrink-0">{event.category}</Badge>
                       </div>
                       
                       <div className="space-y-2 mb-4">
                         <div className="flex items-center text-sm text-gray-600">
-                          <Calendar className="w-4 h-4 mr-2" />
-                          {formatDate(event.date)}
+                          <Calendar className="w-4 h-4 mr-2 flex-shrink-0" />
+                          <span className="truncate">{formatDate(event.date)}</span>
                         </div>
                         <div className="flex items-center text-sm text-gray-600">
-                          <Clock className="w-4 h-4 mr-2" />
-                          {event.time}
+                          <Clock className="w-4 h-4 mr-2 flex-shrink-0" />
+                          <span className="truncate">{event.time}</span>
                         </div>
                         <div className="flex items-center text-sm text-gray-600">
-                          <MapPin className="w-4 h-4 mr-2" />
-                          {event.location}
+                          <MapPin className="w-4 h-4 mr-2 flex-shrink-0" />
+                          <span className="truncate">{event.location}</span>
                         </div>
                         <div className="flex items-center text-sm text-gray-600">
-                          <Users className="w-4 h-4 mr-2" />
+                          <Users className="w-4 h-4 mr-2 flex-shrink-0" />
                           {event.registered}/{event.capacity} registered
                         </div>
                       </div>
@@ -485,18 +485,21 @@ export default function EventsPage() {
                         {event.description}
                       </p>
                       
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-2xl font-bold text-gray-900">
+                      <div className="flex flex-col gap-3">
+                        {/* Price Display - Current price first, original price below */}
+                        <div className="flex flex-col gap-1">
+                          <span className="text-lg font-bold text-gray-900">
                             ₦{event.price.toLocaleString()}
                           </span>
                           {event.originalPrice && (
-                            <span className="text-lg text-gray-500 line-through">
+                            <span className="text-xs text-gray-500 line-through">
                               ₦{event.originalPrice.toLocaleString()}
                             </span>
                           )}
                         </div>
-                        <Button size="sm" className="bg-orange-600 hover:bg-orange-700">
+                        
+                        {/* Get Ticket Button */}
+                        <Button size="sm" className="bg-orange-600 hover:bg-orange-700 w-full">
                           <Ticket className="w-4 h-4 mr-2" />
                           Get Ticket
                         </Button>

@@ -326,15 +326,15 @@ export default function ArtPage() {
                       )}
                     </div>
                     
-                    <div className="p-6">
+                    <div className="p-6 overflow-hidden">
                       <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <h3 className="font-bold text-lg text-gray-900 group-hover:text-orange-600 transition-colors">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-lg text-gray-900 group-hover:text-orange-600 transition-colors break-words line-clamp-2">
                             {artwork.title}
                           </h3>
-                          <p className="text-gray-600 text-sm">by {artwork.artist}</p>
+                          <p className="text-gray-600 text-sm truncate">by {artwork.artist}</p>
                         </div>
-                        <Badge variant="secondary">{artwork.category}</Badge>
+                        <Badge variant="secondary" className="flex-shrink-0">{artwork.category}</Badge>
                       </div>
                       
                       <div className="flex items-center mb-3">
@@ -356,21 +356,24 @@ export default function ArtPage() {
                       </div>
                       
                       <div className="text-sm text-gray-600 mb-4">
-                        <p>{artwork.medium} • {artwork.size}</p>
+                        <p className="truncate">{artwork.medium} • {artwork.size}</p>
                       </div>
                       
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-2xl font-bold text-gray-900">
+                      <div className="flex flex-col gap-3">
+                        {/* Price Display - Current price first, original price below */}
+                        <div className="flex flex-col gap-1">
+                          <span className="text-lg font-bold text-gray-900">
                             ₦{artwork.price.toLocaleString()}
                           </span>
                           {artwork.originalPrice && (
-                            <span className="text-lg text-gray-500 line-through">
+                            <span className="text-xs text-gray-500 line-through">
                               ₦{artwork.originalPrice.toLocaleString()}
                             </span>
                           )}
                         </div>
-                        <Button size="sm" className="bg-orange-600 hover:bg-orange-700">
+                        
+                        {/* Add to Cart Button */}
+                        <Button size="sm" className="bg-orange-600 hover:bg-orange-700 w-full">
                           <ShoppingCart className="w-4 h-4 mr-2" />
                           Add to Cart
                         </Button>

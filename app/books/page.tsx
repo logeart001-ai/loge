@@ -521,18 +521,18 @@ export default function BooksPage() {
                       )}
                     </div>
                     
-                    <div className="p-6">
+                    <div className="p-6 overflow-hidden">
                       <div className="flex items-start justify-between mb-2">
-                        <div className="flex-1">
-                          <h3 className="font-bold text-lg text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-2">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-lg text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-2 break-words">
                             {book.title}
                           </h3>
-                          <p className="text-gray-600 text-sm flex items-center mt-1">
-                            <User className="w-3 h-3 mr-1" />
+                          <p className="text-gray-600 text-sm flex items-center mt-1 truncate">
+                            <User className="w-3 h-3 mr-1 flex-shrink-0" />
                             {book.author}
                           </p>
                         </div>
-                        <Badge variant="secondary">{book.genre}</Badge>
+                        <Badge variant="secondary" className="flex-shrink-0">{book.genre}</Badge>
                       </div>
                       
                       <div className="flex items-center mb-3">
@@ -557,7 +557,7 @@ export default function BooksPage() {
                         {book.description}
                       </p>
                       
-                      <div className="text-sm text-gray-600 mb-4 flex items-center gap-4">
+                      <div className="text-sm text-gray-600 mb-4 flex items-center gap-4 flex-wrap">
                         <span className="flex items-center">
                           <BookOpen className="w-3 h-3 mr-1" />
                           {book.pages} pages
@@ -566,20 +566,23 @@ export default function BooksPage() {
                         <span>{book.publishYear}</span>
                       </div>
                       
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-2xl font-bold text-gray-900">
+                      <div className="flex flex-col gap-3">
+                        {/* Price Display - Current price first, original price below */}
+                        <div className="flex flex-col gap-1">
+                          <span className="text-lg font-bold text-gray-900">
                             ₦{book.price.toLocaleString()}
                           </span>
                           {book.originalPrice && (
-                            <span className="text-lg text-gray-500 line-through">
+                            <span className="text-xs text-gray-500 line-through">
                               ₦{book.originalPrice.toLocaleString()}
                             </span>
                           )}
                         </div>
+                        
+                        {/* Add to Cart Button */}
                         <Button 
                           size="sm" 
-                          className="bg-orange-600 hover:bg-orange-700"
+                          className="bg-orange-600 hover:bg-orange-700 w-full"
                           disabled={!book.inStock}
                         >
                           <ShoppingCart className="w-4 h-4 mr-2" />

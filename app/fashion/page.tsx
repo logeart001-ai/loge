@@ -401,15 +401,15 @@ export default function FashionPage() {
                       )}
                     </div>
                     
-                    <div className="p-6">
+                    <div className="p-6 overflow-hidden">
                       <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <h3 className="font-bold text-lg text-gray-900 group-hover:text-orange-600 transition-colors">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-lg text-gray-900 group-hover:text-orange-600 transition-colors break-words line-clamp-2">
                             {item.title}
                           </h3>
-                          <p className="text-gray-600 text-sm">by {item.designer}</p>
+                          <p className="text-gray-600 text-sm truncate">by {item.designer}</p>
                         </div>
-                        <Badge variant="secondary">{item.category}</Badge>
+                        <Badge variant="secondary" className="flex-shrink-0">{item.category}</Badge>
                       </div>
                       
                       <div className="flex items-center mb-3">
@@ -431,24 +431,27 @@ export default function FashionPage() {
                       </div>
                       
                       <div className="text-sm text-gray-600 mb-4">
-                        <p>Sizes: {item.sizes.join(', ')}</p>
-                        <p>Colors: {item.colors.join(', ')}</p>
+                        <p className="truncate">Sizes: {item.sizes.join(', ')}</p>
+                        <p className="truncate">Colors: {item.colors.join(', ')}</p>
                       </div>
                       
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-2xl font-bold text-gray-900">
+                      <div className="flex flex-col gap-3">
+                        {/* Price Display - Current price first, original price below */}
+                        <div className="flex flex-col gap-1">
+                          <span className="text-lg font-bold text-gray-900">
                             ₦{item.price.toLocaleString()}
                           </span>
                           {item.originalPrice && (
-                            <span className="text-lg text-gray-500 line-through">
+                            <span className="text-xs text-gray-500 line-through">
                               ₦{item.originalPrice.toLocaleString()}
                             </span>
                           )}
                         </div>
+                        
+                        {/* Add to Cart Button */}
                         <Button 
                           size="sm" 
-                          className="bg-orange-600 hover:bg-orange-700"
+                          className="bg-orange-600 hover:bg-orange-700 w-full"
                           disabled={!item.inStock}
                         >
                           <ShoppingCart className="w-4 h-4 mr-2" />

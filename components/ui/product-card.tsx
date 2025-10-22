@@ -60,7 +60,7 @@ export function ProductCard({
       )}
     >
       {/* Image Container */}
-      <div className="relative aspect-square overflow-hidden bg-gray-50">
+      <div className="relative aspect-square overflow-hidden bg-gray-50 flex-shrink-0">
         <Link href={href} className="block w-full h-full">
           <OptimizedImage
             src={imageUrl}
@@ -113,12 +113,12 @@ export function ProductCard({
       </div>
 
       {/* Content Container */}
-      <div className="flex flex-col flex-1 p-6">
+      <div className="flex flex-col flex-1 p-6 overflow-hidden min-h-0">
         {/* Header Section */}
-        <div className="flex-1 space-y-4">
+        <div className="flex-1 space-y-4 overflow-hidden">
           {/* Title */}
           <Link href={href}>
-            <h3 className="font-semibold text-gray-900 text-lg leading-tight line-clamp-2 group-hover:text-orange-600 transition-colors">
+            <h3 className="font-semibold text-gray-900 text-lg leading-tight line-clamp-2 group-hover:text-orange-600 transition-colors break-words">
               {title}
             </h3>
           </Link>
@@ -185,13 +185,13 @@ export function ProductCard({
 
         {/* Price Section - Always at bottom with proper spacing */}
         <div className="mt-6 space-y-4">
-          {/* Price Display */}
-          <div className="flex items-center gap-3">
-            <div className="font-bold text-2xl text-gray-900">
+          {/* Price Display - Current price first, slashed price below */}
+          <div className="flex flex-col gap-1">
+            <div className="font-bold text-lg text-gray-900">
               {currency}{price.toLocaleString()}
             </div>
             {originalPrice && (
-              <div className="text-lg text-gray-500 line-through">
+              <div className="text-xs text-gray-500 line-through">
                 {currency}{originalPrice.toLocaleString()}
               </div>
             )}

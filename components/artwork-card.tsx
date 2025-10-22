@@ -107,24 +107,24 @@ export function ArtworkCard({ artwork, isCreatorView = false }: ArtworkCardProps
 
           {/* Price badge */}
           <div className="absolute top-2 right-2">
-            <Badge className="bg-white text-gray-900 font-semibold">
+            <Badge className="bg-white text-gray-900 font-semibold text-xs">
               ₦{artwork.price?.toLocaleString()}
             </Badge>
           </div>
         </div>
 
         {/* Content */}
-        <div className="p-4">
+        <div className="p-4 overflow-hidden">
           <div className="flex items-start justify-between mb-2">
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               {isCreatorView ? (
-                <h3 className="font-semibold text-lg text-gray-900 line-clamp-1">{artwork.title}</h3>
+                <h3 className="font-semibold text-lg text-gray-900 line-clamp-1 break-words">{artwork.title}</h3>
               ) : (
                 <Link href={`/art/${artwork.id}`}>
-                  <h3 className="font-semibold text-lg text-gray-900 line-clamp-1">{artwork.title}</h3>
+                  <h3 className="font-semibold text-lg text-gray-900 line-clamp-1 break-words">{artwork.title}</h3>
                 </Link>
               )}
-              <p className="text-sm text-gray-600 capitalize">
+              <p className="text-sm text-gray-600 capitalize line-clamp-1">
                 {artwork.category?.replace('_', ' ')}
               </p>
             </div>
@@ -196,20 +196,20 @@ export function ArtworkCard({ artwork, isCreatorView = false }: ArtworkCardProps
           </div>
 
           {/* Pricing */}
-          <div className="flex items-center justify-between mt-3 pt-3 border-t">
-            <div className="flex items-center space-x-2">
-              <span className="text-xl font-bold text-gray-900">
+          <div className="flex flex-col gap-1 mt-3 pt-3 border-t">
+            <div className="flex flex-col gap-0.5">
+              <span className="text-lg font-bold text-gray-900">
                 ₦{artwork.price?.toLocaleString()}
               </span>
               {artwork.original_price && artwork.price != null && artwork.original_price > artwork.price && (
-                <span className="text-sm text-gray-500 line-through">
+                <span className="text-xs text-gray-500 line-through">
                   ₦{artwork.original_price.toLocaleString()}
                 </span>
               )}
             </div>
             
             {artwork.created_at && (
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-gray-500 mt-1">
                 {new Date(artwork.created_at).toLocaleDateString()}
               </span>
             )}
