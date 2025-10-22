@@ -63,7 +63,7 @@ export function ServerProductCard({
         "hover:shadow-lg hover:border-gray-200 transition-all duration-300",
         "overflow-hidden flex flex-col",
         // Dynamic height adjustment based on content
-        needsExtraSpace ? "min-h-[520px]" : "min-h-[480px]",
+        needsExtraSpace ? "min-h-[500px]" : "min-h-[460px]",
         className
       )}
     >
@@ -170,28 +170,28 @@ export function ServerProductCard({
         </div>
 
         {/* Price Section - Always at bottom */}
-        <div className="mt-auto pt-4 space-y-4 border-t border-gray-100">
-          {/* Price Display */}
-          <div className="flex items-baseline gap-3">
-            <div className="font-bold text-2xl text-gray-900">
-              {currency}{price.toLocaleString()}
-            </div>
+        <div className="mt-auto pt-4 space-y-3 border-t border-gray-100">
+          {/* Price Display - Stacked vertically */}
+          <div className="space-y-1">
             {originalPrice && (
-              <div className="text-lg text-gray-500 line-through">
+              <div className="text-sm text-gray-500 line-through">
                 {currency}{originalPrice.toLocaleString()}
               </div>
             )}
+            <div className="font-bold text-xl text-gray-900">
+              {currency}{price.toLocaleString()}
+            </div>
           </div>
 
           {/* Action Buttons - Static for Server Component */}
           <div className="flex gap-3">
             <Link href={href} className="flex-1">
-              <div className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium h-12 text-sm rounded-md flex items-center justify-center transition-colors">
+              <div className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium h-11 text-sm rounded-md flex items-center justify-center transition-colors">
                 🛒 Add to Cart
               </div>
             </Link>
-            <Link href={href} className="px-4">
-              <div className="border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium h-12 w-12 rounded-md flex items-center justify-center transition-colors">
+            <Link href={href} className="px-3">
+              <div className="border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium h-11 w-11 rounded-md flex items-center justify-center transition-colors">
                 📖
               </div>
             </Link>

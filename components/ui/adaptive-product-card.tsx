@@ -72,7 +72,7 @@ export function AdaptiveProductCard({
         "hover:shadow-lg hover:border-gray-200 transition-all duration-300",
         "overflow-hidden flex flex-col",
         // Dynamic height adjustment based on content
-        needsExtraSpace ? "min-h-[520px]" : "min-h-[480px]",
+        needsExtraSpace ? "min-h-[500px]" : "min-h-[460px]",
         className
       )}
     >
@@ -200,17 +200,17 @@ export function AdaptiveProductCard({
         </div>
 
         {/* Price and Actions Section - Always at bottom */}
-        <div className="mt-auto pt-4 space-y-4 border-t border-gray-100">
-          {/* Price Display */}
-          <div className="flex items-baseline gap-3">
-            <div className="font-bold text-2xl text-gray-900">
-              {currency}{price.toLocaleString()}
-            </div>
+        <div className="mt-auto pt-4 space-y-3 border-t border-gray-100">
+          {/* Price Display - Stacked vertically for better containment */}
+          <div className="space-y-1">
             {originalPrice && (
-              <div className="text-lg text-gray-500 line-through">
+              <div className="text-sm text-gray-500 line-through">
                 {currency}{originalPrice.toLocaleString()}
               </div>
             )}
+            <div className="font-bold text-xl text-gray-900">
+              {currency}{price.toLocaleString()}
+            </div>
           </div>
 
           {/* Action Buttons - Properly contained with consistent height */}
@@ -226,7 +226,7 @@ export function AdaptiveProductCard({
                   // You can add default cart functionality here
                 }
               }}
-              className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-medium h-12 text-sm"
+              className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-medium h-11 text-sm"
             >
               <ShoppingCart className="w-4 h-4 mr-2" />
               Add to Cart
@@ -238,7 +238,7 @@ export function AdaptiveProductCard({
                 console.log('Bookmark:', id)
                 // Handle bookmark functionality
               }}
-              className="px-4 border-gray-300 text-gray-700 hover:bg-gray-50 font-medium h-12"
+              className="px-3 border-gray-300 text-gray-700 hover:bg-gray-50 font-medium h-11 w-11"
               title="Bookmark this item"
             >
               <Bookmark className="w-4 h-4" />
