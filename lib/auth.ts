@@ -1,6 +1,6 @@
 'use server'
 
-import { createServerClient } from '@/lib/supabase'
+import { createServerActionClient } from '@/lib/supabase-server'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
@@ -79,7 +79,7 @@ export async function signUp(prevState: unknown, formData: FormData) {
 
   try {
     console.log('🔥 Starting Supabase auth.signUp...')
-    const supabase = await createServerClient()
+    const supabase = await createServerActionClient()
     
     // Map 'collector' to 'buyer' for database compatibility
     const mappedRole = userType === 'collector' ? 'buyer' : userType
@@ -149,7 +149,7 @@ export async function signIn(prevState: unknown, formData: FormData) {
   }
 
   try {
-    const supabase = await createServerClient()
+    const supabase = await createServerActionClient()
     
     const { data, error } = await supabase.auth.signInWithPassword({
       email: email.toLowerCase().trim(),

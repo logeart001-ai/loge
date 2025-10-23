@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase'
+import { createRouteHandlerClient } from '@/lib/supabase-server'
 import { paystackService, fromKobo } from '@/lib/paystack-service'
 import { processOrderCompletion } from '@/lib/order-processing'
 
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    const supabase = await createServerClient()
+    const supabase = await createRouteHandlerClient()
 
     // Find the order by payment reference
     const { data: order, error: orderError } = await supabase

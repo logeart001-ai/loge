@@ -4,7 +4,7 @@ import { paystackService, toKobo } from '@/lib/paystack-service'
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createServerClient()
+    const supabase = await createRouteHandlerClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
     if (authError || !user) {
