@@ -48,6 +48,19 @@ const nextConfig: NextConfig = {
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    // Allow local SVGs with query strings
+    localPatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+        pathname: '/**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        pathname: '/**',
+      },
+    ],
   },
   
   // Headers for caching
@@ -85,7 +98,7 @@ const nextConfig: NextConfig = {
   },
   
   // Optimize webpack for OneDrive/network drives
-  webpack: (config, { dev, isServer }) => {
+  webpack: (config, { dev }) => {
     if (dev) {
       // Optimize file watching for OneDrive
       config.watchOptions = {
