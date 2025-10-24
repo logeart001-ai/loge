@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider'
 import { Heart, Search, Filter, Grid, List, Star, ShoppingCart, Truck } from 'lucide-react'
 import { Navbar } from '@/components/navbar'
-// import Link from 'next/link'
+import Image from 'next/image'
 
 export default function FashionPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
@@ -368,13 +368,13 @@ export default function FashionPage() {
               {filteredItems.map((item) => (
                 <Card key={item.id} className="group cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                   <CardContent className="p-0">
-                    <div className="relative overflow-hidden">
-                      <img
+                    <div className={`relative overflow-hidden ${viewMode === 'grid' ? 'h-80' : 'h-64'}`}>
+                      <Image
                         src={item.image || "/placeholder.svg"}
                         alt={item.title}
-                        className={`w-full object-cover group-hover:scale-110 transition-transform duration-500 ${
-                          viewMode === 'grid' ? 'h-80' : 'h-64'
-                        }`}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-500"
+                        sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
                       />
                       <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <Button size="sm" variant="secondary" className="rounded-full w-10 h-10 p-0">

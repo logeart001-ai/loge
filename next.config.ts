@@ -18,16 +18,6 @@ const nextConfig: NextConfig = {
   // Enable experimental features for better performance
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-tabs', '@radix-ui/react-dialog'],
-    // Improve OneDrive/network drive performance
-    turbo: {
-      // Reduce file system operations
-      resolveAlias: {
-        // Directly map common paths
-        '@/components': './components',
-        '@/lib': './lib',
-        '@/app': './app',
-      },
-    },
   },
   
   // Compiler optimizations

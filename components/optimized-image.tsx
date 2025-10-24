@@ -51,7 +51,7 @@ export function OptimizedImage({
 
   if (hasError) {
     return (
-      <div 
+      <div
         className={cn(
           "bg-gray-200 flex items-center justify-center text-gray-400 text-sm",
           className
@@ -86,7 +86,7 @@ export function OptimizedImage({
       />
       
       {isLoading && (
-        <div 
+        <div
           className="absolute inset-0 bg-gray-200 animate-pulse"
           style={{ width, height }}
         />
