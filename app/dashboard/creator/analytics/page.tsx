@@ -502,7 +502,7 @@ export default async function CreatorAnalyticsPage() {
                       {/* Progress bar */}
                       <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden">
                         <div 
-                          className="absolute inset-y-0 left-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full"
+                          className="absolute inset-y-0 left-0 bg-linear-to-r from-blue-500 to-blue-600 rounded-full"
                           style={{ width: `${category.percentage}%` } as React.CSSProperties}
                         />
                       </div>
@@ -549,7 +549,7 @@ export default async function CreatorAnalyticsPage() {
                 <div className="text-sm text-green-600 mt-1">Average Order Value (₦)</div>
               </div>
               
-              <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg">
+              <div className="text-center p-4 bg-linear-to-br from-blue-50 to-blue-100 rounded-lg">
                 <div className="text-3xl font-bold text-blue-700">
                   {analytics.totalArtworks > 0
                     ? ((analytics.totalViews / analytics.totalArtworks).toFixed(0))
@@ -559,7 +559,7 @@ export default async function CreatorAnalyticsPage() {
                 <div className="text-sm text-blue-600 mt-1">Avg Views per Artwork</div>
               </div>
               
-              <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg">
+              <div className="text-center p-4 bg-linear-to-br from-purple-50 to-purple-100 rounded-lg">
                 <div className="text-3xl font-bold text-purple-700">
                   {analytics.totalViews > 0 && analytics.totalOrders > 0
                     ? ((analytics.totalOrders / analytics.totalViews) * 100).toFixed(2)

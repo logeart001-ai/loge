@@ -49,7 +49,7 @@ function PaymentCallbackContent() {
   }, [searchParams])
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-orange-50 to-red-50">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-linear-to-br from-orange-50 to-red-50">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-center text-2xl">Payment Status</CardTitle>

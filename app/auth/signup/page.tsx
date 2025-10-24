@@ -74,7 +74,7 @@ export default function SignUpPage() {
 
   if (state && 'success' in state && state.success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-orange-50 to-red-50">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="text-brand-yellow">Success!</CardTitle>
@@ -95,7 +95,7 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-orange-50 to-red-50">
       <div className="absolute top-4 left-4">
         <Link href="/" className="text-orange-600 hover:text-orange-700 font-medium">
           ← Back to Home

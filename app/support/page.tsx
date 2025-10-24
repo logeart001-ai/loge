@@ -117,7 +117,7 @@ export default function SupportPage() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 py-16">
+      <section className="bg-linear-to-br from-orange-50 via-red-50 to-yellow-50 py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <HelpCircle className="h-16 w-16 text-orange-500 mx-auto mb-4" />
           <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -200,7 +200,7 @@ export default function SupportPage() {
       </section>
 
       {/* Still Need Help? */}
-      <section className="py-16 bg-gradient-to-br from-orange-50 to-red-50">
+      <section className="py-16 bg-linear-to-br from-orange-50 to-red-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-2xl font-bold mb-4">Still Need Help?</h2>
           <p className="text-gray-600 mb-8">

@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider'
 import { Heart, Search, Filter, Grid, List, Star, ShoppingCart } from 'lucide-react'
 import { Navbar } from '@/components/navbar'
-import Link from 'next/link'
+import Image from 'next/image'
 
 export default function ArtPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
@@ -307,9 +307,11 @@ export default function ArtPage() {
                 <Card key={artwork.id} className="group cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                   <CardContent className="p-0">
                     <div className="relative overflow-hidden">
-                      <img
+                      <Image
                         src={artwork.image || "/placeholder.svg"}
                         alt={artwork.title}
+                        width={300}
+                        height={300}
                         className={`w-full object-cover group-hover:scale-110 transition-transform duration-500 ${
                           viewMode === 'grid' ? 'h-64' : 'h-48'
                         }`}
@@ -334,7 +336,7 @@ export default function ArtPage() {
                           </h3>
                           <p className="text-gray-600 text-sm truncate">by {artwork.artist}</p>
                         </div>
-                        <Badge variant="secondary" className="flex-shrink-0">{artwork.category}</Badge>
+                        <Badge variant="secondary" className="shrink-0">{artwork.category}</Badge>
                       </div>
                       
                       <div className="flex items-center mb-3">

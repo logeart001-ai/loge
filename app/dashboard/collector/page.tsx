@@ -224,7 +224,7 @@ export default async function CollectorDashboard() {
                       user_profiles?: { full_name?: string | null } | null;
                     }) => (
                       <div key={order.id} className="flex items-center space-x-4 p-4 border rounded-lg">
-                        <div className="w-16 h-16 bg-gray-200 rounded-lg flex-shrink-0">
+                        <div className="w-16 h-16 bg-gray-200 rounded-lg shrink-0">
                           {/* Artwork thumbnail omitted to keep query simple and robust across schemas */}
                         </div>
                         <div className="flex-1">

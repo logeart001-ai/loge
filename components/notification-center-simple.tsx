@@ -234,7 +234,7 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
                   }`}
                 >
                   <div className="flex gap-3">
-                    <div className="text-2xl flex-shrink-0">
+                    <div className="text-2xl shrink-0">
                       {getNotificationIcon(notification.type)}
                     </div>
                     <div className="flex-1 min-w-0">

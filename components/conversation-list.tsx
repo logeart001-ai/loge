@@ -45,7 +45,7 @@ export function ConversationList({
           >
             <div className="p-4 flex gap-3">
               {/* Avatar */}
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 {otherUser?.avatar_url ? (
                   <Image
                     src={otherUser.avatar_url}
@@ -76,7 +76,7 @@ export function ConversationList({
                       {otherUser?.full_name || 'Unknown User'}
                     </span>
                     {otherUser?.is_verified && (
-                      <BadgeCheck className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                      <BadgeCheck className="w-4 h-4 text-blue-500 shrink-0" />
                     )}
                   </div>
                   {hasUnread && (

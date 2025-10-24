@@ -169,7 +169,7 @@ export default function FashionPage() {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-16">
+      <section className="bg-linear-to-r from-orange-500 to-red-500 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-4">
@@ -404,12 +404,12 @@ export default function FashionPage() {
                     <div className="p-6 overflow-hidden">
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-bold text-lg text-gray-900 group-hover:text-orange-600 transition-colors break-words line-clamp-2">
+                          <h3 className="font-bold text-lg text-gray-900 group-hover:text-orange-600 transition-colors wrap-break-words line-clamp-2">
                             {item.title}
                           </h3>
                           <p className="text-gray-600 text-sm truncate">by {item.designer}</p>
                         </div>
-                        <Badge variant="secondary" className="flex-shrink-0">{item.category}</Badge>
+                        <Badge variant="secondary" className="shrink-0">{item.category}</Badge>
                       </div>
                       
                       <div className="flex items-center mb-3">

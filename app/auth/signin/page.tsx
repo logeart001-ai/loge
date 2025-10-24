@@ -52,7 +52,7 @@ function SignInForm() {
 
   if (state?.success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-orange-50 to-red-50">
         <div className="absolute top-4 left-4">
           <Link href="/" className="text-orange-600 hover:text-orange-700 font-medium">
             ← Back to Home
@@ -90,7 +90,7 @@ function SignInForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-orange-50 to-red-50">
       <div className="absolute top-4 left-4">
         <Link href="/" className="text-orange-600 hover:text-orange-700 font-medium">
           ← Back to Home
@@ -263,7 +263,7 @@ function SignInForm() {
 export default function SignInPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-orange-50 to-red-50">
         <Card className="w-full max-w-md">
           <CardContent className="p-6">
             <div className="flex items-center justify-center">

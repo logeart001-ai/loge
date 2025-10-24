@@ -118,10 +118,10 @@ export function ArtworkCard({ artwork, isCreatorView = false }: ArtworkCardProps
           <div className="flex items-start justify-between mb-2">
             <div className="flex-1 min-w-0">
               {isCreatorView ? (
-                <h3 className="font-semibold text-lg text-gray-900 line-clamp-1 break-words">{artwork.title}</h3>
+                <h3 className="font-semibold text-lg text-gray-900 line-clamp-1 wrap-break-words">{artwork.title}</h3>
               ) : (
                 <Link href={`/art/${artwork.id}`}>
-                  <h3 className="font-semibold text-lg text-gray-900 line-clamp-1 break-words">{artwork.title}</h3>
+                  <h3 className="font-semibold text-lg text-gray-900 line-clamp-1 wrap-break-words">{artwork.title}</h3>
                 </Link>
               )}
               <p className="text-sm text-gray-600 capitalize line-clamp-1">

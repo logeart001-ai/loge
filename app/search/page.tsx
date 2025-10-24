@@ -334,7 +334,7 @@ export default async function SearchPage({
                             )}
                             <span className="truncate">{artwork.user_profiles?.full_name}</span>
                             {artwork.user_profiles?.is_verified && (
-                              <BadgeCheck className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                              <BadgeCheck className="w-4 h-4 text-blue-500 shrink-0" />
                             )}
                           </Link>
 
@@ -405,7 +405,7 @@ export default async function SearchPage({
                                   className="w-16 h-16 rounded-full object-cover"
                                 />
                               ) : (
-                                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-2xl font-bold">
+                                <div className="w-16 h-16 rounded-full bg-linear-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-2xl font-bold">
                                   {creator.full_name.charAt(0).toUpperCase()}
                                 </div>
                               )}
@@ -417,7 +417,7 @@ export default async function SearchPage({
                                 <h3 className="font-semibold text-lg text-gray-900 hover:text-orange-600 flex items-center gap-2">
                                   <span className="truncate">{creator.full_name}</span>
                                   {creator.is_verified && (
-                                    <BadgeCheck className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                                    <BadgeCheck className="w-5 h-5 text-blue-500 shrink-0" />
                                   )}
                                 </h3>
                               </Link>

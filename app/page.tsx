@@ -154,7 +154,7 @@ export default async function HomePage() {
       <Navbar />
 
       {/* Hero Section with Video Background */}
-      <section className="relative bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 overflow-hidden h-screen flex items-center">
+      <section className="relative bg-linear-to-br from-orange-50 via-red-50 to-yellow-50 overflow-hidden h-screen flex items-center">
         {/* Background Video */}
         <div className="absolute inset-0 w-full h-full">
           <BackgroundVideo
@@ -408,7 +408,7 @@ export default async function HomePage() {
       </LazySection>
 
       {/* Upcoming Events */}
-      <section className="py-6 bg-gradient-to-r from-orange-500 to-red-500">
+      <section className="py-6 bg-linear-to-r from-orange-500 to-red-500">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-4">
             <h2 className="section-title text-lg md:text-xl font-bold text-white mb-1">Upcoming Events</h2>
@@ -596,7 +596,7 @@ export default async function HomePage() {
       </section>
 
       {/* Creator CTA */}
-      <section className="py-8 md:py-12 bg-gradient-to-br from-yellow-50 to-orange-50">
+      <section className="py-8 md:py-12 bg-linear-to-br from-yellow-50 to-orange-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Are You An African Creator?</h2>
         <p className="text-lg text-gray-600 mb-6">

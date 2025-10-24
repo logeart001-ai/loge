@@ -47,7 +47,7 @@ export function MessageList({ messages, currentUserId }: MessageListProps) {
               }`}
             >
               {/* Avatar */}
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 {user?.avatar_url ? (
                   <Image
                     src={user.avatar_url}
@@ -87,7 +87,7 @@ export function MessageList({ messages, currentUserId }: MessageListProps) {
                       : 'bg-gray-100 text-gray-900'
                   }`}
                 >
-                  <p className="text-sm whitespace-pre-wrap break-words">
+                  <p className="text-sm whitespace-pre-wrap wrap-break-words">
                     {message.content}
                   </p>
                 </div>
