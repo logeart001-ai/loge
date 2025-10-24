@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase-client'
 import { OptimizedImage } from '@/components/optimized-image'
 import { FollowButton } from '@/components/follow-button'
@@ -33,6 +33,46 @@ interface FollowingData {
   }
 }
 
+type FollowerItem = {
+  id: string
+  created_at: string
+  follower:
+    | {
+        id: string
+        full_name: string
+        username: string
+        avatar_url?: string
+        bio?: string
+      }
+    | {
+        id: string
+        full_name: string
+        username: string
+        avatar_url?: string
+        bio?: string
+      }[]
+}
+
+type FollowingItem = {
+  id: string
+  created_at: string
+  following:
+    | {
+        id: string
+        full_name: string
+        username: string
+        avatar_url?: string
+        bio?: string
+      }
+    | {
+        id: string
+        full_name: string
+        username: string
+        avatar_url?: string
+        bio?: string
+      }[]
+}
+
 interface FollowersListProps {
   userId: string
   type: 'followers' | 'following'
@@ -45,11 +85,9 @@ export function FollowersList({ userId, type, className }: FollowersListProps) {
   const [error, setError] = useState<string | null>(null)
   const supabase = createClient()
 
-  useEffect(() => {
-    fetchUsers()
-  }, [userId, type])
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
+    setIsLoading(true)
+    setError(null)
     try {
       if (type === 'followers') {
         const { data, error: fetchError } = await supabase
@@ -69,7 +107,23 @@ export function FollowersList({ userId, type, className }: FollowersListProps) {
           .order('created_at', { ascending: false })
 
         if (fetchError) throw fetchError
-        setUsers(data || [])
+
+        if (data) {
+          const mappedData = data
+            .map((item: FollowerItem) => {
+              const follower = Array.isArray(item.follower)
+                ? item.follower[0]
+                : item.follower
+              return {
+                ...item,
+                follower,
+              }
+            })
+            .filter(item => item.follower)
+          setUsers(mappedData as FollowerData[])
+        } else {
+          setUsers([])
+        }
       } else {
         const { data, error: fetchError } = await supabase
           .from('follows')
@@ -88,7 +142,23 @@ export function FollowersList({ userId, type, className }: FollowersListProps) {
           .order('created_at', { ascending: false })
 
         if (fetchError) throw fetchError
-        setUsers(data || [])
+
+        if (data) {
+          const mappedData = data
+            .map((item: FollowingItem) => {
+              const following = Array.isArray(item.following)
+                ? item.following[0]
+                : item.following
+              return {
+                ...item,
+                following,
+              }
+            })
+            .filter(item => item.following)
+          setUsers(mappedData as FollowingData[])
+        } else {
+          setUsers([])
+        }
       }
     } catch (error) {
       console.error(`Error fetching ${type}:`, error)
@@ -96,7 +166,11 @@ export function FollowersList({ userId, type, className }: FollowersListProps) {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [userId, type, supabase])
+
+  useEffect(() => {
+    fetchUsers()
+  }, [fetchUsers])
 
   if (isLoading) {
     return (
@@ -151,47 +225,34 @@ export function FollowersList({ userId, type, className }: FollowersListProps) {
           ? (item as FollowerData).follower 
           : (item as FollowingData).following
 
+        if (!user) return null
+
         return (
-          <Card key={item.id} className="hover:shadow-md transition-shadow">
+          <Card key={item.id}>
             <CardContent className="p-4 flex items-center space-x-4">
               <Link href={`/creator/${user.username}`}>
-                <div className="w-12 h-12 relative rounded-full overflow-hidden bg-gray-200">
-                  {user.avatar_url ? (
-                    <OptimizedImage
-                      src={user.avatar_url}
-                      alt={user.full_name}
-                      fill
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-500 font-semibold">
-                      {user.full_name.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                </div>
+                <OptimizedImage
+                  src={user.avatar_url || '/img/avatar-placeholder.png'}
+                  alt={user.full_name}
+                  width={48}
+                  height={48}
+                  className="w-12 h-12 rounded-full object-cover"
+                />
               </Link>
-
-              <div className="flex-1 min-w-0">
+              <div className="flex-1">
                 <Link href={`/creator/${user.username}`}>
-                  <h3 className="font-semibold text-gray-900 hover:text-blue-600 transition-colors truncate">
+                  <h4 className="font-semibold text-gray-900 hover:underline">
                     {user.full_name}
-                  </h3>
-                  <p className="text-sm text-gray-600 truncate">
-                    @{user.username}
-                  </p>
+                  </h4>
                 </Link>
-                {user.bio && (
-                  <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-                    {user.bio}
-                  </p>
-                )}
+                <p className="text-sm text-gray-500 truncate">
+                  {user.bio || `@${user.username}`}
+                </p>
               </div>
-
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <FollowButton
                   creatorId={user.id}
-                  creatorName={user.full_name}
-                  className="min-w-[100px]"
+                  currentUserId={userId}
                 />
               </div>
             </CardContent>
