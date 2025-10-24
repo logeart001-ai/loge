@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider'
 import { Heart, Search, Filter, Grid, List, Star, ShoppingCart, BookOpen, User } from 'lucide-react'
 import { Navbar } from '@/components/navbar'
-import Link from 'next/link'
+import Image from 'next/image'
 
 export default function BooksPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
@@ -290,7 +290,7 @@ export default function BooksPage() {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-16">
+      <section className="bg-linear-to-r from-orange-500 to-red-500 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="hero-title text-4xl md:text-6xl font-bold mb-4">
@@ -320,14 +320,14 @@ export default function BooksPage() {
       </section>
 
       {/* Spiritual & Religious Books Highlight Section */}
-      <section className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-12">
+      <section className="bg-linear-to-r from-orange-500 to-red-500 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Spiritual & Religious Collection
             </h2>
             <p className="text-lg text-white/90 mb-6">
-              Discover Africa's rich spiritual heritage and contemporary faith
+              Discover Africa&apos;s rich spiritual heritage and contemporary faith
             </p>
             <Button 
               variant="secondary" 
@@ -495,9 +495,11 @@ export default function BooksPage() {
                 <Card key={book.id} className="group cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                   <CardContent className="p-0">
                     <div className="relative overflow-hidden">
-                      <img
+                      <Image
                         src={book.image || "/placeholder.svg"}
                         alt={book.title}
+                        width={300}
+                        height={400}
                         className={`w-full object-cover group-hover:scale-110 transition-transform duration-500 ${
                           viewMode === 'grid' ? 'h-80' : 'h-64'
                         }`}
@@ -524,15 +526,15 @@ export default function BooksPage() {
                     <div className="p-6 overflow-hidden">
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-bold text-lg text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-2 break-words">
+                          <h3 className="font-bold text-lg text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-2 wrap-break-word">
                             {book.title}
                           </h3>
                           <p className="text-gray-600 text-sm flex items-center mt-1 truncate">
-                            <User className="w-3 h-3 mr-1 flex-shrink-0" />
+                            <User className="w-3 h-3 mr-1 shrink-0" />
                             {book.author}
                           </p>
                         </div>
-                        <Badge variant="secondary" className="flex-shrink-0">{book.genre}</Badge>
+                        <Badge variant="secondary" className="shrink-0">{book.genre}</Badge>
                       </div>
                       
                       <div className="flex items-center mb-3">

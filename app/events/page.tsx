@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Calendar, MapPin, Clock, Users, Search, Filter, Grid, List, Star, Ticket, Video, Globe } from 'lucide-react'
 import { Navbar } from '@/components/navbar'
-import Link from 'next/link'
+import Image from 'next/image'
 
 export default function EventsPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
@@ -216,7 +216,7 @@ export default function EventsPage() {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-16">
+      <section className="bg-linear-to-r from-orange-500 to-red-500 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-4">
@@ -398,9 +398,11 @@ export default function EventsPage() {
                 <Card key={event.id} className="group cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                   <CardContent className="p-0">
                     <div className="relative overflow-hidden">
-                      <img
+                      <Image
                         src={event.image || "/placeholder.svg"}
                         alt={event.title}
+                        width={400}
+                        height={300}
                         className={`w-full object-cover group-hover:scale-110 transition-transform duration-500 ${
                           viewMode === 'grid' ? 'h-48' : 'h-40'
                         }`}
@@ -434,31 +436,31 @@ export default function EventsPage() {
                     <div className="p-6 overflow-hidden">
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-bold text-lg text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-2 break-words">
+                          <h3 className="font-bold text-lg text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-2 wrap-break-word">
                             {event.title}
                           </h3>
                           <p className="text-gray-600 text-sm mt-1 truncate">
                             by {event.organizer}
                           </p>
                         </div>
-                        <Badge variant="secondary" className="flex-shrink-0">{event.category}</Badge>
+                        <Badge variant="secondary" className="shrink-0">{event.category}</Badge>
                       </div>
                       
                       <div className="space-y-2 mb-4">
                         <div className="flex items-center text-sm text-gray-600">
-                          <Calendar className="w-4 h-4 mr-2 flex-shrink-0" />
+                          <Calendar className="w-4 h-4 mr-2 shrink-0" />
                           <span className="truncate">{formatDate(event.date)}</span>
                         </div>
                         <div className="flex items-center text-sm text-gray-600">
-                          <Clock className="w-4 h-4 mr-2 flex-shrink-0" />
+                          <Clock className="w-4 h-4 mr-2 shrink-0" />
                           <span className="truncate">{event.time}</span>
                         </div>
                         <div className="flex items-center text-sm text-gray-600">
-                          <MapPin className="w-4 h-4 mr-2 flex-shrink-0" />
+                          <MapPin className="w-4 h-4 mr-2 shrink-0" />
                           <span className="truncate">{event.location}</span>
                         </div>
                         <div className="flex items-center text-sm text-gray-600">
-                          <Users className="w-4 h-4 mr-2 flex-shrink-0" />
+                          <Users className="w-4 h-4 mr-2 shrink-0" />
                           {event.registered}/{event.capacity} registered
                         </div>
                       </div>

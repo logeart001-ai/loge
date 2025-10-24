@@ -539,7 +539,7 @@ export default async function CreatorAnalyticsPage() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg">
+              <div className="text-center p-4 bg-linear-to-br from-green-50 to-green-100 rounded-lg">
                 <div className="text-3xl font-bold text-green-700">
                   {analytics.totalOrders > 0 
                     ? ((analytics.totalRevenue / analytics.totalOrders).toFixed(0))
