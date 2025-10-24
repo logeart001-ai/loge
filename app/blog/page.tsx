@@ -2,9 +2,9 @@ import { createServerClient } from '@/lib/supabase'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Navbar } from '@/components/navbar'
 import { OptimizedImage } from '@/components/optimized-image'
+import { BlogSearch } from '@/components/blog/blog-search'
 import Link from 'next/link'
 import { Search, Calendar, ArrowRight } from 'lucide-react'
 
@@ -41,11 +41,11 @@ function normalizeAuthor(authorData: unknown): BlogPost['author'] {
   }
 }
 
-async function getBlogPosts(): Promise<BlogPost[]> {
+async function getBlogPosts(searchQuery?: string, tags?: string[]): Promise<BlogPost[]> {
   try {
     const supabase = await createServerClient()
     
-    const { data, error } = await supabase
+    let query = supabase
       .from('blog_posts')
       .select(`
         id,
@@ -61,7 +61,18 @@ async function getBlogPosts(): Promise<BlogPost[]> {
         )
       `)
       .eq('is_published', true)
-      .order('published_at', { ascending: false })
+
+    // Add search filter
+    if (searchQuery) {
+      query = query.or(`title.ilike.%${searchQuery}%,excerpt.ilike.%${searchQuery}%,content.ilike.%${searchQuery}%`)
+    }
+
+    // Add tag filter
+    if (tags && tags.length > 0) {
+      query = query.overlaps('tags', tags)
+    }
+
+    const { data, error } = await query.order('published_at', { ascending: false })
 
     if (error) {
       console.error('Error fetching blog posts:', error)
@@ -82,8 +93,14 @@ async function getBlogPosts(): Promise<BlogPost[]> {
   }
 }
 
-export default async function BlogPage() {
-  const posts = await getBlogPosts()
+export default async function BlogPage({ 
+  searchParams 
+}: { 
+  searchParams: Promise<{ q?: string; tags?: string }> 
+}) {
+  const { q: searchQuery, tags: tagsParam } = await searchParams
+  const tags = tagsParam ? tagsParam.split(',').filter(Boolean) : []
+  const posts = await getBlogPosts(searchQuery, tags)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -99,16 +116,7 @@ export default async function BlogPage() {
             <p className="text-xl mb-8 text-orange-100 max-w-2xl mx-auto">
               Explore the rich world of African art, culture, and creativity through our curated articles and insights
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <div className="relative max-w-md mx-auto sm:mx-0">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <Input
-                  type="text"
-                  placeholder="Search articles..."
-                  className="pl-10 pr-4 py-3 w-full text-gray-900"
-                />
-              </div>
-            </div>
+            <BlogSearch />
           </div>
         </div>
       </section>

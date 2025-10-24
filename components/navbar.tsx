@@ -128,6 +128,9 @@ export function Navbar() {
             <Link href="/events" className="text-gray-700 hover:text-orange-500 font-medium">
               Events
             </Link>
+            <Link href="/blog" className="text-gray-700 hover:text-orange-500 font-medium">
+              Blog
+            </Link>
             <Link href="/about" className="text-gray-700 hover:text-orange-500 font-medium">
               About
             </Link>
@@ -174,6 +177,12 @@ export function Navbar() {
               <div className="w-20 h-8 bg-gray-200 animate-pulse rounded"></div>
             ) : user ? (
               <div className="flex items-center space-x-4">
+                <Link
+                  href="/blog/saved"
+                  className="flex items-center space-x-2 text-gray-700 hover:text-orange-500"
+                >
+                  <span>Saved</span>
+                </Link>
                 <Link
                   href={user.user_metadata?.user_type === 'creator' ? '/dashboard/creator' : '/dashboard/collector'}
                   className="flex items-center space-x-2 text-gray-700 hover:text-orange-500"
@@ -266,6 +275,13 @@ export function Navbar() {
                   🎪 Events
                 </Link>
                 <Link
+                  href="/blog"
+                  className="flex items-center px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg font-medium transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  📝 Blog
+                </Link>
+                <Link
                   href="/search"
                   className="flex items-center px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg font-medium transition-colors"
                   onClick={() => setIsOpen(false)}
@@ -286,6 +302,13 @@ export function Navbar() {
                     <div className="px-4 py-2 text-sm text-gray-500">
                       Signed in as {user.user_metadata?.full_name || user.email}
                     </div>
+                    <Link
+                      href="/blog/saved"
+                      className="flex items-center px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg font-medium transition-colors"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      📖 Saved Articles
+                    </Link>
                     <Link
                       href={user.user_metadata?.user_type === 'creator' ? '/dashboard/creator' : '/dashboard/collector'}
                       className="flex items-center px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg font-medium transition-colors"

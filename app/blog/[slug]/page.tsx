@@ -4,9 +4,11 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Navbar } from '@/components/navbar'
 import { OptimizedImage } from '@/components/optimized-image'
+import { ShareSaveButtons } from '@/components/blog/share-save-buttons'
+import { CommentsSection } from '@/components/blog/comments-section'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { Calendar, ArrowLeft, Share2, Heart } from 'lucide-react'
+import { Calendar, ArrowLeft } from 'lucide-react'
 
 interface BlogPost {
   id: string
@@ -48,7 +50,6 @@ async function getBlogPost(slug: string): Promise<BlogPost | null> {
   try {
     const supabase = await createServerClient()
     
-    // First, let's try a simpler query to debug
     const { data, error } = await supabase
       .from('blog_posts')
       .select(`
@@ -68,7 +69,6 @@ async function getBlogPost(slug: string): Promise<BlogPost | null> {
 
     if (error) {
       console.error('Error fetching blog post:', error)
-      console.error('Error details:', JSON.stringify(error, null, 2))
       return null
     }
 
@@ -93,7 +93,7 @@ async function getBlogPost(slug: string): Promise<BlogPost | null> {
 
     const normalizedPost = {
       ...data,
-      author: normalizeAuthor((data as { author: unknown }).author),
+      author: normalizeAuthor(author),
     } as BlogPost
 
     return normalizedPost
@@ -118,11 +118,7 @@ async function getRelatedPosts(currentSlug: string, tags: string[]): Promise<Blo
         featured_image_url,
         published_at,
         tags,
-        author:user_profiles!author_id (
-          full_name,
-          avatar_url,
-          bio
-        )
+        author_id
       `)
       .eq('is_published', true)
       .neq('slug', currentSlug)
@@ -138,9 +134,18 @@ async function getRelatedPosts(currentSlug: string, tags: string[]): Promise<Blo
       return []
     }
 
+    // Get authors for all posts
+    const authorIds = data.map(post => post.author_id).filter(Boolean)
+    const { data: authors } = await supabase
+      .from('user_profiles')
+      .select('id, full_name, avatar_url, bio')
+      .in('id', authorIds)
+
+    const authorsMap = new Map(authors?.map(author => [author.id, author]) || [])
+
     return data.map((item) => ({
       ...item,
-      author: normalizeAuthor((item as { author: unknown }).author),
+      author: normalizeAuthor(authorsMap.get(item.author_id)),
     })) as BlogPost[]
   } catch (error) {
     console.error('Unexpected error fetching related posts:', error)
@@ -148,8 +153,9 @@ async function getRelatedPosts(currentSlug: string, tags: string[]): Promise<Blo
   }
 }
 
-export default async function BlogPostPage({ params }: { params: { slug: string } }) {
-  const post = await getBlogPost(params.slug)
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const post = await getBlogPost(slug)
   
   if (!post) {
     notFound()
@@ -212,16 +218,12 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                 </div>
               </div>
               
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm">
-                  <Share2 className="w-4 h-4 mr-2" />
-                  Share
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Heart className="w-4 h-4 mr-2" />
-                  Save
-                </Button>
-              </div>
+              <ShareSaveButtons
+                title={post.title}
+                slug={post.slug}
+                excerpt={post.excerpt}
+                postId={post.id}
+              />
             </div>
           </div>
 
@@ -272,6 +274,9 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
             </div>
           </div>
         )}
+
+        {/* Comments Section */}
+        <CommentsSection postId={post.id} />
       </article>
 
       {/* Related Articles */}
