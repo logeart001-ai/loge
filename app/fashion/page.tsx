@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider'
 import { Heart, Search, Filter, Grid, List, Star, ShoppingCart, Truck } from 'lucide-react'
 import { Navbar } from '@/components/navbar'
-import Link from 'next/link'
+// import Link from 'next/link'
 
 export default function FashionPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')

@@ -349,11 +349,8 @@ export default async function CreatorAnalyticsPage() {
                         className="flex-1 group relative h-full"
                       >
                         <div
-                          className="w-full bg-blue-500 rounded-t hover:bg-blue-600 transition-colors cursor-pointer"
-                          style={{ 
-                            height: `${height}%`,
-                            marginTop: `${100 - height}%`
-                          } as React.CSSProperties}
+                          className={`w-full bg-blue-500 rounded-t hover:bg-blue-600 transition-colors cursor-pointer absolute bottom-0`}
+                          style={{ height: `${height}%` } as React.CSSProperties}
                           title={`${new Date(day.date).toLocaleDateString()}: ${formatCurrency(day.amount)} (${day.count} orders)`}
                         />
                         
@@ -503,7 +500,7 @@ export default async function CreatorAnalyticsPage() {
                       <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden">
                         <div 
                           className="absolute inset-y-0 left-0 bg-linear-to-r from-blue-500 to-blue-600 rounded-full"
-                          style={{ width: `${category.percentage}%` } as React.CSSProperties}
+                          style={{ width: `${category.percentage}%` }}
                         />
                       </div>
                       
