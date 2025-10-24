@@ -1,6 +1,7 @@
 'use server'
 
 import { createServerActionClient } from '@/lib/supabase-server'
+import { createServerClient } from '@/lib/supabase'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'

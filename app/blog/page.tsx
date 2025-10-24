@@ -1,4 +1,3 @@
-import { Suspense } from 'react'
 import { createServerClient } from '@/lib/supabase'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -7,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Navbar } from '@/components/navbar'
 import { OptimizedImage } from '@/components/optimized-image'
 import Link from 'next/link'
-import { Search, Calendar, User, ArrowRight } from 'lucide-react'
+import { Search, Calendar, ArrowRight } from 'lucide-react'
 
 interface BlogPost {
   id: string
@@ -21,6 +20,25 @@ interface BlogPost {
     full_name: string
     avatar_url: string | null
   } | null
+}
+
+function normalizeAuthor(authorData: unknown): BlogPost['author'] {
+  if (!authorData) {
+    return null
+  }
+
+  const author = Array.isArray(authorData) ? authorData[0] : authorData
+
+  if (!author || typeof author !== 'object') {
+    return null
+  }
+
+  const { full_name, avatar_url } = author as Record<string, unknown>
+
+  return {
+    full_name: typeof full_name === 'string' ? full_name : 'Unknown Author',
+    avatar_url: typeof avatar_url === 'string' ? avatar_url : null,
+  }
 }
 
 async function getBlogPosts(): Promise<BlogPost[]> {
@@ -50,7 +68,14 @@ async function getBlogPosts(): Promise<BlogPost[]> {
       return []
     }
 
-    return data || []
+    if (!data) {
+      return []
+    }
+
+    return data.map((item) => ({
+      ...item,
+      author: normalizeAuthor((item as { author: unknown }).author),
+    })) as BlogPost[]
   } catch (error) {
     console.error('Unexpected error fetching blog posts:', error)
     return []

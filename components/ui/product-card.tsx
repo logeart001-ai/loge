@@ -85,7 +85,7 @@ export function ProductCard({
               isInWishlist ? "text-red-500" : "text-gray-600 hover:text-red-500"
             )}
             aria-label={isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
-            aria-pressed={isInWishlist ? 'true' : 'false'}
+            aria-pressed={isInWishlist}
             title={isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
           >
             <Heart className={cn("w-4 h-4", isInWishlist && "fill-current")} />

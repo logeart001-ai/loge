@@ -26,6 +26,60 @@ interface WishlistItem {
   }
 }
 
+function normalizeWishlistItem(item: unknown): WishlistItem | null {
+  if (!item || typeof item !== 'object') {
+    return null
+  }
+
+  const { id, created_at, artwork } = item as Record<string, unknown>
+
+  // Normalize artwork (it comes as an array from Supabase)
+  const artworkData = Array.isArray(artwork) ? artwork[0] : artwork
+  
+  if (!artworkData || typeof artworkData !== 'object') {
+    return null
+  }
+
+  const { 
+    id: artworkId, 
+    title, 
+    description, 
+    price, 
+    image_url, 
+    creator 
+  } = artworkData as Record<string, unknown>
+
+  // Normalize creator (it also comes as an array from Supabase)
+  const creatorData = Array.isArray(creator) ? creator[0] : creator
+  
+  if (!creatorData || typeof creatorData !== 'object') {
+    return null
+  }
+
+  const {
+    id: creatorId,
+    full_name,
+    username
+  } = creatorData as Record<string, unknown>
+
+  return {
+    id: typeof id === 'string' ? id : '',
+    created_at: typeof created_at === 'string' ? created_at : '',
+    artwork: {
+      id: typeof artworkId === 'string' ? artworkId : '',
+      title: typeof title === 'string' ? title : '',
+      description: typeof description === 'string' ? description : '',
+      price: typeof price === 'number' ? price : 0,
+      image_url: typeof image_url === 'string' ? image_url : '',
+      creator: {
+        id: typeof creatorId === 'string' ? creatorId : '',
+        full_name: typeof full_name === 'string' ? full_name : '',
+        username: typeof username === 'string' ? username : ''
+      }
+    }
+  }
+}
+
 export function WishlistGrid() {
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -73,7 +127,12 @@ export function WishlistGrid() {
         return
       }
 
-      setWishlistItems(data || [])
+      // Normalize the data to handle array responses from Supabase
+      const normalizedData = (data || [])
+        .map(normalizeWishlistItem)
+        .filter((item): item is WishlistItem => item !== null)
+
+      setWishlistItems(normalizedData)
     } catch (error) {
       console.error('Error fetching wishlist:', error)
       setError('Something went wrong')

@@ -252,7 +252,7 @@ export function FollowersList({ userId, type, className }: FollowersListProps) {
               <div className="shrink-0">
                 <FollowButton
                   creatorId={user.id}
-                  currentUserId={userId}
+                  creatorName={user.full_name || user.username}
                 />
               </div>
             </CardContent>
