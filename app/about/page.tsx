@@ -44,7 +44,7 @@ export default function AboutPage() {
       <Navbar />
 
       {/* Hero */}
-      <section className="relative bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50">
+      <section className="relative bg-linear-to-br from-orange-50 via-red-50 to-yellow-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
           <Reveal>
             <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">About L&apos;oge Arts</h1>

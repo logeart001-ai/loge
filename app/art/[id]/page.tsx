@@ -112,7 +112,7 @@ export default async function ArtworkDetailPage({ params }: { params: Promise<{ 
               <WishlistButton 
                 artworkId={artwork.id} 
                 artworkTitle={artwork.title}
-                className="flex-shrink-0"
+                className="shrink-0"
               />
             </div>
           </div>
