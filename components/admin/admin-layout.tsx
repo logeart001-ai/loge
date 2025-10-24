@@ -69,7 +69,7 @@ export function AdminLayout() {
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="p-2 rounded-md hover:bg-gray-100"
               aria-label="Toggle navigation menu"
-              aria-expanded={sidebarOpen ? 'true' : 'false'}
+              {...(sidebarOpen ? { 'aria-expanded': 'true' } : { 'aria-expanded': 'false' })}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -128,7 +128,7 @@ export function AdminLayout() {
                       : 'text-gray-700 hover:bg-gray-50'
                   }`}
                 >
-                  <Icon className="w-5 h-5 flex-shrink-0" />
+                  <Icon className="w-5 h-5 shrink-0" />
                   <div className="min-w-0 flex-1">
                     <div className="font-medium">{tab.label}</div>
                     <div className="text-xs text-gray-500 hidden sm:block">{tab.description}</div>

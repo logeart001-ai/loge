@@ -77,7 +77,7 @@ export function AdaptiveProductCard({
       )}
     >
       {/* Image Container */}
-      <div className="relative aspect-square overflow-hidden bg-gray-50 flex-shrink-0">
+      <div className="relative aspect-square overflow-hidden bg-gray-50 shrink-0">
         <Link href={href} className="block w-full h-full">
           <OptimizedImage
             src={imageUrl}
@@ -90,6 +90,7 @@ export function AdaptiveProductCard({
 
         {/* Wishlist Button */}
         <button
+          title={isInWishlist ? "Remove from wishlist" : "Add to wishlist"}
           onClick={(e) => {
             e.preventDefault()
             if (onToggleWishlist) {
@@ -131,7 +132,7 @@ export function AdaptiveProductCard({
         <div className="flex-1 space-y-4 overflow-hidden">
           {/* Title */}
           <Link href={href}>
-            <h3 className="font-semibold text-gray-900 text-lg leading-tight line-clamp-2 group-hover:text-orange-600 transition-colors break-words">
+            <h3 className="font-semibold text-gray-900 text-lg leading-tight line-clamp-2 group-hover:text-orange-600 transition-colors wrap-break-word">
               {title}
             </h3>
           </Link>

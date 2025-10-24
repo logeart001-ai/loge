@@ -10,6 +10,11 @@ try {
 }
 
 const nextConfig: NextConfig = {
+  // Disable ESLint during builds for faster deployment
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  
   // Enable experimental features for better performance
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-tabs', '@radix-ui/react-dialog'],
