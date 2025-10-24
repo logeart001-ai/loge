@@ -4,20 +4,26 @@ import { paystackService, toKobo } from '@/lib/paystack-service'
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('🔥 Payment initialization started')
     const supabase = await createRouteHandlerClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
     if (authError || !user) {
+      console.log('🔥 Auth error:', authError)
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
     }
 
+    console.log('🔥 User authenticated:', user.email)
+
     const body = await request.json()
     const { cart_id, email } = body
+    console.log('🔥 Request body:', { cart_id, email })
 
     if (!cart_id || !email) {
+      console.log('🔥 Missing required fields')
       return NextResponse.json(
         { error: 'Missing required fields: cart_id, email' },
         { status: 400 }
@@ -49,11 +55,15 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (cartError || !cart) {
+      console.log('🔥 Cart error:', cartError)
+      console.log('🔥 Cart data:', cart)
       return NextResponse.json(
         { error: 'Cart not found or already processed' },
         { status: 404 }
       )
     }
+
+    console.log('🔥 Cart found:', { id: cart.id, itemCount: cart.cart_items?.length || 0 })
 
     const cartItems = (cart.cart_items || []) as unknown as Array<{
       id: string
@@ -102,12 +112,20 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (orderError || !order) {
-      console.error('Order creation error:', orderError)
+      console.error('🔥 Order creation error:', orderError)
+      console.error('🔥 Order creation details:', {
+        orderNumber,
+        buyer_id: user.id,
+        totalAmount,
+        error: orderError
+      })
       return NextResponse.json(
-        { error: 'Failed to create order' },
+        { error: `Failed to create order: ${orderError?.message || 'Unknown error'}` },
         { status: 500 }
       )
     }
+
+    console.log('🔥 Order created successfully:', order.id)
 
     // Create order items
     const orderItems = cartItems.map(item => ({

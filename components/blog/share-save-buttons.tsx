@@ -24,9 +24,15 @@ export function ShareSaveButtons({ title, slug, excerpt, postId, initialSaved = 
   const [isSaved, setIsSaved] = useState(initialSaved)
   const [isSharing, setIsSharing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [canShare, setCanShare] = useState(false)
 
   const currentUrl = typeof window !== 'undefined' ? `${window.location.origin}/blog/${slug}` : ''
   const shareText = `${title} - ${excerpt || 'Check out this article on L\'oge Arts'}`
+
+  useEffect(() => {
+    // Check if native sharing is available
+    setCanShare(typeof window !== 'undefined' && 'share' in navigator)
+  }, [])
 
   useEffect(() => {
     // Check if article is saved when component mounts
@@ -82,7 +88,7 @@ export function ShareSaveButtons({ title, slug, excerpt, postId, initialSaved = 
   }
 
   const handleNativeShare = async () => {
-    if (navigator.share) {
+    if (canShare && navigator.share) {
       try {
         setIsSharing(true)
         await navigator.share({
@@ -114,7 +120,7 @@ export function ShareSaveButtons({ title, slug, excerpt, postId, initialSaved = 
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
-          {navigator.share && (
+          {canShare && (
             <DropdownMenuItem onClick={handleNativeShare}>
               <Share2 className="w-4 h-4 mr-2" />
               Share via...

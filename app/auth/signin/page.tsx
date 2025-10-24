@@ -20,22 +20,34 @@ function SignInForm() {
   const searchParams = useSearchParams()
   const router = useRouter()
 
+  // Debug: Log when component mounts
+  useEffect(() => {
+    console.log('🔥 SignInForm mounted')
+  }, [])
+
   useEffect(() => {
     console.log('🔥 SignIn useEffect triggered', { 
       state, 
       hasState: !!state,
       stateSuccess: state?.success,
       stateRedirectTo: state?.redirectTo,
-      stateError: state?.error 
+      stateError: state?.error,
+      isPending,
+      stateType: typeof state,
+      stateKeys: state ? Object.keys(state) : []
     })
     
     if (state?.success) {
       console.log('🔥 Success detected! Redirecting to:', state?.redirectTo || '/dashboard')
       const redirectPath = state?.redirectTo || '/dashboard'
       
-      // Use window.location.href for a full page reload to ensure cookies are sent
-      console.log('🔥 Executing full page redirect to:', redirectPath)
-      window.location.href = redirectPath
+      // Small delay to ensure cookies are set before redirect
+      console.log('🔥 Waiting for cookies to be set...')
+      setTimeout(() => {
+        console.log('🔥 Executing full page redirect to:', redirectPath)
+        window.location.href = redirectPath
+      }, 100)
+      return
     } else if (state?.error) {
       console.log('🔥 Error detected:', state.error)
     } else if (state === null) {
@@ -48,7 +60,7 @@ function SignInForm() {
     if (state?.error && state.error.toLowerCase().includes('email not confirmed')) {
       setShowResendForm(true)
     }
-  }, [state, router])
+  }, [state, router, isPending])
 
   if (state?.success) {
     return (
@@ -111,7 +123,13 @@ function SignInForm() {
         </CardHeader>
         <CardContent>
           {!showResendForm ? (
-            <form action={action} className="space-y-4">
+            <form action={action} className="space-y-4" onSubmit={(e) => {
+              console.log('🔥 Form submitted!', {
+                email: e.currentTarget.email.value,
+                hasPassword: !!e.currentTarget.password.value,
+                redirectTo: searchParams.get('redirectTo') || ''
+              })
+            }}>
               <input type="hidden" name="redirectTo" value={searchParams.get('redirectTo') || ''} />
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
@@ -165,7 +183,12 @@ function SignInForm() {
                   {state.error}
                 </div>
               )}
-              <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600" disabled={isPending}>
+              <Button 
+                type="submit" 
+                className="w-full bg-orange-500 hover:bg-orange-600" 
+                disabled={isPending}
+                onClick={() => console.log('🔥 Sign In button clicked!', { isPending })}
+              >
                 {isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

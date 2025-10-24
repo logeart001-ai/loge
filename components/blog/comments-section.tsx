@@ -95,7 +95,11 @@ export function CommentsSection({ postId }: CommentsSectionProps) {
       setComments(rootComments)
     } catch (error) {
       console.error('Error loading comments:', error)
-      toast.error('Failed to load comments')
+      console.error('Error details:', JSON.stringify(error, null, 2))
+      // Don't show error toast if table doesn't exist yet
+      if (error && typeof error === 'object' && 'code' in error && error.code !== '42P01') {
+        toast.error('Failed to load comments')
+      }
     }
   }
 

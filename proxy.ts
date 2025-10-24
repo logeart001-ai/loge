@@ -10,6 +10,7 @@ type SupabaseAuthCookie = {
 
 type SupabaseUser = {
   email_confirmed_at?: string | null
+  email?: string
   user_metadata?: Record<string, unknown>
 }
 
@@ -31,11 +32,40 @@ function parseSupabaseCookie(rawValue?: string) {
     return null
   }
 
-  const decoded = rawValue.startsWith('%7B') ? decodeURIComponent(rawValue) : rawValue
-
   try {
-    return JSON.parse(decoded) as SupabaseAuthCookie
-  } catch {
+    // Try multiple decoding approaches
+    let decoded = rawValue
+    
+    // Handle URL encoding
+    if (rawValue.includes('%')) {
+      decoded = decodeURIComponent(rawValue)
+    }
+    
+    // Handle base64 encoding (common in Supabase cookies)
+    if (decoded.startsWith('base64-')) {
+      decoded = atob(decoded.substring(7))
+    }
+    
+    // Parse JSON
+    const parsed = JSON.parse(decoded) as SupabaseAuthCookie
+    console.log('🔥 Successfully parsed cookie:', { hasAccessToken: !!parsed.access_token })
+    return parsed
+  } catch (error) {
+    console.log('🔥 Cookie parsing error:', error)
+    
+    // Fallback: try to extract access_token directly if it's a simple format
+    if (rawValue.includes('access_token')) {
+      try {
+        // Handle cases where the cookie might be in a different format
+        const tokenMatch = rawValue.match(/"access_token":"([^"]+)"/)
+        if (tokenMatch) {
+          return { access_token: tokenMatch[1] }
+        }
+      } catch {
+        // Ignore fallback errors
+      }
+    }
+    
     return null
   }
 }
@@ -51,11 +81,29 @@ async function getSupabaseUser(request: NextRequest): Promise<SupabaseUser | nul
 
   const cookieName = `${SUPABASE_AUTH_COOKIE_PREFIX}${projectRef}-auth-token`
   const cookieValue = request.cookies.get(cookieName)?.value
+  
+  // Debug: Log all cookies
+  const allCookies = request.cookies.getAll()
+  console.log('🔥 All cookies:', allCookies.map(c => c.name))
+  console.log('🔥 Looking for cookie:', cookieName)
+  console.log('🔥 Cookie found:', !!cookieValue)
+  
   const parsedCookie = parseSupabaseCookie(cookieValue)
+  
+  // Debug: Log parsed cookie structure
+  if (parsedCookie) {
+    console.log('🔥 Parsed cookie keys:', Object.keys(parsedCookie))
+  } else {
+    console.log('🔥 Failed to parse cookie')
+  }
 
   const accessToken = parsedCookie?.access_token ?? parsedCookie?.currentSession?.access_token
+  
+  console.log('🔥 Has access token:', !!accessToken)
+  console.log('🔥 Access token preview:', accessToken ? `${accessToken.substring(0, 20)}...` : 'none')
 
   if (!accessToken) {
+    console.log('🔥 No access token found in cookie')
     return null
   }
 
@@ -70,11 +118,16 @@ async function getSupabaseUser(request: NextRequest): Promise<SupabaseUser | nul
       cache: 'no-store',
     })
 
+    console.log('🔥 Supabase user API response status:', response.status)
+
     if (!response.ok) {
+      console.log('🔥 Supabase user API failed:', response.statusText)
       return null
     }
 
-    return (await response.json()) as SupabaseUser
+    const userData = (await response.json()) as SupabaseUser
+    console.log('🔥 User data from API:', { email: userData.email, hasMetadata: !!userData.user_metadata })
+    return userData
   } catch {
     return null
   }
@@ -82,6 +135,12 @@ async function getSupabaseUser(request: NextRequest): Promise<SupabaseUser | nul
 
 export default async function proxy(request: NextRequest) {
   const user = await getSupabaseUser(request)
+  
+  console.log('🔥 Proxy middleware:', {
+    path: request.nextUrl.pathname,
+    hasUser: !!user,
+    userEmail: user?.email ?? null
+  })
 
   // Protect dashboard routes
   if (request.nextUrl.pathname.startsWith('/dashboard')) {

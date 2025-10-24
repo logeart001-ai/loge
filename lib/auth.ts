@@ -200,33 +200,83 @@ export async function signIn(prevState: unknown, formData: FormData) {
       metadata: data.user?.user_metadata
     })
 
-    // Determine redirect URL
-    const userType = data.user?.user_metadata?.user_type || data.user?.user_metadata?.role
+    // Debug session and cookies
+    console.log('🔥 Session data:', {
+      hasSession: !!data.session,
+      accessToken: data.session?.access_token ? 'present' : 'missing',
+      refreshToken: data.session?.refresh_token ? 'present' : 'missing',
+      expiresAt: data.session?.expires_at
+    })
+
+    // Fetch user profile from database to get the actual role
+    const { data: profile, error: profileError } = await supabase
+      .from('user_profiles')
+      .select('role')
+      .eq('id', data.user.id)
+      .single()
+
+    if (profileError) {
+      console.error('🔥 Error fetching user profile:', profileError)
+    }
+
+    // Determine redirect URL - check profile.role first, then fall back to metadata
+    const userType = profile?.role || data.user?.user_metadata?.user_type || data.user?.user_metadata?.role
     console.log('🔥 User metadata:', data.user?.user_metadata)
+    console.log('🔥 Profile role:', profile?.role)
     console.log('🔥 Detected userType:', userType)
     
     // Revalidate the authentication state to ensure cookies are fresh
     revalidatePath('/', 'layout')
     revalidatePath('/dashboard/creator', 'page')
     
-    // Default to general dashboard if no specific user type, otherwise use specific dashboard
+    // Determine the correct dashboard based on user type
     // Handle both 'buyer' and 'collector' as they mean the same thing
-    const defaultRedirect = userType === 'creator' 
+    const roleDashboard = userType === 'creator' 
       ? '/dashboard/creator' 
       : (userType === 'collector' || userType === 'buyer')
         ? '/dashboard/collector' 
         : '/dashboard'
-    const finalRedirect = redirectTo || defaultRedirect
+    
+    // Only use redirectTo if it matches the user's role, otherwise use role-based dashboard
+    let finalRedirect = roleDashboard
+    if (redirectTo) {
+      const isCreatorPath = redirectTo.includes('/dashboard/creator')
+      const isCollectorPath = redirectTo.includes('/dashboard/collector') || redirectTo.includes('/dashboard/buyer')
+      const matchesRole = (userType === 'creator' && isCreatorPath) || 
+                          ((userType === 'collector' || userType === 'buyer') && isCollectorPath)
+      
+      if (matchesRole) {
+        finalRedirect = redirectTo
+      } else {
+        console.log('🔥 redirectTo does not match user role, using role-based dashboard instead')
+      }
+    }
     
     console.log('🔥 Final redirect path:', finalRedirect)
     
-    // Return success with redirect path - client will handle the redirect
+    // Revalidate paths to ensure fresh data after sign-in
+    revalidatePath('/', 'layout')
+    revalidatePath('/dashboard', 'layout')
+    revalidatePath(finalRedirect, 'page')
+    
+    // Return success - let client handle redirect to ensure cookies are set
+    console.log('🔥 Returning success to client for redirect')
     return {
       success: true,
       message: 'Successfully signed in! Redirecting...',
       redirectTo: finalRedirect
     }
   } catch (error) {
+    if (
+      error &&
+      typeof error === 'object' &&
+      'digest' in error &&
+      typeof (error as { digest: unknown }).digest === 'string' &&
+      (error as { digest: string }).digest.startsWith('NEXT_REDIRECT')
+    ) {
+      throw error
+    }
+
     console.error('🔥 Signin catch block error:', error)
     console.error('🔥 Error type:', error instanceof Error ? error.constructor.name : typeof error)
     console.error('🔥 Error message:', error instanceof Error ? error.message : String(error))
