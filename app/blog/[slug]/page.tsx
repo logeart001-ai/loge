@@ -48,6 +48,7 @@ async function getBlogPost(slug: string): Promise<BlogPost | null> {
   try {
     const supabase = await createServerClient()
     
+    // First, let's try a simpler query to debug
     const { data, error } = await supabase
       .from('blog_posts')
       .select(`
@@ -59,11 +60,7 @@ async function getBlogPost(slug: string): Promise<BlogPost | null> {
         featured_image_url,
         published_at,
         tags,
-        author:user_profiles!author_id (
-          full_name,
-          avatar_url,
-          bio
-        )
+        author_id
       `)
       .eq('slug', slug)
       .eq('is_published', true)
@@ -71,11 +68,27 @@ async function getBlogPost(slug: string): Promise<BlogPost | null> {
 
     if (error) {
       console.error('Error fetching blog post:', error)
+      console.error('Error details:', JSON.stringify(error, null, 2))
       return null
     }
 
     if (!data) {
+      console.log('No blog post found for slug:', slug)
       return null
+    }
+
+    // Now get the author separately
+    let author = null
+    if (data.author_id) {
+      const { data: authorData, error: authorError } = await supabase
+        .from('user_profiles')
+        .select('full_name, avatar_url, bio')
+        .eq('id', data.author_id)
+        .single()
+      
+      if (!authorError && authorData) {
+        author = authorData
+      }
     }
 
     const normalizedPost = {
