@@ -125,7 +125,7 @@ export default async function CreatorDashboard() {
                 <div className="flex items-center space-x-3 mb-6">
                   <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
                     {user.user_metadata?.avatar_url ? (
-                      <OptimizedImage src={user.user_metadata.avatar_url || "/placeholder.svg"} alt={user.user_metadata?.full_name || 'Profile avatar'} width={48} height={48} className="rounded-full object-cover" />
+                      <OptimizedImage src={user.user_metadata.avatar_url || "/image/placeholder.svg"} alt={user.user_metadata?.full_name || 'Profile avatar'} width={48} height={48} className="rounded-full object-cover" />
                     ) : (
                       <Upload className="w-6 h-6 text-gray-600" />
                     )}
@@ -369,7 +369,7 @@ export default async function CreatorDashboard() {
                           <div key={artwork.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
                             <div className="relative w-full h-32 bg-gray-200 rounded-lg mb-3 overflow-hidden">
                               <OptimizedImage
-                                src={artwork.image_urls?.[0] || "/placeholder.svg"}
+                                src={artwork.image_urls?.[0] || "/image/placeholder.svg"}
                                 alt={artwork.title}
                                 fill
                                 className="object-cover rounded-lg"

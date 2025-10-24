@@ -26,7 +26,7 @@ export default function FashionPage() {
       designer: 'Kemi Fashion House',
       price: 45000,
       originalPrice: 55000,
-      image: '/african-ankara-dress.png',
+  image: '/image/Fashion Week Image.png',
       category: 'Dresses',
       sizes: ['S', 'M', 'L', 'XL'],
       colors: ['Red', 'Blue', 'Green'],
@@ -42,7 +42,7 @@ export default function FashionPage() {
       title: 'Kente Blazer',
       designer: 'Accra Couture',
       price: 72000,
-      image: '/african-kente-blazer.png',
+  image: '/image/ankarablazers.jpg',
       category: 'Blazers',
       sizes: ['M', 'L', 'XL', 'XXL'],
       colors: ['Gold', 'Black', 'Red'],
@@ -106,7 +106,7 @@ export default function FashionPage() {
       title: 'Wax Print Jumpsuit',
       designer: 'Dakar Designs',
       price: 58000,
-      image: '/placeholder.svg?height=400&width=300&text=Wax+Jumpsuit',
+  image: '/image/Art Exhibition Image.png',
       category: 'Jumpsuits',
       sizes: ['S', 'M', 'L'],
       colors: ['Yellow', 'Orange', 'Green'],
@@ -370,7 +370,7 @@ export default function FashionPage() {
                   <CardContent className="p-0">
                     <div className={`relative overflow-hidden ${viewMode === 'grid' ? 'h-80' : 'h-64'}`}>
                       <Image
-                        src={item.image || "/placeholder.svg"}
+                        src={item.image || "/image/placeholder.svg"}
                         alt={item.title}
                         fill
                         className="object-cover group-hover:scale-110 transition-transform duration-500"

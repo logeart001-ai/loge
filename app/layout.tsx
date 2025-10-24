@@ -4,6 +4,7 @@ import "./globals.css";
 import { CartProvider } from '@/components/cart-provider'
 import { WhatsAppChatWidget } from '@/components/whatsapp-chat-widget'
 import { Toaster } from 'sonner'
+import { ClientOnly } from '@/components/client-only'
 // import { PerformanceMonitor } from '@/components/performance/performance-monitor'
 // import { CriticalCSS } from '@/components/performance/critical-css'
 // import { ServiceWorkerRegistration } from '@/components/performance/service-worker-registration'
@@ -87,8 +88,10 @@ export default function RootLayout({
       <body className="antialiased font-body">
         <CartProvider>
           {children}
-          <WhatsAppChatWidget />
-          <Toaster position="top-right" richColors />
+          <ClientOnly>
+            <WhatsAppChatWidget />
+            <Toaster position="top-right" richColors />
+          </ClientOnly>
         </CartProvider>
       </body>
     </html>

@@ -10,11 +10,6 @@ try {
 }
 
 const nextConfig: NextConfig = {
-  // Disable ESLint during builds for faster deployment
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  
   // Enable experimental features for better performance
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-tabs', '@radix-ui/react-dialog'],
@@ -48,19 +43,6 @@ const nextConfig: NextConfig = {
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    // Allow local SVGs with query strings
-    localPatterns: [
-      {
-        protocol: 'https',
-        hostname: '**',
-        pathname: '/**',
-      },
-      {
-        protocol: 'http',
-        hostname: 'localhost',
-        pathname: '/**',
-      },
-    ],
   },
   
   // Headers for caching

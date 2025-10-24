@@ -80,7 +80,7 @@ async function getSupabaseUser(request: NextRequest): Promise<SupabaseUser | nul
   }
 }
 
-export async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const user = await getSupabaseUser(request)
 
   // Protect dashboard routes

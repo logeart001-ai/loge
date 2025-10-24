@@ -95,7 +95,7 @@ export default function ArtPage() {
       title: 'Golden Threads',
       artist: 'Amara Kone',
       price: 180000,
-      image: '/placeholder.svg?height=300&width=300&text=Golden+Threads',
+  image: '/image/placeholder.svg',
       category: 'Textile Art',
       medium: 'Gold Thread on Silk',
       size: '100x80 cm',
@@ -308,7 +308,7 @@ export default function ArtPage() {
                   <CardContent className="p-0">
                     <div className="relative overflow-hidden">
                       <Image
-                        src={artwork.image || "/placeholder.svg"}
+                        src={artwork.image || "/image/placeholder.svg"}
                         alt={artwork.title}
                         width={300}
                         height={300}

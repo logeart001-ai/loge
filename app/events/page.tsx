@@ -113,7 +113,7 @@ export default function EventsPage() {
       location: 'Cape Town, South Africa',
       venue: 'Cape Town Convention Centre',
       price: 12000,
-      image: '/placeholder.svg?height=300&width=400&text=Digital+Art+NFT',
+  image: '/image/placeholder.svg',
       category: 'Technology',
       type: 'Hybrid',
       capacity: 300,
@@ -134,7 +134,7 @@ export default function EventsPage() {
       location: 'Dakar, Senegal',
       venue: 'Dakar Arts Village',
       price: 6500,
-      image: '/placeholder.svg?height=300&width=400&text=Film+Festival',
+  image: '/image/placeholder.svg',
       category: 'Film Festival',
       type: 'In-Person',
       capacity: 400,
@@ -399,7 +399,7 @@ export default function EventsPage() {
                   <CardContent className="p-0">
                     <div className="relative overflow-hidden">
                       <Image
-                        src={event.image || "/placeholder.svg"}
+                        src={event.image || "/image/placeholder.svg"}
                         alt={event.title}
                         width={400}
                         height={300}

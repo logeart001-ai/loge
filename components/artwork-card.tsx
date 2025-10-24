@@ -54,7 +54,7 @@ export function ArtworkCard({ artwork, isCreatorView = false }: ArtworkCardProps
         <div className="relative h-48 overflow-hidden">
           {isCreatorView ? (
             <OptimizedImage
-              src={artwork.thumbnail_url || artwork.image_urls?.[0] || "/placeholder.svg?height=300&width=400&text=Artwork"}
+              src={artwork.thumbnail_url || artwork.image_urls?.[0] || "/image/placeholder.svg"}
               alt={artwork.title}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -63,7 +63,7 @@ export function ArtworkCard({ artwork, isCreatorView = false }: ArtworkCardProps
           ) : (
             <Link href={`/art/${artwork.id}`} className="block">
               <OptimizedImage
-                src={artwork.thumbnail_url || artwork.image_urls?.[0] || "/placeholder.svg?height=300&width=400&text=Artwork"}
+                src={artwork.thumbnail_url || artwork.image_urls?.[0] || "/image/placeholder.svg"}
                 alt={artwork.title}
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-300"

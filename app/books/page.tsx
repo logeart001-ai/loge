@@ -98,7 +98,7 @@ export default function BooksPage() {
       title: 'Rhythms of the Sahel',
       author: 'Aminata Traore',
       price: 4800,
-      image: '/placeholder.svg?height=400&width=300&text=Rhythms+Sahel',
+  image: '/image/placeholder.svg',
       genre: 'Poetry',
       format: 'Paperback',
       pages: 128,
@@ -116,7 +116,7 @@ export default function BooksPage() {
       title: 'Digital Africa',
       author: 'Kwame Nkrumah Jr.',
       price: 8900,
-      image: '/placeholder.svg?height=400&width=300&text=Digital+Africa',
+  image: '/image/placeholder.svg',
       genre: 'Technology',
       format: 'Paperback',
       pages: 345,
@@ -134,7 +134,7 @@ export default function BooksPage() {
       title: 'African Traditional Spirituality',
       author: 'Dr. Kofi Asante',
       price: 7200,
-      image: '/placeholder.svg?height=400&width=300&text=African+Spirituality',
+  image: '/image/placeholder.svg',
       genre: 'Spiritual & Religious',
       format: 'Hardcover',
       pages: 288,
@@ -152,7 +152,7 @@ export default function BooksPage() {
       title: 'The Quran in African Context',
       author: 'Sheikh Abdullah Hakim',
       price: 6500,
-      image: '/placeholder.svg?height=400&width=300&text=Quran+African+Context',
+  image: '/image/placeholder.svg',
       genre: 'Spiritual & Religious',
       format: 'Paperback',
       pages: 412,
@@ -170,7 +170,7 @@ export default function BooksPage() {
       title: 'Christianity and African Heritage',
       author: 'Rev. Dr. Grace Mbeki',
       price: 5800,
-      image: '/placeholder.svg?height=400&width=300&text=Christianity+African+Heritage',
+  image: '/image/placeholder.svg',
       genre: 'Spiritual & Religious',
       format: 'Paperback',
       pages: 324,
@@ -188,7 +188,7 @@ export default function BooksPage() {
       title: 'Ancestral Wisdom: Connecting with the Spirits',
       author: 'Mama Asha Kone',
       price: 4900,
-      image: '/placeholder.svg?height=400&width=300&text=Ancestral+Wisdom',
+  image: '/image/placeholder.svg',
       genre: 'Spiritual & Religious',
       format: 'Paperback',
       pages: 256,
@@ -206,7 +206,7 @@ export default function BooksPage() {
       title: 'Meditation and Mindfulness in Africa',
       author: 'Dr. Amina Hassan',
       price: 5500,
-      image: '/placeholder.svg?height=400&width=300&text=Meditation+Africa',
+  image: '/image/placeholder.svg',
       genre: 'Spiritual & Religious',
       format: 'Paperback',
       pages: 198,
@@ -224,7 +224,7 @@ export default function BooksPage() {
       title: 'Sacred Rituals of the Yoruba',
       author: 'Babalawo Ifayemi Elebuibon',
       price: 8200,
-      image: '/placeholder.svg?height=400&width=300&text=Yoruba+Rituals',
+  image: '/image/placeholder.svg',
       genre: 'Spiritual & Religious',
       format: 'Hardcover',
       pages: 368,
@@ -496,7 +496,7 @@ export default function BooksPage() {
                   <CardContent className="p-0">
                     <div className="relative overflow-hidden">
                       <Image
-                        src={book.image || "/placeholder.svg"}
+                        src={book.image || "/image/placeholder.svg"}
                         alt={book.title}
                         width={300}
                         height={400}

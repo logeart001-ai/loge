@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Navbar } from '@/components/navbar'
+import { ClientOnly } from '@/components/client-only'
 import { BackgroundVideo } from '@/components/background-video'
 import { HomeSearch } from '@/components/home-search'
 import { ServerProductCard } from '@/components/ui/server-product-card'
@@ -151,7 +152,9 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
+      <ClientOnly>
+        <Navbar />
+      </ClientOnly>
 
       {/* Hero Section with Video Background */}
       <section className="relative bg-linear-to-br from-orange-50 via-red-50 to-yellow-50 overflow-hidden h-screen flex items-center">

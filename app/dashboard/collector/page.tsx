@@ -108,7 +108,7 @@ export default async function CollectorDashboard() {
                   <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
                     {user.user_metadata?.avatar_url ? (
                       <OptimizedImage
-                        src={user.user_metadata.avatar_url || "/placeholder.svg"}
+                        src={user.user_metadata.avatar_url || "/image/placeholder.svg"}
                         alt={user.user_metadata?.full_name || 'Profile avatar'}
                         width={48}
                         height={48}

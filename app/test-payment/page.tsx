@@ -10,6 +10,7 @@ import { useCart } from '@/components/cart-provider'
 import { useUser } from '@/lib/use-user'
 import { ShoppingCart, CreditCard, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function TestPaymentPage() {
   const { cart, addItem, loading: cartLoading } = useCart()
@@ -27,15 +28,15 @@ export default function TestPaymentPage() {
       title: 'Test Artwork 1',
       artist: 'Test Artist',
       price: 50000, // ₦500
-      image: '/placeholder.svg?height=200&width=200&text=Test+Art+1',
+      image: '/image/placeholder.svg',
       description: 'A test artwork for payment integration testing'
     },
     {
-      id: 'test-artwork-2', 
+      id: 'test-artwork-2',
       title: 'Test Artwork 2',
       artist: 'Another Artist',
       price: 75000, // ₦750
-      image: '/placeholder.svg?height=200&width=200&text=Test+Art+2',
+      image: '/image/placeholder.svg',
       description: 'Another test artwork for payment testing'
     },
     {
@@ -43,7 +44,7 @@ export default function TestPaymentPage() {
       title: 'Premium Test Art',
       artist: 'Premium Artist',
       price: 120000, // ₦1,200
-      image: '/placeholder.svg?height=200&width=200&text=Premium+Art',
+      image: '/image/placeholder.svg',
       description: 'A premium test artwork for higher value testing'
     }
   ]
@@ -129,7 +130,8 @@ export default function TestPaymentPage() {
       } else {
         setError('Failed to create direct Paystack transaction')
       }
-    } catch (err) {
+    } catch (error) {
+      console.error('Direct Paystack test error:', error)
       setError('Failed to test Paystack directly')
     }
   }
@@ -225,11 +227,15 @@ export default function TestPaymentPage() {
                   {testArtworks.map((artwork) => (
                     <Card key={artwork.id} className="border">
                       <CardContent className="p-4">
-                        <img
-                          src={artwork.image}
-                          alt={artwork.title}
-                          className="w-full h-32 object-cover rounded-md mb-3"
-                        />
+                        <div className="relative w-full h-32 mb-3">
+                          <Image
+                            src={artwork.image}
+                            alt={artwork.title}
+                            fill
+                            className="object-cover rounded-md"
+                            sizes="(min-width: 768px) 50vw, 100vw"
+                          />
+                        </div>
                         <h3 className="font-semibold text-lg mb-1">{artwork.title}</h3>
                         <p className="text-gray-600 text-sm mb-2">by {artwork.artist}</p>
                         <p className="text-lg font-bold text-orange-600 mb-3">
