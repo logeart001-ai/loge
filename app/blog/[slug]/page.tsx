@@ -1,4 +1,3 @@
-import { Suspense } from 'react'
 import { createServerClient } from '@/lib/supabase'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -7,7 +6,7 @@ import { Navbar } from '@/components/navbar'
 import { OptimizedImage } from '@/components/optimized-image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { Calendar, User, ArrowLeft, Share2, Heart } from 'lucide-react'
+import { Calendar, ArrowLeft, Share2, Heart } from 'lucide-react'
 
 interface BlogPost {
   id: string
@@ -23,6 +22,26 @@ interface BlogPost {
     avatar_url: string | null
     bio: string | null
   } | null
+}
+
+function normalizeAuthor(authorData: unknown): BlogPost['author'] {
+  if (!authorData) {
+    return null
+  }
+
+  const author = Array.isArray(authorData) ? authorData[0] : authorData
+
+  if (!author || typeof author !== 'object') {
+    return null
+  }
+
+  const { full_name, avatar_url, bio } = author as Record<string, unknown>
+
+  return {
+    full_name: typeof full_name === 'string' ? full_name : 'Unknown Author',
+    avatar_url: typeof avatar_url === 'string' ? avatar_url : null,
+    bio: typeof bio === 'string' ? bio : null,
+  }
 }
 
 async function getBlogPost(slug: string): Promise<BlogPost | null> {
@@ -55,7 +74,16 @@ async function getBlogPost(slug: string): Promise<BlogPost | null> {
       return null
     }
 
-    return data
+    if (!data) {
+      return null
+    }
+
+    const normalizedPost = {
+      ...data,
+      author: normalizeAuthor((data as { author: unknown }).author),
+    } as BlogPost
+
+    return normalizedPost
   } catch (error) {
     console.error('Unexpected error fetching blog post:', error)
     return null
@@ -73,6 +101,7 @@ async function getRelatedPosts(currentSlug: string, tags: string[]): Promise<Blo
         title,
         slug,
         excerpt,
+        content,
         featured_image_url,
         published_at,
         tags,
@@ -92,7 +121,14 @@ async function getRelatedPosts(currentSlug: string, tags: string[]): Promise<Blo
       return []
     }
 
-    return data || []
+    if (!data) {
+      return []
+    }
+
+    return data.map((item) => ({
+      ...item,
+      author: normalizeAuthor((item as { author: unknown }).author),
+    })) as BlogPost[]
   } catch (error) {
     console.error('Unexpected error fetching related posts:', error)
     return []
@@ -267,7 +303,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
       )}
 
       {/* Newsletter CTA */}
-      <section className="py-12 bg-gradient-to-r from-orange-500 to-red-500">
+  <section className="py-12 bg-linear-to-r from-orange-500 to-red-500">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
             Enjoyed this article?
