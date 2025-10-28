@@ -157,7 +157,8 @@ export default async function HomePage() {
       </ClientOnly>
 
       {/* Hero Section with Video Background */}
-      <section className="relative bg-linear-to-br from-orange-50 via-red-50 to-yellow-50 overflow-hidden h-screen flex items-center">
+      <ClientOnly>
+        <section className="relative bg-linear-to-br from-orange-50 via-red-50 to-yellow-50 overflow-hidden h-screen flex items-center">
         {/* Background Video */}
         <div className="absolute inset-0 w-full h-full">
           <BackgroundVideo
@@ -239,6 +240,7 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+      </ClientOnly>
 
       {/* Search Section */}
       <section className="py-12 md:py-16 bg-white border-b">
