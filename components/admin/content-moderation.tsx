@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
+import { AdminAuthDebug } from './admin-auth-debug'
 import { 
   Flag, 
   Eye, 
@@ -54,6 +55,7 @@ export function ContentModeration() {
   const [reports, setReports] = useState<ReportedContent[]>([])
   const [selectedReport, setSelectedReport] = useState<ReportedContent | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [actionLoading, setActionLoading] = useState(false)
   const [filter, setFilter] = useState('pending')
   const [moderationAction, setModerationAction] = useState<ModerationAction>({
@@ -70,6 +72,16 @@ export function ContentModeration() {
 
   const fetchReports = async () => {
     try {
+      // Check authentication first
+      const { data: { user }, error: authError } = await supabase.auth.getUser()
+      
+      if (authError || !user) {
+        console.error('Authentication error:', authError)
+        throw new Error('You must be logged in to view reports')
+      }
+
+      console.log('Authenticated user:', user.id)
+
       let query = supabase
         .from('content_reports')
         .select(`
@@ -87,7 +99,10 @@ export function ContentModeration() {
 
       const { data, error } = await query
 
-      if (error) throw error
+      if (error) {
+        console.error('Error fetching reports:', error)
+        throw error
+      }
 
       // Fetch content details for each report
       const enrichedReports = await Promise.all(
@@ -117,7 +132,7 @@ export function ContentModeration() {
               case 'review':
                 const { data: reviewData } = await supabase
                   .from('reviews')
-                  .select('comment, rating, reviewer:user_profiles(full_name)')
+                  .select('comment, rating, reviewer:user_profiles!reviewer_id(full_name)')
                   .eq('id', report.content_id)
                   .single()
                 contentDetails = reviewData
@@ -135,8 +150,13 @@ export function ContentModeration() {
       )
 
       setReports(enrichedReports)
+      setError(null)
     } catch (error) {
       console.error('Error fetching reports:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch reports'
+      setError(errorMessage)
+      // Set empty array if there's an error
+      setReports([])
     } finally {
       setLoading(false)
     }
@@ -291,8 +311,28 @@ export function ContentModeration() {
     )
   }
 
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px]">
+        <Flag className="w-12 h-12 text-red-400 mb-4" />
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">Error Loading Reports</h3>
+        <p className="text-gray-600 mb-4">{error}</p>
+        <Button onClick={() => {
+          setError(null)
+          setLoading(true)
+          fetchReports()
+        }}>
+          Try Again
+        </Button>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
+      {/* Debug Info */}
+      <AdminAuthDebug />
+      
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
