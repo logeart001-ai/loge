@@ -347,10 +347,11 @@ export default async function CreatorAnalyticsPage() {
                       <div
                         key={index}
                         className="flex-1 group relative h-full"
+                        style={{ ['--bar-height' as string]: `${height}%` } as React.CSSProperties}
                       >
                         <div
-                          className={`w-full bg-blue-500 rounded-t hover:bg-blue-600 transition-colors cursor-pointer absolute bottom-0`}
-                          style={{ height: `${height}%` } as React.CSSProperties}
+                          className="w-full bg-blue-500 rounded-t hover:bg-blue-600 transition-colors cursor-pointer absolute bottom-0"
+                          style={{ height: 'var(--bar-height)' }}
                           title={`${new Date(day.date).toLocaleDateString()}: ${formatCurrency(day.amount)} (${day.count} orders)`}
                         />
                         
