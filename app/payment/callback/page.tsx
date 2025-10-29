@@ -19,17 +19,23 @@ function PaymentCallbackContent() {
 
   useEffect(() => {
     const verifyPayment = async () => {
+      console.log('🔥 Payment callback page loaded')
       const reference = searchParams.get('reference')
+      console.log('🔥 Payment reference from URL:', reference)
       
       if (!reference) {
+        console.log('🔥 No payment reference found in URL')
         setStatus('failed')
         setMessage('No payment reference found')
         return
       }
 
       try {
+        console.log('🔥 About to call verification API:', `/api/payments/verify?reference=${reference}`)
         const response = await fetch(`/api/payments/verify?reference=${reference}`)
+        console.log('🔥 Verification API response status:', response.status)
         const data = await response.json()
+        console.log('🔥 Verification API response data:', data)
 
         if (data.success) {
           setStatus('success')

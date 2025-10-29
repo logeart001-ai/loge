@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase-client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { GrowthChart } from './growth-chart'
 import { 
   BarChart3, 
   TrendingUp, 
@@ -50,12 +51,11 @@ interface AnalyticsData {
 }
 
 interface ChartData {
-  labels: string[]
-  datasets: Array<{
-    label: string
-    data: number[]
-    color: string
-  }>
+  date: string
+  users: number
+  artworks: number
+  revenue: number
+  orders: number
 }
 
 export function AnalyticsDashboard() {
@@ -67,10 +67,8 @@ export function AnalyticsDashboard() {
   })
   const [loading, setLoading] = useState(true)
   const [timeRange, setTimeRange] = useState('30d')
-  const [chartData, setChartData] = useState<ChartData>({
-    labels: [],
-    datasets: []
-  })
+  const [chartData, setChartData] = useState<ChartData[]>([])
+  const [chartType, setChartType] = useState<'area' | 'line' | 'bar'>('area')
   const supabase = createClient()
 
   useEffect(() => {
@@ -180,27 +178,49 @@ export function AnalyticsDashboard() {
         }
       })
 
-      // Generate chart data (simplified example)
-      const last7Days = Array.from({ length: 7 }, (_, i) => {
-        const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000)
-        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-      }).reverse()
+      // Generate growth trend data for the last 30 days
+      const days = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : 90
+      const growthData: ChartData[] = []
 
-      setChartData({
-        labels: last7Days,
-        datasets: [
-          {
-            label: 'New Users',
-            data: [12, 19, 3, 5, 2, 3, 9], // Mock data
-            color: '#3B82F6'
-          },
-          {
-            label: 'New Artworks',
-            data: [2, 3, 20, 5, 1, 4, 6], // Mock data
-            color: '#10B981'
-          }
-        ]
-      })
+      for (let i = days - 1; i >= 0; i--) {
+        const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000)
+        const startOfDay = new Date(date.setHours(0, 0, 0, 0))
+        const endOfDay = new Date(date.setHours(23, 59, 59, 999))
+
+        // Fetch users created on this day
+        const { count: dailyUsers } = await supabase
+          .from('user_profiles')
+          .select('*', { count: 'exact', head: true })
+          .gte('created_at', startOfDay.toISOString())
+          .lte('created_at', endOfDay.toISOString())
+
+        // Fetch artworks created on this day
+        const { count: dailyArtworks } = await supabase
+          .from('artworks')
+          .select('*', { count: 'exact', head: true })
+          .gte('created_at', startOfDay.toISOString())
+          .lte('created_at', endOfDay.toISOString())
+
+        // Fetch orders and revenue for this day
+        const { data: dailyOrders } = await supabase
+          .from('orders')
+          .select('total_amount')
+          .gte('created_at', startOfDay.toISOString())
+          .lte('created_at', endOfDay.toISOString())
+          .eq('status', 'delivered')
+
+        const dailyRevenue = dailyOrders?.reduce((sum, order) => sum + (order.total_amount || 0), 0) || 0
+
+        growthData.push({
+          date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+          users: dailyUsers || 0,
+          artworks: dailyArtworks || 0,
+          revenue: dailyRevenue,
+          orders: dailyOrders?.length || 0
+        })
+      }
+
+      setChartData(growthData)
 
     } catch (error) {
       console.error('Error fetching analytics:', error)
@@ -314,19 +334,36 @@ export function AnalyticsDashboard() {
             </Card>
           </div>
 
-          {/* Chart placeholder */}
+          {/* Growth Trends Chart */}
           <Card>
             <CardHeader>
-              <CardTitle>Growth Trends</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
-                <div className="text-center">
-                  <BarChart3 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600">Chart visualization would go here</p>
-                  <p className="text-sm text-gray-500">Integration with charting library needed</p>
+              <div className="flex items-center justify-between">
+                <CardTitle>Growth Trends</CardTitle>
+                <div className="flex gap-2">
+                  <Select value={chartType} onValueChange={(value: any) => setChartType(value)}>
+                    <SelectTrigger className="w-32">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="area">Area</SelectItem>
+                      <SelectItem value="line">Line</SelectItem>
+                      <SelectItem value="bar">Bar</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
+            </CardHeader>
+            <CardContent>
+              <GrowthChart
+                data={chartData}
+                datasets={[
+                  { key: 'users', label: 'New Users', color: '#3B82F6' },
+                  { key: 'artworks', label: 'New Artworks', color: '#10B981' },
+                  { key: 'orders', label: 'Orders', color: '#F59E0B' }
+                ]}
+                type={chartType}
+                height={320}
+              />
             </CardContent>
           </Card>
         </TabsContent>
