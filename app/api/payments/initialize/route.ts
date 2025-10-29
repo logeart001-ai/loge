@@ -19,13 +19,21 @@ export async function POST(request: NextRequest) {
     console.log('🔥 User authenticated:', user.email)
 
     const body = await request.json()
-    const { cart_id, email } = body
-    console.log('🔥 Request body:', { cart_id, email })
+    const { cart_id, email, shipping } = body
+    console.log('🔥 Request body:', { cart_id, email, hasShipping: !!shipping })
 
     if (!cart_id || !email) {
       console.log('🔥 Missing required fields')
       return NextResponse.json(
         { error: 'Missing required fields: cart_id, email' },
+        { status: 400 }
+      )
+    }
+
+    if (!shipping) {
+      console.log('🔥 Missing shipping information')
+      return NextResponse.json(
+        { error: 'Please select a shipping option' },
         { status: 400 }
       )
     }
@@ -85,13 +93,19 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Calculate total amount
-    const totalAmount = cartItems.reduce((sum, item) => {
+    // Calculate subtotal
+    const subtotal = cartItems.reduce((sum, item) => {
       const price = typeof item.unit_price === 'string' 
         ? parseFloat(item.unit_price) 
         : item.unit_price
       return sum + (price * item.quantity)
     }, 0)
+
+    // Add shipping cost
+    const shippingCost = shipping.price || 0
+    const totalAmount = subtotal + shippingCost
+    
+    console.log('🔥 Order totals:', { subtotal, shippingCost, totalAmount })
 
     // Generate order number
     const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`
@@ -113,11 +127,16 @@ export async function POST(request: NextRequest) {
           ? parseFloat(firstItem.unit_price) 
           : firstItem.unit_price,
         total_amount: totalAmount,
-        subtotal: totalAmount,
-        shipping_cost: 0,
+        subtotal: subtotal,
+        shipping_cost: shippingCost,
         status: 'pending',
         payment_status: 'pending',
-        shipping_address: {}, // TODO: Add shipping address collection
+        shipping_address: {
+          provider: shipping.provider,
+          service_type: shipping.service_type,
+          estimated_delivery_days: shipping.estimated_delivery_days,
+          tracking_available: shipping.tracking_available
+        },
       })
       .select()
       .single()

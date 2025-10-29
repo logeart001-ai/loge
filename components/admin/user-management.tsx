@@ -118,21 +118,26 @@ export function UserManagement() {
 
   const updateUserStatus = async (userId: string, newStatus: string) => {
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('user_profiles')
-        .update({ status: newStatus })
+        .update({ account_status: newStatus })
         .eq('id', userId)
+        .select()
 
-      if (error) throw error
+      if (error) {
+        console.error('Supabase error:', error)
+        throw new Error(error.message || 'Failed to update user status')
+      }
 
       setUsers(prev => prev.map(user => 
         user.id === userId ? { ...user, status: newStatus } : user
       ))
 
-      alert(`User status updated to ${newStatus}`)
+      alert(`User account status updated to ${newStatus}`)
     } catch (error) {
       console.error('Error updating user status:', error)
-      alert('Failed to update user status')
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+      alert(`Failed to update user status: ${errorMessage}`)
     }
   }
 

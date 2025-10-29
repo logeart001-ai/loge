@@ -2,6 +2,7 @@
 import { LogisticsProvider, ShipmentRequest, ShippingQuote, TrackingInfo } from './types'
 import { SendboxProvider } from './providers/sendbox'
 import { GIGProvider } from './providers/gig'
+import { FallbackProvider } from './providers/fallback'
 
 export class LogisticsService {
   private providers: LogisticsProvider[] = []
@@ -15,6 +16,9 @@ export class LogisticsService {
     if (process.env.GIG_API_KEY) {
       this.providers.push(new GIGProvider(process.env.GIG_API_KEY))
     }
+    
+    // Always add fallback provider for testing/development
+    this.providers.push(new FallbackProvider())
   }
 
   async getShippingQuotes(request: ShipmentRequest): Promise<ShippingQuote[]> {
