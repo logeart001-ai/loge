@@ -117,166 +117,198 @@ export function ShippingCalculator({
   }
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Package className="w-5 h-5" />
+    <div className="w-full max-w-none">
+      <Card className="w-full">
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Package className="w-5 h-5 text-orange-600" />
             Shipping Calculator
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="recipient_name">Recipient Name</Label>
+        <CardContent className="space-y-6">
+          {/* Delivery Address Form */}
+          <div className="space-y-4">
+            <h3 className="font-medium text-gray-900 text-sm">Delivery Address</h3>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="recipient_name" className="text-sm font-medium">Recipient Name</Label>
+                <Input
+                  id="recipient_name"
+                  value={deliveryAddress.recipient_name}
+                  onChange={(e) => setDeliveryAddress(prev => ({ ...prev, recipient_name: e.target.value }))}
+                  placeholder="Full name"
+                  className="w-full"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone" className="text-sm font-medium">Phone Number</Label>
+                <Input
+                  id="phone"
+                  value={deliveryAddress.phone}
+                  onChange={(e) => setDeliveryAddress(prev => ({ ...prev, phone: e.target.value }))}
+                  placeholder="+234..."
+                  className="w-full"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="street" className="text-sm font-medium">Street Address</Label>
               <Input
-                id="recipient_name"
-                value={deliveryAddress.recipient_name}
-                onChange={(e) => setDeliveryAddress(prev => ({ ...prev, recipient_name: e.target.value }))}
-                placeholder="Full name"
+                id="street"
+                value={deliveryAddress.street}
+                onChange={(e) => setDeliveryAddress(prev => ({ ...prev, street: e.target.value }))}
+                placeholder="Enter full street address"
+                className="w-full"
               />
             </div>
-            <div>
-              <Label htmlFor="phone">Phone Number</Label>
-              <Input
-                id="phone"
-                value={deliveryAddress.phone}
-                onChange={(e) => setDeliveryAddress(prev => ({ ...prev, phone: e.target.value }))}
-                placeholder="+234..."
-              />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="city" className="text-sm font-medium">City</Label>
+                <Input
+                  id="city"
+                  value={deliveryAddress.city}
+                  onChange={(e) => setDeliveryAddress(prev => ({ ...prev, city: e.target.value }))}
+                  placeholder="City"
+                  className="w-full"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="state" className="text-sm font-medium">State</Label>
+                <Select onValueChange={(value) => setDeliveryAddress(prev => ({ ...prev, state: value }))}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select state" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {nigerianStates.map((state) => (
+                      <SelectItem key={state} value={state}>
+                        {state}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
+
+            <Button 
+              onClick={getQuotes} 
+              disabled={loading}
+              className="w-full bg-orange-600 hover:bg-orange-700"
+            >
+              {loading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                  Getting Quotes...
+                </>
+              ) : (
+                <>
+                  <Truck className="w-4 h-4 mr-2" />
+                  Get Shipping Quotes
+                </>
+              )}
+            </Button>
           </div>
 
-          <div>
-            <Label htmlFor="street">Street Address</Label>
-            <Input
-              id="street"
-              value={deliveryAddress.street}
-              onChange={(e) => setDeliveryAddress(prev => ({ ...prev, street: e.target.value }))}
-              placeholder="Street address"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="city">City</Label>
-              <Input
-                id="city"
-                value={deliveryAddress.city}
-                onChange={(e) => setDeliveryAddress(prev => ({ ...prev, city: e.target.value }))}
-                placeholder="City"
-              />
-            </div>
-            <div>
-              <Label htmlFor="state">State</Label>
-              <Select onValueChange={(value) => setDeliveryAddress(prev => ({ ...prev, state: value }))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select state" />
-                </SelectTrigger>
-                <SelectContent>
-                  {nigerianStates.map((state) => (
-                    <SelectItem key={state} value={state}>
-                      {state}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <Button 
-            onClick={getQuotes} 
-            disabled={loading}
-            className="w-full"
-          >
-            {loading ? 'Getting Quotes...' : 'Get Shipping Quotes'}
-          </Button>
-        </CardContent>
-      </Card>
-
-      {quotes.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Truck className="w-5 h-5" />
-              Available Shipping Options
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {quotes.map((quote, index) => (
-                <div
-                  key={index}
-                  className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                    selectedQuote === quote
-                      ? 'border-orange-500 bg-orange-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                  onClick={() => handleQuoteSelect(quote)}
-                >
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h4 className="font-semibold">{quote.provider}</h4>
-                        <Badge variant="secondary">{quote.service_type}</Badge>
-                        {quote.tracking_available && (
-                          <Badge variant="outline" className="text-xs">
-                            <Package className="w-3 h-3 mr-1" />
-                            Tracking
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-4 text-sm text-gray-600">
-                        <div className="flex items-center gap-1">
-                          <Clock className="w-4 h-4" />
-                          {quote.estimated_delivery_days} days
+          {/* Shipping Options */}
+          {quotes.length > 0 && (
+            <div className="space-y-4 border-t pt-6">
+              <h3 className="font-medium text-gray-900 text-sm flex items-center gap-2">
+                <Truck className="w-4 h-4 text-orange-600" />
+                Available Shipping Options
+              </h3>
+              
+              <div className="space-y-3">
+                {quotes.map((quote, index) => (
+                  <div
+                    key={index}
+                    className={`relative p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
+                      selectedQuote === quote
+                        ? 'border-orange-500 bg-orange-50 shadow-sm'
+                        : 'border-gray-200 hover:border-orange-300 hover:shadow-sm'
+                    }`}
+                    onClick={() => handleQuoteSelect(quote)}
+                  >
+                    {selectedQuote === quote && (
+                      <div className="absolute top-2 right-2">
+                        <div className="w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center">
+                          <div className="w-2 h-2 bg-white rounded-full" />
                         </div>
-                        {itemValue > 50000 && (
+                      </div>
+                    )}
+                    
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                          <h4 className="font-semibold text-gray-900 text-sm">{quote.provider}</h4>
+                          <Badge variant="secondary" className="text-xs px-2 py-1">
+                            {quote.service_type}
+                          </Badge>
+                          {quote.tracking_available && (
+                            <Badge variant="outline" className="text-xs px-2 py-1">
+                              <Package className="w-3 h-3 mr-1" />
+                              Tracking
+                            </Badge>
+                          )}
+                        </div>
+                        
+                        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
                           <div className="flex items-center gap-1">
-                            <Shield className="w-4 h-4" />
-                            Insurance included
+                            <Clock className="w-4 h-4" />
+                            <span>{quote.estimated_delivery_days} day{quote.estimated_delivery_days !== 1 ? 's' : ''}</span>
                           </div>
-                        )}
+                          {itemValue > 50000 && (
+                            <div className="flex items-center gap-1">
+                              <Shield className="w-4 h-4" />
+                              <span>Insurance included</span>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-lg font-bold text-gray-900">
-                        ₦{quote.price.toLocaleString()}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        Shipping fee
+                      
+                      <div className="text-right sm:text-right">
+                        <div className="text-lg font-bold text-gray-900">
+                          ₦{quote.price.toLocaleString()}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          Shipping fee
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </CardContent>
-        </Card>
-      )}
+          )}
 
-      {selectedQuote && (
-        <Card className="border-orange-200 bg-orange-50">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-semibold text-orange-900">Selected Shipping Option</h4>
-                <p className="text-orange-700">
-                  {selectedQuote.provider} - {selectedQuote.service_type}
-                </p>
-              </div>
-              <div className="text-right">
-                <div className="text-lg font-bold text-orange-900">
-                  ₦{selectedQuote.price.toLocaleString()}
-                </div>
-                <div className="text-sm text-orange-700">
-                  Delivery in {selectedQuote.estimated_delivery_days} days
+          {/* Selected Quote Summary */}
+          {selectedQuote && (
+            <div className="border-t pt-6">
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-orange-900 text-sm mb-1">
+                      Selected Shipping Option
+                    </h4>
+                    <p className="text-orange-700 text-sm">
+                      {selectedQuote.provider} - {selectedQuote.service_type}
+                    </p>
+                  </div>
+                  <div className="text-right sm:text-right">
+                    <div className="text-lg font-bold text-orange-900">
+                      ₦{selectedQuote.price.toLocaleString()}
+                    </div>
+                    <div className="text-sm text-orange-700">
+                      Delivery in {selectedQuote.estimated_delivery_days} day{selectedQuote.estimated_delivery_days !== 1 ? 's' : ''}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      )}
+          )}
+        </CardContent>
+      </Card>
     </div>
   )
 }

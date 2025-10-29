@@ -82,8 +82,8 @@ export default function CartPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 space-y-4">
+          <div className="flex flex-col lg:flex-row gap-6">
+            <div className="flex-1 lg:max-w-2xl space-y-4">
               {cart.items.map(item => (
                 <CartRow key={item.id} item={{
                   id: item.id,
@@ -95,7 +95,7 @@ export default function CartPage() {
                 }} />
               ))}
             </div>
-            <div className="space-y-6">
+            <div className="w-full lg:w-96 lg:shrink-0 space-y-6">
               {/* Order Summary */}
               <Card>
                 <CardHeader>
@@ -166,15 +166,17 @@ export default function CartPage() {
               
               {/* Shipping Calculator */}
               {showShipping && (
-                <ShippingCalculator
-                  itemType="art"
-                  itemValue={cart.subtotal}
-                  itemWeight={2} // Default weight, could be calculated from items
-                  onQuoteSelect={(quote) => {
-                    setSelectedShipping(quote)
-                    setError(null)
-                  }}
-                />
+                <div className="w-full">
+                  <ShippingCalculator
+                    itemType="art"
+                    itemValue={cart.subtotal}
+                    itemWeight={2} // Default weight, could be calculated from items
+                    onQuoteSelect={(quote) => {
+                      setSelectedShipping(quote)
+                      setError(null)
+                    }}
+                  />
+                </div>
               )}
             </div>
           </div>

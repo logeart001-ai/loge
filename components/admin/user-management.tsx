@@ -9,18 +9,13 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { 
   Users, 
   Search, 
-  Filter, 
   MoreVertical, 
   Ban, 
   CheckCircle, 
-  Mail, 
-  Shield,
-  UserCheck,
-  UserX
+  Mail
 } from 'lucide-react'
 
 interface User {
@@ -29,7 +24,7 @@ interface User {
   full_name: string
   username: string
   role: string
-  status: string
+  account_status: string
   created_at: string
   last_sign_in_at: string
   avatar_url?: string
@@ -62,7 +57,7 @@ export function UserManagement() {
     try {
       const { data, error } = await supabase
         .from('user_profiles')
-        .select('*')
+        .select('id, email, full_name, username, role, account_status, created_at, last_sign_in_at, avatar_url, bio, discipline, phone, location')
         .order('created_at', { ascending: false })
 
       if (error) throw error
@@ -90,7 +85,7 @@ export function UserManagement() {
     }
 
     if (statusFilter !== 'all') {
-      filtered = filtered.filter(user => user.status === statusFilter)
+      filtered = filtered.filter(user => user.account_status === statusFilter)
     }
 
     setFilteredUsers(filtered)
@@ -130,7 +125,7 @@ export function UserManagement() {
       }
 
       setUsers(prev => prev.map(user => 
-        user.id === userId ? { ...user, status: newStatus } : user
+        user.id === userId ? { ...user, account_status: newStatus } : user
       ))
 
       alert(`User account status updated to ${newStatus}`)
@@ -262,7 +257,7 @@ export function UserManagement() {
 
                 <div className="flex items-center space-x-4">
                   {getRoleBadge(user.role)}
-                  {getStatusBadge(user.status)}
+                  {getStatusBadge(user.account_status)}
                   
                   <div className="flex items-center space-x-2">
                     <Dialog open={isDialogOpen && selectedUser?.id === user.id} onOpenChange={setIsDialogOpen}>
@@ -301,7 +296,7 @@ export function UserManagement() {
                           <div>
                             <Label>Change Status</Label>
                             <Select
-                              value={user.status}
+                              value={user.account_status}
                               onValueChange={(value) => updateUserStatus(user.id, value)}
                             >
                               <SelectTrigger>
@@ -319,9 +314,9 @@ export function UserManagement() {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => updateUserStatus(user.id, user.status === 'active' ? 'suspended' : 'active')}
+                              onClick={() => updateUserStatus(user.id, user.account_status === 'active' ? 'suspended' : 'active')}
                             >
-                              {user.status === 'active' ? (
+                              {user.account_status === 'active' ? (
                                 <>
                                   <Ban className="w-4 h-4 mr-2" />
                                   Suspend
