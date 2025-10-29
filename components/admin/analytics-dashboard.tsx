@@ -119,11 +119,11 @@ export function AnalyticsDashboard() {
         .from('wishlists')
         .select('*', { count: 'exact', head: true })
 
-      // Fetch sales analytics
+      // Fetch sales analytics - only count delivered orders
       const { data: ordersData } = await supabase
         .from('orders')
         .select('total_amount, created_at')
-        .eq('status', 'completed')
+        .eq('status', 'delivered')
 
       const totalRevenue = ordersData?.reduce((sum, order) => sum + order.total_amount, 0) || 0
       const monthlyOrders = ordersData?.filter(order => 
