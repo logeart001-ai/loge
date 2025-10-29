@@ -14,7 +14,6 @@ import {
   Eye, 
   Heart,
   DollarSign,
-  Calendar,
   Activity,
   Star,
   MessageSquare
@@ -56,6 +55,7 @@ interface ChartData {
   artworks: number
   revenue: number
   orders: number
+  [key: string]: string | number
 }
 
 export function AnalyticsDashboard() {
@@ -73,12 +73,12 @@ export function AnalyticsDashboard() {
 
   useEffect(() => {
     fetchAnalytics()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeRange])
 
   const fetchAnalytics = async () => {
     try {
       const now = new Date()
-      const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
 
       // Fetch user analytics
@@ -340,7 +340,7 @@ export function AnalyticsDashboard() {
               <div className="flex items-center justify-between">
                 <CardTitle>Growth Trends</CardTitle>
                 <div className="flex gap-2">
-                  <Select value={chartType} onValueChange={(value: any) => setChartType(value)}>
+                  <Select value={chartType} onValueChange={(value: 'area' | 'line' | 'bar') => setChartType(value)}>
                     <SelectTrigger className="w-32">
                       <SelectValue />
                     </SelectTrigger>
