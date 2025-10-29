@@ -47,10 +47,12 @@ export function UserManagement() {
 
   useEffect(() => {
     fetchUsers()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
     filterUsers()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [users, searchTerm, roleFilter, statusFilter])
 
   const fetchUsers = async () => {

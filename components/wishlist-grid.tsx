@@ -88,6 +88,7 @@ export function WishlistGrid() {
 
   useEffect(() => {
     fetchWishlist()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const fetchWishlist = async () => {
