@@ -108,7 +108,7 @@ export default async function BlogPage({
       <Navbar />
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-16">
+      <section className="bg-linear-to-r from-orange-500 to-red-500 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-4">
@@ -204,7 +204,7 @@ export default async function BlogPage({
       </section>
 
       {/* Newsletter Signup */}
-      <section className="py-12 bg-gradient-to-r from-orange-500 to-red-500">
+      <section className="py-12 bg-linear-to-r from-orange-500 to-red-500">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
             Stay Updated with Our Latest Stories

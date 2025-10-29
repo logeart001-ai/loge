@@ -32,7 +32,7 @@ export default async function ArtworkDetailPage({ params }: { params: Promise<{ 
           <div>
             <Card>
               <CardContent className="p-0">
-                <div className="relative w-full h-[320px] md:h-[480px] bg-white">
+                <div className="relative w-full h-80 md:h-[480px] bg-white">
                   {images.length > 0 ? (
                     <OptimizedImage
                       src={images[0]}
