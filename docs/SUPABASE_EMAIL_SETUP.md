@@ -1,6 +1,7 @@
 # Supabase Email Configuration Guide
 
 ## Overview
+
 Supabase provides built-in email templates for authentication flows. This guide shows you how to customize them for L'oge Arts branding.
 
 ## Accessing Email Templates
@@ -12,15 +13,18 @@ Supabase provides built-in email templates for authentication flows. This guide 
 ## Available Templates
 
 ### 1. Confirm Signup (Email Confirmation)
+
 **When sent:** User creates an account
 **Default subject:** "Confirm Your Email"
 **Variables available:**
+
 - `{{ .ConfirmationURL }}` - Link to confirm email
 - `{{ .Token }}` - Token for manual confirmation
 - `{{ .Email }}` - User's email address
-- `{{ .SiteURL }}` - Your site URL (https://logeart.vercel.app)
+- `{{ .SiteURL }}` - Your site URL (<https://logeart.vercel.app>)
 
 **Recommended Custom Template:**
+
 ```html
 <h2>Welcome to L'oge Arts! 🎨</h2>
 
@@ -51,15 +55,18 @@ Supabase provides built-in email templates for authentication flows. This guide 
 ```
 
 ### 2. Reset Password (Forgot Password)
+
 **When sent:** User requests password reset
 **Default subject:** "Reset Your Password"
 **Variables available:**
+
 - `{{ .ConfirmationURL }}` - Password reset link
 - `{{ .Token }}` - Token for manual reset
 - `{{ .Email }}` - User's email address
 - `{{ .SiteURL }}` - Your site URL
 
 **Recommended Custom Template:**
+
 ```html
 <h2>Password Reset Request 🔒</h2>
 
@@ -91,11 +98,13 @@ Supabase provides built-in email templates for authentication flows. This guide 
 ```
 
 ### 3. Magic Link
+
 **When sent:** User requests passwordless login
 **Default subject:** "Your Magic Link"
 **Variables available:** Same as password reset
 
 **Recommended Custom Template:**
+
 ```html
 <h2>Your Magic Link 🪄</h2>
 
@@ -126,10 +135,12 @@ Supabase provides built-in email templates for authentication flows. This guide 
 ```
 
 ### 4. Change Email Address
+
 **When sent:** User changes their email
 **Default subject:** "Confirm Email Change"
 
 **Recommended Custom Template:**
+
 ```html
 <h2>Confirm Email Change 📧</h2>
 
@@ -164,35 +175,39 @@ Supabase provides built-in email templates for authentication flows. This guide 
 ## SMTP Configuration (Optional - For Production)
 
 ### Option 1: Use Supabase's Email Service (Easiest)
+
 - **Pros:** Free, no setup required, works immediately
 - **Cons:** Limited to 3 emails/hour per user (rate limited)
 - **Best for:** Development and testing
 
 ### Option 2: Custom SMTP (Recommended for Production)
+
 Configure your own SMTP in **Settings** → **Auth** → **SMTP Settings**
 
 **Recommended Providers:**
+
 1. **Resend** (Modern, Developer-friendly)
    - Free: 3,000 emails/month
    - From: `noreply@logeart.com` (custom domain)
-   - Setup: https://resend.com
+   - Setup: <https://resend.com>
 
 2. **SendGrid** (Enterprise-grade)
    - Free: 100 emails/day
    - Reliable delivery
-   - Setup: https://sendgrid.com
+   - Setup: <https://sendgrid.com>
 
 3. **Amazon SES** (Cost-effective)
    - $0.10 per 1,000 emails
    - High deliverability
-   - Setup: https://aws.amazon.com/ses
+   - Setup: <https://aws.amazon.com/ses>
 
-### SMTP Configuration Steps:
+### SMTP Configuration Steps
 
 1. Go to **Settings** → **Auth** → **SMTP Settings** in Supabase
 2. Enable "Use Custom SMTP Server"
 3. Enter your SMTP details:
-   ```
+
+   ```text
    Host: smtp.resend.com
    Port: 587 (or 465 for SSL)
    Username: resend
@@ -200,13 +215,14 @@ Configure your own SMTP in **Settings** → **Auth** → **SMTP Settings**
    Sender email: noreply@logeart.com
    Sender name: L'oge Arts
    ```
+
 4. Click "Save"
 
 ## Email URL Configuration
 
 Ensure these URLs are correct in **Settings** → **Auth** → **URL Configuration**:
 
-```
+```text
 Site URL: https://logeart.vercel.app
 Redirect URLs:
   - https://logeart.vercel.app/auth/callback
@@ -220,23 +236,27 @@ Redirect URLs:
 ## Rate Limiting
 
 Supabase applies rate limits to prevent abuse:
+
 - **3 emails per hour** per user for auth emails (signup, password reset)
 - **Unlimited** for custom emails (via Edge Functions)
 
 To avoid issues:
+
 1. Don't resend confirmation emails too quickly
 2. Use custom email service for non-auth emails
 3. In production, set up custom SMTP
 
 ## Testing Email Delivery
 
-### Test Email Confirmation:
+### Test Email Confirmation
+
 1. Create a test account in your app
 2. Check your email inbox
 3. Click confirmation link
 4. Verify you're redirected to `/auth/confirmed`
 
-### Test Password Reset:
+### Test Password Reset
+
 1. Go to `/auth/forgot-password`
 2. Enter your email
 3. Check inbox for reset email
@@ -245,7 +265,7 @@ To avoid issues:
 
 ## Troubleshooting
 
-### Emails Not Being Received?
+### Emails Not Being Received
 
 1. **Check spam folder** - Auth emails often end up in spam
 2. **Verify email address** - Ensure it's valid
@@ -253,7 +273,7 @@ To avoid issues:
 4. **Rate limit hit** - Wait 1 hour if you've sent 3+ emails
 5. **SMTP errors** - Check SMTP configuration in Settings
 
-### Email Links Not Working?
+### Email Links Not Working
 
 1. **Check URL configuration** - Ensure Site URL and Redirect URLs are correct
 2. **Token expired** - Links expire after 1 hour
@@ -271,7 +291,7 @@ To avoid issues:
 7. ❌ **Don't spam users** - respect rate limits
 8. ❌ **Don't use Supabase emails** for marketing
 
-## Summary: Email Strategy
+## Summary - Email Strategy
 
 | Email Type | Service | Why |
 |------------|---------|-----|

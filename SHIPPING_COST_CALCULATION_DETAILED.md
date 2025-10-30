@@ -1,0 +1,394 @@
+# Shipping Cost Calculation - Detailed Guide
+
+## Overview
+The Loge Arts platform implements a sophisticated shipping cost calculation system that supports multiple logistics providers and handles different item types (art, books, fashion) with varying pricing strategies.
+
+## Architecture
+
+### 1. **Multi-Provider System**
+```
+LogisticsService
+├── SendboxProvider (Primary)
+├── GIGProvider (Secondary)  
+└── FallbackProvider (Testing/Backup)
+```
+
+### 2. **API Flow**
+```
+User Request → ShippingCalculator → /api/shipping/quote → LogisticsService → Providers → Database → Response
+```
+
+## Cost Calculation Factors
+
+### **Base Pricing Components**
+
+#### 1. **Weight-Based Pricing**
+```typescript
+// Minimum base price calculation
+const basePrice = Math.max(1000, package_details.weight * 500)
+```
+- **Minimum**: ₦1,000 regardless of weight
+- **Rate**: ₦500 per kg
+- **Example**: 2kg item = ₦1,000 (2 × 500 = 1000, but minimum is 1000)
+- **Example**: 3kg item = ₦1,500 (3 × 500 = 1500)
+
+#### 2. **Value-Based Insurance**
+```typescript
+const valueInsurance = package_details.value > 50000 ? package_details.value * 0.02 : 0
+```
+- **Threshold**: Items over ₦50,000
+- **Rate**: 2% of item value
+- **Example**: ₦75,000 artwork = ₦1,500 insurance (75,000 × 0.02)
+
+#### 3. **Geographic Multipliers**
+
+##### **Lagos (Same State)**
+- **Same Day**: Base price × 1.5
+- **Standard**: Base price × 1.0
+- **Delivery**: 1-2 days
+
+##### **Nearby States** (Ogun, Oyo, Osun)
+- **Express**: Base price × 1.8
+- **Standard**: Base price × 1.3
+- **Delivery**: 2-4 days
+
+##### **Other States**
+- **Express**: Base price × 2.5
+- **Standard**: Base price × 1.8
+- **Economy**: Base price × 1.2
+- **Delivery**: 3-10 days
+
+#### 4. **Special Handling Fees**
+
+##### **Fragile Items** (Artworks)
+```typescript
+if (package_details.fragile) {
+    quote.price += 500 // ₦500 fragile handling fee
+}
+```
+
+##### **Item Type Minimums**
+```typescript
+// Art items
+weight: Math.max(weight, 0.5) // Minimum 0.5kg
+insurance_required: artworkValue > 50000
+special_handling: artworkValue > 100000
+
+// Books  
+weight: Math.max(weight, 0.2) // Minimum 0.2kg
+insurance_required: bookValue > 20000
+
+// Fashion
+weight: Math.max(weight, 0.3) // Minimum 0.3kg
+insurance_required: fashionValue > 30000
+```
+
+## Calculation Examples
+
+### **Example 1: Lagos Artwork**
+```
+Item: Painting worth ₦75,000, 2kg
+Location: Lagos to Lagos
+
+Base Price: max(1000, 2 × 500) = ₦1,000
+Insurance: 75,000 × 0.02 = ₦1,500
+Fragile Fee: ₦500
+Geographic: Lagos Standard (×1.0)
+
+Same Day: (1,000 + 1,500 + 500) × 1.5 = ₦4,500
+Standard: (1,000 + 1,500 + 500) × 1.0 = ₦3,000
+```
+
+### **Example 2: Interstate Book**
+```
+Item: Book worth ₦15,000, 0.5kg
+Location: Lagos to Abuja
+
+Base Price: max(1000, 0.5 × 500) = ₦1,000
+Insurance: 0 (under ₦20,000 threshold)
+Fragile Fee: ₦0
+Geographic: Other States
+
+Express: 1,000 × 2.5 = ₦2,500 (3 days)
+Standard: 1,000 × 1.8 = ₦1,800 (6 days)
+Economy: 1,000 × 1.2 = ₦1,200 (10 days)
+```
+
+### **Example 3: High-Value Fashion**
+```
+Item: Designer dress worth ₦45,000, 1kg
+Location: Lagos to Ogun State
+
+Base Price: max(1000, 1 × 500) = ₦1,000
+Insurance: 0 (under ₦50,000 threshold)
+Fragile Fee: ₦0
+Geographic: Nearby State
+
+Express: 1,000 × 1.8 = ₦1,800 (2 days)
+Standard: 1,000 × 1.3 = ₦1,300 (4 days)
+```
+
+## Provider Integration
+
+### **1. Sendbox Provider**
+```typescript
+// Real API integration
+const response = await fetch('https://api.sendbox.co/shipping/quote', {
+  headers: { 'Authorization': `Bearer ${apiKey}` },
+  body: JSON.stringify(shipmentData)
+})
+```
+
+### **2. GIG Logistics**
+```typescript
+// Specialized for fragile items
+if (package_details.fragile && package_details.value > 100000) {
+  // Route to GIG for premium handling
+}
+```
+
+### **3. Fallback Provider**
+```typescript
+// Used when external APIs fail or in development
+// Provides consistent pricing for testing
+```
+
+## Database Storage
+
+### **Shipping Quotes Table**
+```sql
+CREATE TABLE shipping_quotes (
+    id UUID PRIMARY KEY,
+    user_id UUID REFERENCES auth.users(id),
+    provider VARCHAR(50),
+    service_type VARCHAR(100),
+    price DECIMAL(10,2),
+    estimated_delivery_days INTEGER,
+    pickup_address JSONB,
+    delivery_address JSONB,
+    package_details JSONB,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+### **Shipments Table**
+```sql
+CREATE TABLE shipments (
+    id UUID PRIMARY KEY,
+    order_id UUID REFERENCES orders(id),
+    tracking_number VARCHAR(100) UNIQUE,
+    provider VARCHAR(50),
+    status VARCHAR(50),
+    shipping_cost DECIMAL(10,2),
+    insurance_cost DECIMAL(10,2),
+    pickup_address JSONB,
+    delivery_address JSONB,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+## API Endpoints
+
+### **Get Quotes**
+```
+POST /api/shipping/quote
+```
+**Request:**
+```json
+{
+  "pickup_address": {
+    "street": "123 Creator St",
+    "city": "Lagos", 
+    "state": "Lagos",
+    "country": "Nigeria"
+  },
+  "delivery_address": {
+    "street": "456 Buyer Ave",
+    "city": "Abuja",
+    "state": "FCT", 
+    "country": "Nigeria"
+  },
+  "package_details": {
+    "weight": 2.5,
+    "length": 40,
+    "width": 30, 
+    "height": 15,
+    "value": 75000,
+    "fragile": true,
+    "category": "art"
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "quotes": [
+    {
+      "provider": "Local Delivery",
+      "service_type": "Standard Delivery", 
+      "price": 4500,
+      "estimated_delivery_days": 6,
+      "tracking_available": true
+    },
+    {
+      "provider": "Local Delivery",
+      "service_type": "Express Delivery",
+      "price": 6250, 
+      "estimated_delivery_days": 3,
+      "tracking_available": true
+    }
+  ]
+}
+```
+
+## Frontend Integration
+
+### **Shipping Calculator Component**
+```tsx
+<ShippingCalculator
+  itemType="art"           // Determines fragile handling
+  itemValue={75000}        // For insurance calculation
+  itemWeight={2.5}         // Base pricing factor
+  itemDimensions={{        // For volume calculations
+    length: 40,
+    width: 30, 
+    height: 15
+  }}
+  onQuoteSelect={(quote) => {
+    // Handle selected shipping option
+    setShippingCost(quote.price)
+    setDeliveryTime(quote.estimated_delivery_days)
+  }}
+/>
+```
+
+## Cost Optimization Strategies
+
+### **1. Provider Competition**
+- Always show multiple quotes
+- Sort by price (cheapest first)
+- Highlight best value options
+
+### **2. Geographic Optimization**
+```typescript
+// Prefer local providers for regional deliveries
+if (isWithinLagos(pickup, delivery)) {
+  prioritizeProvider('Kwik Delivery') // Same-day options
+}
+```
+
+### **3. Bulk Shipping**
+```typescript
+// Combine multiple items when possible
+if (orderItems.length > 1) {
+  calculateCombinedShipping(orderItems)
+}
+```
+
+### **4. Insurance Optimization**
+```typescript
+// Only add insurance for high-value items
+const needsInsurance = itemValue > getInsuranceThreshold(itemType)
+```
+
+## Error Handling & Fallbacks
+
+### **Provider Failures**
+```typescript
+try {
+  quotes = await primaryProvider.getQuote(request)
+} catch (error) {
+  console.error('Primary provider failed:', error)
+  quotes = await fallbackProvider.getQuote(request)
+}
+```
+
+### **Invalid Addresses**
+```typescript
+// Validate addresses before calculation
+if (!isValidNigerianAddress(delivery_address)) {
+  throw new Error('Invalid delivery address')
+}
+```
+
+### **Weight/Size Limits**
+```typescript
+// Check provider restrictions
+if (weight > provider.maxWeight) {
+  throw new Error('Package exceeds weight limit')
+}
+```
+
+## Testing & Development
+
+### **Mock Data**
+```typescript
+// Use fallback provider for consistent testing
+if (process.env.NODE_ENV === 'development') {
+  return mockShippingQuotes
+}
+```
+
+### **Sandbox APIs**
+```env
+# Use test API keys
+SENDBOX_API_KEY=test_sk_...
+GIG_API_KEY=test_gig_...
+```
+
+## Monitoring & Analytics
+
+### **Key Metrics**
+- Quote success rate by provider
+- Average shipping costs by item type
+- Delivery time accuracy
+- Customer satisfaction scores
+
+### **Cost Analysis**
+```sql
+-- Average shipping cost by state
+SELECT 
+  delivery_state,
+  AVG(shipping_cost) as avg_cost,
+  COUNT(*) as shipment_count
+FROM shipments 
+GROUP BY delivery_state
+ORDER BY avg_cost DESC;
+```
+
+## Security & Compliance
+
+### **Data Protection**
+- Encrypt sensitive address data
+- Implement rate limiting on quote requests
+- Validate all input parameters
+
+### **API Security**
+```typescript
+// Validate user authentication
+const { data: { user } } = await supabase.auth.getUser()
+if (!user) {
+  return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+}
+```
+
+## Future Enhancements
+
+### **Dynamic Pricing**
+- Real-time fuel cost adjustments
+- Demand-based pricing during peak periods
+- Seasonal rate modifications
+
+### **AI Optimization**
+- Route optimization algorithms
+- Predictive delivery time modeling
+- Automated provider selection
+
+### **Advanced Features**
+- Scheduled delivery options
+- Delivery time slot selection
+- Real-time tracking integration
+- Automated retry logic for failed deliveries
+
+This comprehensive system ensures accurate, competitive shipping costs while providing flexibility for different item types and delivery requirements across Nigeria.
