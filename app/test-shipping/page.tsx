@@ -1,3 +1,5 @@
+'use client'
+
 import { ShippingCalculator } from '@/components/shipping/shipping-calculator'
 
 export default function TestShippingPage() {

@@ -22,15 +22,12 @@ interface User {
   id: string
   email: string
   full_name: string
-  username: string
   role: string
   account_status: string
   created_at: string
-  last_sign_in_at: string
   avatar_url?: string
   bio?: string
   discipline?: string
-  phone?: string
   location?: string
 }
 
@@ -59,13 +56,20 @@ export function UserManagement() {
     try {
       const { data, error } = await supabase
         .from('user_profiles')
-        .select('id, email, full_name, username, role, account_status, created_at, last_sign_in_at, avatar_url, bio, discipline, phone, location')
+        .select('id, email, full_name, role, account_status, created_at, avatar_url, bio, discipline, location')
         .order('created_at', { ascending: false })
 
-      if (error) throw error
+      if (error) {
+        console.error('Supabase error:', error)
+        throw new Error(`Failed to fetch users: ${error.message}`)
+      }
+      
       setUsers(data || [])
+      console.log(`Successfully loaded ${data?.length || 0} users`)
     } catch (error) {
       console.error('Error fetching users:', error)
+      // You could add a toast notification here if you have a toast system
+      alert(`Failed to load users: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
       setLoading(false)
     }
@@ -77,8 +81,7 @@ export function UserManagement() {
     if (searchTerm) {
       filtered = filtered.filter(user => 
         user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.username?.toLowerCase().includes(searchTerm.toLowerCase())
+        user.email?.toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
 
@@ -187,7 +190,7 @@ export function UserManagement() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <Input
-                  placeholder="Search users by name, email, or username..."
+                  placeholder="Search users by name or email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -253,7 +256,7 @@ export function UserManagement() {
                   <div>
                     <h3 className="font-semibold text-gray-900">{user.full_name}</h3>
                     <p className="text-sm text-gray-600">{user.email}</p>
-                    <p className="text-xs text-gray-500">@{user.username}</p>
+                    <p className="text-xs text-gray-500">{user.discipline || 'No discipline set'}</p>
                   </div>
                 </div>
 
