@@ -35,6 +35,8 @@ export function UserManagement() {
   const [users, setUsers] = useState<User[]>([])
   const [filteredUsers, setFilteredUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [retryCount, setRetryCount] = useState(0)
   const [searchTerm, setSearchTerm] = useState('')
   const [roleFilter, setRoleFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
@@ -43,7 +45,12 @@ export function UserManagement() {
   const supabase = createClient()
 
   useEffect(() => {
-    fetchUsers()
+    // Add a small delay to ensure auth is ready
+    const timer = setTimeout(() => {
+      fetchUsers()
+    }, 100)
+    
+    return () => clearTimeout(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -52,27 +59,69 @@ export function UserManagement() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [users, searchTerm, roleFilter, statusFilter])
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (isRetry = false) => {
     try {
+      if (!isRetry) {
+        setLoading(true)
+        setError(null)
+      }
+      
+      console.log('Fetching users...')
+      
+      // First check if we have a valid Supabase client
+      if (!supabase) {
+        throw new Error('Supabase client not initialized')
+      }
+
+      // Check authentication
+      const { data: { user }, error: authError } = await supabase.auth.getUser()
+      if (authError) {
+        console.error('Auth error:', authError)
+        throw new Error('Authentication failed')
+      }
+      
+      if (!user) {
+        throw new Error('User not authenticated')
+      }
+
+      console.log('User authenticated, fetching profiles...')
+
       const { data, error } = await supabase
         .from('user_profiles')
         .select('id, email, full_name, role, account_status, created_at, avatar_url, bio, discipline, location')
         .order('created_at', { ascending: false })
 
       if (error) {
-        console.error('Supabase error:', error)
-        throw new Error(`Failed to fetch users: ${error.message}`)
+        console.error('Supabase error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        })
+        throw new Error(`Database error: ${error.message}`)
       }
       
       setUsers(data || [])
-      console.log(`Successfully loaded ${data?.length || 0} users`)
+      setError(null)
+      console.log(`✅ Successfully loaded ${data?.length || 0} users`)
     } catch (error) {
-      console.error('Error fetching users:', error)
-      // You could add a toast notification here if you have a toast system
-      alert(`Failed to load users: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      console.error('❌ Error fetching users:', error)
+      
+      // More specific error messages
+      let errorMessage = 'Unknown error occurred'
+      if (error instanceof Error) {
+        errorMessage = error.message
+      }
+      
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleRetry = () => {
+    setRetryCount(prev => prev + 1)
+    fetchUsers(true)
   }
 
   const filterUsers = () => {
@@ -167,7 +216,36 @@ export function UserManagement() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading users...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-6 text-center">
+            <div className="text-red-500 mb-4">
+              <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Failed to Load Users</h3>
+            <p className="text-gray-600 mb-4">{error}</p>
+            <div className="space-y-2">
+              <Button onClick={handleRetry} className="w-full">
+                Try Again
+              </Button>
+              <p className="text-xs text-gray-500">
+                Retry attempt: {retryCount}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     )
   }
