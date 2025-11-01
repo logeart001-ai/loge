@@ -21,7 +21,7 @@ async function handleJson(res: Response) {
   const data = await res.json().catch(() => null)
   if (!res.ok) {
     const message = (data && (data.message || data.error)) || 'Request failed'
-    throw new Error(message)
+    throw retanew Error(message)
   }
   return data
 }
