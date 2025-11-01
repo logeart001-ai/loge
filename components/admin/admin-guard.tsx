@@ -42,35 +42,78 @@ export function AdminGuard({ children }: AdminGuardProps) {
       let profileError = null
 
       // Try profiles table first
+      console.log('Checking profiles table for user:', authUser.id)
       const { data: profileData1, error: error1 } = await supabase
         .from('profiles')
         .select('role, full_name, email')
         .eq('id', authUser.id)
         .single()
 
+      console.log('Profiles table result:', { data: profileData1, error: error1 })
+
       if (!error1 && profileData1) {
         profile = profileData1
+        console.log('Found profile in profiles table:', profile)
       } else {
         // Try user_profiles table
+        console.log('Checking user_profiles table for user:', authUser.id)
         const { data: profileData2, error: error2 } = await supabase
           .from('user_profiles')
           .select('role, full_name, email')
           .eq('id', authUser.id)
           .single()
 
+        console.log('User_profiles table result:', { data: profileData2, error: error2 })
+
         if (!error2 && profileData2) {
           profile = profileData2
+          console.log('Found profile in user_profiles table:', profile)
         } else {
           profileError = error2 || error1
+          console.log('No profile found in either table')
         }
       }
 
       if (profileError) {
-        console.error('Error fetching user profile:', profileError)
+        console.error('Error fetching user profile:', {
+          error: profileError,
+          message: profileError?.message || 'Unknown error',
+          code: profileError?.code || 'No code',
+          details: profileError?.details || 'No details',
+          userId: authUser.id
+        })
         console.log('Tried both "profiles" and "user_profiles" tables')
-        setIsAdmin(false)
-        setLoading(false)
-        return
+        console.log('User ID:', authUser.id)
+        console.log('User email:', authUser.email)
+        
+        // Try to create a profile if none exists
+        console.log('Attempting to create user profile...')
+        try {
+          const { data: newProfile, error: createError } = await supabase
+            .from('user_profiles')
+            .insert({
+              id: authUser.id,
+              full_name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'User',
+              role: 'buyer' // Default role
+            })
+            .select('role, full_name, email')
+            .single()
+
+          if (!createError && newProfile) {
+            console.log('Created new profile:', newProfile)
+            profile = newProfile
+          } else {
+            console.error('Failed to create profile:', createError)
+            setIsAdmin(false)
+            setLoading(false)
+            return
+          }
+        } catch (createErr) {
+          console.error('Exception creating profile:', createErr)
+          setIsAdmin(false)
+          setLoading(false)
+          return
+        }
       }
 
       // Check if user is admin
