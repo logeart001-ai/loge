@@ -10,26 +10,59 @@ import Link from 'next/link'
 async function getCreatorArtworks(userId: string) {
   const supabase = await createServerClient()
   
-  const { data: artworks, error } = await supabase
-    .from('artworks')
-    .select('*')
-    .eq('creator_id', userId)
-    .order('created_at', { ascending: false })
+  // Get both published artworks and submissions
+  const [artworksResult, submissionsResult] = await Promise.allSettled([
+    supabase
+      .from('artworks')
+      .select('*')
+      .eq('creator_id', userId)
+      .order('created_at', { ascending: false }),
+    
+    supabase
+      .from('project_submissions')
+      .select('*')
+      .eq('creator_id', userId)
+      .order('submission_date', { ascending: false })
+  ])
 
-  if (error) {
-    console.error('Error fetching artworks:', error)
-    return []
-  }
+  const artworks = artworksResult.status === 'fulfilled' ? artworksResult.value.data || [] : []
+  const submissions = submissionsResult.status === 'fulfilled' ? submissionsResult.value.data || [] : []
 
-  return artworks || []
+  // Combine artworks and submissions, avoiding duplicates
+  const combined = [
+    ...artworks.map(artwork => ({
+      ...artwork,
+      type: 'artwork',
+      status: 'published',
+      created_at: artwork.created_at
+    })),
+    ...submissions
+      .filter(sub => !artworks.some(art => art.title === sub.title)) // Avoid duplicates
+      .map(submission => ({
+        id: submission.id,
+        title: submission.title,
+        description: submission.description,
+        price: submission.price,
+        currency: submission.currency,
+        thumbnail_url: null, // Submissions don't have thumbnails in artworks format
+        type: 'submission',
+        status: submission.status,
+        created_at: submission.submission_date,
+        category: submission.creator_type,
+        is_available: submission.status === 'published'
+      }))
+  ]
+
+  return combined.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 }
 
 export default async function CreatorArtworksPage() {
   const user = await requireAuth()
   const artworks = await getCreatorArtworks(user.id)
 
-  const availableCount = artworks.filter(artwork => artwork.is_available).length
-  const soldCount = artworks.filter(artwork => !artwork.is_available).length
+  const publishedCount = artworks.filter(item => item.type === 'artwork' || item.status === 'published').length
+  const pendingCount = artworks.filter(item => item.status === 'submitted' || item.status === 'under_review').length
+  const rejectedCount = artworks.filter(item => item.status === 'rejected').length
   const totalViews = artworks.reduce((sum, artwork) => sum + (artwork.views_count || 0), 0)
 
   return (
@@ -69,21 +102,21 @@ export default async function CreatorArtworksPage() {
           
           <Card>
             <CardContent className="p-6 text-center">
-              <div className="w-8 h-8 bg-brand-yellow/20 rounded-full flex items-center justify-center mx-auto mb-2">
-                <span className="text-brand-yellow font-bold">✓</span>
+              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                <span className="text-green-600 font-bold">✓</span>
               </div>
-              <div className="text-2xl font-bold">{availableCount}</div>
-              <div className="text-gray-600">Available</div>
+              <div className="text-2xl font-bold">{publishedCount}</div>
+              <div className="text-gray-600">Published</div>
             </CardContent>
           </Card>
           
           <Card>
             <CardContent className="p-6 text-center">
-              <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                <span className="text-red-600 font-bold">✗</span>
+              <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                <span className="text-yellow-600 font-bold">⏳</span>
               </div>
-              <div className="text-2xl font-bold">{soldCount}</div>
-              <div className="text-gray-600">Sold</div>
+              <div className="text-2xl font-bold">{pendingCount}</div>
+              <div className="text-gray-600">Pending Review</div>
             </CardContent>
           </Card>
           
@@ -98,15 +131,48 @@ export default async function CreatorArtworksPage() {
           </Card>
         </div>
 
-        {/* Artworks Grid */}
+        {/* Artworks & Submissions Grid */}
         {artworks.length > 0 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {artworks.map((artwork) => (
-              <ArtworkCard 
-                key={artwork.id} 
-                artwork={artwork} 
-                isCreatorView={true}
-              />
+            {artworks.map((item) => (
+              <div key={item.id} className="relative">
+                {item.type === 'submission' ? (
+                  <Card className="hover:shadow-lg transition-shadow">
+                    <CardContent className="p-4">
+                      <div className="aspect-square bg-gray-100 rounded-lg mb-4 flex items-center justify-center">
+                        <Package className="w-12 h-12 text-gray-400" />
+                      </div>
+                      <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{item.title}</h3>
+                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">{item.description}</p>
+                      <div className="flex justify-between items-center mb-3">
+                        <span className="font-bold text-lg">
+                          {item.currency} {item.price?.toLocaleString()}
+                        </span>
+                        <Badge 
+                          className={
+                            item.status === 'submitted' ? 'bg-blue-100 text-blue-800' :
+                            item.status === 'under_review' ? 'bg-yellow-100 text-yellow-800' :
+                            item.status === 'approved' ? 'bg-green-100 text-green-800' :
+                            item.status === 'published' ? 'bg-green-100 text-green-800' :
+                            item.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                            'bg-gray-100 text-gray-800'
+                          }
+                        >
+                          {item.status.replace('_', ' ')}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-gray-500">
+                        Submitted {new Date(item.created_at).toLocaleDateString()}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <ArtworkCard 
+                    artwork={item} 
+                    isCreatorView={true}
+                  />
+                )}
+              </div>
             ))}
           </div>
         ) : (

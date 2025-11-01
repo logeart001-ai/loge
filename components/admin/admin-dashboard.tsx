@@ -228,7 +228,22 @@ export function AdminDashboard() {
 
             // If approved, create artwork/book/fashion item in main tables
             if (reviewData.status === 'approved') {
-                await createMarketplaceItem(selectedSubmission)
+                try {
+                    const marketplaceItem = await createMarketplaceItem(selectedSubmission)
+                    
+                    // Update status to published only if marketplace item created successfully
+                    await supabase
+                        .from('project_submissions')
+                        .update({ status: 'published' })
+                        .eq('id', selectedSubmission.id)
+                        
+                    console.log('✅ Submission published successfully:', marketplaceItem?.id)
+                    
+                } catch (marketplaceError) {
+                    console.error('❌ Marketplace creation failed:', marketplaceError)
+                    alert(`Submission approved but marketplace item creation failed: ${marketplaceError.message}. Please check the console and try again.`)
+                    // Don't return here - still send notification about approval
+                }
             }
 
             // Send email notification to creator
@@ -261,8 +276,10 @@ export function AdminDashboard() {
 
     const createMarketplaceItem = async (submission: Submission) => {
         try {
+            let createdItem = null;
+            
             if (submission.creator_type === 'artist') {
-                await supabase
+                const { data, error } = await supabase
                     .from('artworks')
                     .insert({
                         creator_id: submission.creator.id,
@@ -272,17 +289,75 @@ export function AdminDashboard() {
                         price: submission.price,
                         currency: submission.currency,
                         is_available: true,
-                        is_featured: false,
+                        is_featured: true, // Make approved items featured by default
                         thumbnail_url: submission.media_files?.[0]?.file_url,
                         image_urls: submission.media_files?.filter(m => m.file_type === 'image').map(m => m.file_url),
                         tags: submission.cultural_reference ? [submission.cultural_reference] : [],
                         dimensions: submission.artist_details?.dimensions,
                         materials: submission.artist_details?.materials
                     })
+                    .select()
+                    .single()
+                
+                if (error) throw error
+                createdItem = data
+                console.log('✅ Artwork created successfully:', createdItem.id)
+                
+            } else if (submission.creator_type === 'writer') {
+                // Check if books table exists, if not create artwork entry with book category
+                const { data, error } = await supabase
+                    .from('artworks')
+                    .insert({
+                        creator_id: submission.creator.id,
+                        title: submission.title,
+                        description: submission.description,
+                        category: 'book',
+                        price: submission.price,
+                        currency: submission.currency,
+                        is_available: true,
+                        is_featured: true,
+                        thumbnail_url: submission.media_files?.[0]?.file_url,
+                        image_urls: submission.media_files?.filter(m => m.file_type === 'image').map(m => m.file_url),
+                        tags: submission.cultural_reference ? [submission.cultural_reference, 'literature'] : ['literature']
+                    })
+                    .select()
+                    .single()
+                
+                if (error) throw error
+                createdItem = data
+                console.log('✅ Book created successfully:', createdItem.id)
+                
+            } else if (submission.creator_type === 'fashion_designer') {
+                // Create fashion item as artwork with fashion category
+                const { data, error } = await supabase
+                    .from('artworks')
+                    .insert({
+                        creator_id: submission.creator.id,
+                        title: submission.title,
+                        description: submission.description,
+                        category: 'fashion',
+                        price: submission.price,
+                        currency: submission.currency,
+                        is_available: true,
+                        is_featured: true,
+                        thumbnail_url: submission.media_files?.[0]?.file_url,
+                        image_urls: submission.media_files?.filter(m => m.file_type === 'image').map(m => m.file_url),
+                        tags: submission.cultural_reference ? [submission.cultural_reference, 'fashion'] : ['fashion'],
+                        materials: submission.fashion_details?.materials || []
+                    })
+                    .select()
+                    .single()
+                
+                if (error) throw error
+                createdItem = data
+                console.log('✅ Fashion item created successfully:', createdItem.id)
             }
-            // TODO: Add similar logic for books and fashion items
+            
+            return createdItem
+            
         } catch (error) {
-            console.error('Error creating marketplace item:', error)
+            console.error('❌ Error creating marketplace item:', error)
+            throw error
         }
     }
 
