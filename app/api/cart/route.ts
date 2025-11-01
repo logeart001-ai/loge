@@ -75,7 +75,7 @@ export async function GET() {
       .eq('status', 'active')
       .single()
 
-  if (cartErr && cartErr.code !== 'PGRST116') throw cartErr
+    if (cartErr && cartErr.code !== 'PGRST116') throw cartErr
 
     if (!cart) {
       return NextResponse.json({ id: null, items: [], subtotal: 0, count: 0 })
@@ -120,7 +120,7 @@ export async function GET() {
       }
     }
 
-  const summary = toCartResponse((items as unknown as ItemRow[]) || [])
+    const summary = toCartResponse(items)
     return NextResponse.json({ id: cart.id, ...summary })
   } catch (e: unknown) {
     const message = typeof e === 'object' && e && 'message' in e ? String((e as { message?: string }).message || 'Failed to load cart') : 'Failed to load cart'

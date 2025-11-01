@@ -241,7 +241,8 @@ export function AdminDashboard() {
                     
                 } catch (marketplaceError) {
                     console.error('❌ Marketplace creation failed:', marketplaceError)
-                    alert(`Submission approved but marketplace item creation failed: ${marketplaceError.message}. Please check the console and try again.`)
+                    const errorMessage = marketplaceError instanceof Error ? marketplaceError.message : 'Unknown error'
+                    alert(`Submission approved but marketplace item creation failed: ${errorMessage}. Please check the console and try again.`)
                     // Don't return here - still send notification about approval
                 }
             }

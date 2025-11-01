@@ -45,7 +45,20 @@ CREATE TABLE IF NOT EXISTS cart_items (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 5. Add foreign key constraints if they don't exist
+-- 5. Clean up orphaned data before adding constraints
+-- Remove cart items that reference non-existent artworks
+DELETE FROM cart_items 
+WHERE artwork_id NOT IN (SELECT id FROM artworks WHERE id IS NOT NULL);
+
+-- Remove cart items that reference non-existent carts
+DELETE FROM cart_items 
+WHERE cart_id NOT IN (SELECT id FROM carts WHERE id IS NOT NULL);
+
+-- Remove carts that reference non-existent users (if any)
+DELETE FROM carts 
+WHERE user_id NOT IN (SELECT id FROM auth.users WHERE id IS NOT NULL);
+
+-- 6. Add foreign key constraints if they don't exist
 DO $$ 
 BEGIN
     -- Add cart_id foreign key if it doesn't exist
@@ -57,6 +70,7 @@ BEGIN
         ALTER TABLE cart_items 
         ADD CONSTRAINT cart_items_cart_id_fkey 
         FOREIGN KEY (cart_id) REFERENCES carts(id) ON DELETE CASCADE;
+        RAISE NOTICE 'Added cart_id foreign key constraint';
     END IF;
     
     -- Add artwork_id foreign key if it doesn't exist
@@ -68,6 +82,7 @@ BEGIN
         ALTER TABLE cart_items 
         ADD CONSTRAINT cart_items_artwork_id_fkey 
         FOREIGN KEY (artwork_id) REFERENCES artworks(id) ON DELETE CASCADE;
+        RAISE NOTICE 'Added artwork_id foreign key constraint';
     END IF;
     
     -- Add user_id foreign key to carts if it doesn't exist
@@ -79,7 +94,11 @@ BEGIN
         ALTER TABLE carts 
         ADD CONSTRAINT carts_user_id_fkey 
         FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+        RAISE NOTICE 'Added user_id foreign key constraint';
     END IF;
+    
+EXCEPTION WHEN OTHERS THEN
+    RAISE NOTICE 'Error adding foreign key constraints: %', SQLERRM;
 END $$;
 
 -- 6. Create indexes for better performance
