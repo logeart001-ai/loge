@@ -81,13 +81,44 @@ export async function GET() {
       return NextResponse.json({ id: null, items: [], subtotal: 0, count: 0 })
     }
 
-    const { data: items, error: itemsErr } = await supabase
-      .from('cart_items')
-      .select('id, artwork_id, unit_price, quantity, artwork:artworks!artwork_id(id, title, thumbnail_url, creator_id)')
-      .eq('cart_id', cart.id)
-      .order('created_at', { ascending: true })
+    // Try the join query first, fallback to separate queries if relationship fails
+    let items: ItemRow[] = []
+    try {
+      const { data: joinedItems, error: itemsErr } = await supabase
+        .from('cart_items')
+        .select('id, artwork_id, unit_price, quantity, artwork:artworks!artwork_id(id, title, thumbnail_url, creator_id)')
+        .eq('cart_id', cart.id)
+        .order('created_at', { ascending: true })
 
-    if (itemsErr) throw itemsErr
+      if (itemsErr) throw itemsErr
+      items = (joinedItems as unknown as ItemRow[]) || []
+    } catch (relationshipError) {
+      console.warn('Relationship query failed, using fallback:', relationshipError)
+      
+      // Fallback: Get cart items and artworks separately
+      const { data: cartItems, error: cartItemsErr } = await supabase
+        .from('cart_items')
+        .select('id, artwork_id, unit_price, quantity')
+        .eq('cart_id', cart.id)
+        .order('created_at', { ascending: true })
+
+      if (cartItemsErr) throw cartItemsErr
+
+      // Get artwork details for each item
+      if (cartItems && cartItems.length > 0) {
+        const artworkIds = cartItems.map(item => item.artwork_id)
+        const { data: artworks } = await supabase
+          .from('artworks')
+          .select('id, title, thumbnail_url, creator_id')
+          .in('id', artworkIds)
+
+        // Combine the data
+        items = cartItems.map(item => ({
+          ...item,
+          artwork: artworks?.find(art => art.id === item.artwork_id) || null
+        })) as ItemRow[]
+      }
+    }
 
   const summary = toCartResponse((items as unknown as ItemRow[]) || [])
     return NextResponse.json({ id: cart.id, ...summary })
@@ -138,13 +169,38 @@ export async function POST(req: NextRequest) {
       if (insErr) throw insErr
     }
 
-    // Return updated cart
-    const { data: items } = await supabase
-      .from('cart_items')
-      .select('id, artwork_id, unit_price, quantity, artwork:artworks!artwork_id(id, title, thumbnail_url, creator_id)')
-      .eq('cart_id', cart.id)
+    // Return updated cart with fallback for relationship issues
+    let items: ItemRow[] = []
+    try {
+      const { data: joinedItems } = await supabase
+        .from('cart_items')
+        .select('id, artwork_id, unit_price, quantity, artwork:artworks!artwork_id(id, title, thumbnail_url, creator_id)')
+        .eq('cart_id', cart.id)
+      
+      items = (joinedItems as unknown as ItemRow[]) || []
+    } catch (relationshipError) {
+      console.warn('Relationship query failed in POST, using fallback:', relationshipError)
+      
+      const { data: cartItems } = await supabase
+        .from('cart_items')
+        .select('id, artwork_id, unit_price, quantity')
+        .eq('cart_id', cart.id)
 
-  const summary = toCartResponse((items as unknown as ItemRow[]) || [])
+      if (cartItems && cartItems.length > 0) {
+        const artworkIds = cartItems.map(item => item.artwork_id)
+        const { data: artworks } = await supabase
+          .from('artworks')
+          .select('id, title, thumbnail_url, creator_id')
+          .in('id', artworkIds)
+
+        items = cartItems.map(item => ({
+          ...item,
+          artwork: artworks?.find(art => art.id === item.artwork_id) || null
+        })) as ItemRow[]
+      }
+    }
+
+    const summary = toCartResponse(items)
     return NextResponse.json({ id: cart.id, ...summary })
   } catch (e: unknown) {
     const message = typeof e === 'object' && e && 'message' in e ? String((e as { message?: string }).message || 'Failed to add to cart') : 'Failed to add to cart'

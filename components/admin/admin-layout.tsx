@@ -7,12 +7,14 @@ import {
   Users,
   Flag,
   BarChart3,
-  Shield
+  Shield,
+  Calendar
 } from 'lucide-react'
 import { AdminDashboard } from './admin-dashboard'
 import { UserManagement } from './user-management'
 import { ContentModeration } from './content-moderation'
 import { AnalyticsDashboard } from './analytics-dashboard'
+import { EventsManagement } from './events-management'
 
 export function AdminLayout() {
   const [activeTab, setActiveTab] = useState('dashboard')
@@ -25,6 +27,13 @@ export function AdminLayout() {
       icon: LayoutDashboard,
       component: AdminDashboard,
       description: 'Review submissions and manage content'
+    },
+    {
+      id: 'events',
+      label: 'Events',
+      icon: Calendar,
+      component: EventsManagement,
+      description: 'Manage events and exhibitions'
     },
     {
       id: 'analytics',

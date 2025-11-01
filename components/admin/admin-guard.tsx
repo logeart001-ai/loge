@@ -36,15 +36,38 @@ export function AdminGuard({ children }: AdminGuardProps) {
 
       setUser(authUser)
 
-      // Check if user has admin role
-      const { data: profile, error: profileError } = await supabase
-        .from('user_profiles')
+      // Try to check if user has admin role from profiles table
+      // First try 'profiles' (Supabase default), then 'user_profiles'
+      let profile = null
+      let profileError = null
+
+      // Try profiles table first
+      const { data: profileData1, error: error1 } = await supabase
+        .from('profiles')
         .select('role, full_name, email')
         .eq('id', authUser.id)
         .single()
 
+      if (!error1 && profileData1) {
+        profile = profileData1
+      } else {
+        // Try user_profiles table
+        const { data: profileData2, error: error2 } = await supabase
+          .from('user_profiles')
+          .select('role, full_name, email')
+          .eq('id', authUser.id)
+          .single()
+
+        if (!error2 && profileData2) {
+          profile = profileData2
+        } else {
+          profileError = error2 || error1
+        }
+      }
+
       if (profileError) {
         console.error('Error fetching user profile:', profileError)
+        console.log('Tried both "profiles" and "user_profiles" tables')
         setIsAdmin(false)
         setLoading(false)
         return
