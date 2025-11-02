@@ -101,6 +101,12 @@ export function ContentModeration() {
 
       if (error) {
         console.error('Error fetching reports:', error)
+        // Check if table doesn't exist
+        if (error.message?.includes('does not exist') || error.code === '42P01') {
+          console.warn('content_reports table does not exist yet')
+          setReports([])
+          return
+        }
         throw error
       }
 
@@ -479,7 +485,10 @@ export function ContentModeration() {
               <CardContent className="p-12 text-center">
                 <Flag className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">No Reports Found</h3>
-                <p className="text-gray-600">No content reports match the current filter.</p>
+                <p className="text-gray-600 mb-1">No content reports match the current filter.</p>
+                <p className="text-sm text-gray-500">
+                  The content_reports table may not be set up yet.
+                </p>
               </CardContent>
             </Card>
           )}

@@ -542,7 +542,10 @@ export function AdminDashboard() {
                                 {submissions.length === 0 && (
                                     <div className="text-center py-8">
                                         <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                                        <p className="text-gray-600">No submissions found</p>
+                                        <p className="text-gray-600 mb-2">No submissions found</p>
+                                        <p className="text-sm text-gray-500">
+                                            The project_submissions table may not be set up yet.
+                                        </p>
                                     </div>
                                 )}
                             </div>
