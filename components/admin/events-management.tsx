@@ -90,7 +90,12 @@ export function EventsManagement() {
   const fetchEvents = async () => {
     try {
       setLoading(true)
-      const { data, error } = await supabase
+      
+      // Try to fetch events with organizer info, fallback to without if relationship fails
+      let data = null
+
+      // First, try with profiles relationship
+      const profilesResult = await supabase
         .from('events')
         .select(`
           *,
@@ -98,10 +103,42 @@ export function EventsManagement() {
         `)
         .order('event_date', { ascending: false })
 
-      if (error) throw error
+      if (!profilesResult.error) {
+        data = profilesResult.data
+      } else {
+        // Try with user_profiles table
+        const userProfilesResult = await supabase
+          .from('events')
+          .select(`
+            *,
+            organizer:user_profiles!organizer_id(full_name, email)
+          `)
+          .order('event_date', { ascending: false })
+
+        if (!userProfilesResult.error) {
+          data = userProfilesResult.data
+        } else {
+          // Fallback: fetch events without organizer info
+          console.warn('Could not fetch organizer info, loading events without it')
+          const eventsResult = await supabase
+            .from('events')
+            .select('*')
+            .order('event_date', { ascending: false })
+
+          if (eventsResult.error) {
+            throw eventsResult.error
+          }
+          data = eventsResult.data
+        }
+      }
+
       setEvents(data || [])
     } catch (error) {
       console.error('Error fetching events:', error)
+      // Show a more helpful error message
+      if (error instanceof Error) {
+        console.error('Error details:', error.message)
+      }
     } finally {
       setLoading(false)
     }
