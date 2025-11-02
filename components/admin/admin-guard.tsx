@@ -41,6 +41,26 @@ export function AdminGuard({ children }: AdminGuardProps) {
       let profile = null
       let profileError = null
 
+      // First, let's check if the tables exist by trying a simple count
+      console.log('Testing table access...')
+      try {
+        const { count: profilesCount, error: profilesTestError } = await supabase
+          .from('profiles')
+          .select('*', { count: 'exact', head: true })
+        console.log('Profiles table test:', { count: profilesCount, error: profilesTestError })
+      } catch (e) {
+        console.log('Profiles table does not exist or is not accessible')
+      }
+
+      try {
+        const { count: userProfilesCount, error: userProfilesTestError } = await supabase
+          .from('user_profiles')
+          .select('*', { count: 'exact', head: true })
+        console.log('User_profiles table test:', { count: userProfilesCount, error: userProfilesTestError })
+      } catch (e) {
+        console.log('User_profiles table does not exist or is not accessible')
+      }
+
       // Try profiles table first
       console.log('Checking profiles table for user:', authUser.id)
       const { data: profileData1, error: error1 } = await supabase
@@ -75,11 +95,12 @@ export function AdminGuard({ children }: AdminGuardProps) {
       }
 
       if (profileError) {
-        console.error('Error fetching user profile:', {
-          error: profileError,
+        console.error('Error fetching user profile:', JSON.stringify(profileError, null, 2))
+        console.error('Profile error details:', {
           message: profileError?.message || 'Unknown error',
           code: profileError?.code || 'No code',
           details: profileError?.details || 'No details',
+          hint: profileError?.hint || 'No hint',
           userId: authUser.id
         })
         console.log('Tried both "profiles" and "user_profiles" tables')
@@ -88,13 +109,21 @@ export function AdminGuard({ children }: AdminGuardProps) {
         
         // Try to create a profile if none exists
         console.log('Attempting to create user profile...')
+        
+        // Check if this is the admin email and set role accordingly
+        const isAdminEmail = authUser.email === 'stephenmayowa112@gmail.com'
+        const defaultRole = isAdminEmail ? 'admin' : 'buyer'
+        
+        console.log('Creating profile with role:', defaultRole, 'for email:', authUser.email)
+        
         try {
           const { data: newProfile, error: createError } = await supabase
             .from('user_profiles')
             .insert({
               id: authUser.id,
               full_name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'User',
-              role: 'buyer' // Default role
+              email: authUser.email,
+              role: defaultRole
             })
             .select('role, full_name, email')
             .single()
@@ -103,7 +132,13 @@ export function AdminGuard({ children }: AdminGuardProps) {
             console.log('Created new profile:', newProfile)
             profile = newProfile
           } else {
-            console.error('Failed to create profile:', createError)
+            console.error('Failed to create profile:', JSON.stringify(createError, null, 2))
+            console.error('Create error details:', {
+              message: createError?.message || 'Unknown error',
+              code: createError?.code || 'No code',
+              details: createError?.details || 'No details',
+              hint: createError?.hint || 'No hint'
+            })
             setIsAdmin(false)
             setLoading(false)
             return
