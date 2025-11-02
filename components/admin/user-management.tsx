@@ -201,12 +201,35 @@ export function UserManagement() {
 
   const updateUserRole = async (userId: string, newRole: string) => {
     try {
-      const { error } = await supabase
+      // First check if user has a profile, if not create one
+      const userToUpdate = users.find(u => u.id === userId)
+      if (!userToUpdate) {
+        throw new Error('User not found')
+      }
+
+      // Try to update existing profile
+      let { error } = await supabase
         .from('user_profiles')
         .update({ role: newRole })
         .eq('id', userId)
 
-      if (error) throw error
+      // If profile doesn't exist, create it
+      if (error && error.code === 'PGRST116') {
+        console.log('Profile not found, creating new profile for user:', userId)
+        const { error: insertError } = await supabase
+          .from('user_profiles')
+          .insert({
+            id: userId,
+            email: userToUpdate.email,
+            full_name: userToUpdate.full_name,
+            role: newRole,
+            is_verified: userToUpdate.is_verified || false
+          })
+
+        if (insertError) throw insertError
+      } else if (error) {
+        throw error
+      }
 
       setUsers(prev => prev.map(user => 
         user.id === userId ? { ...user, role: newRole } : user
@@ -215,19 +238,40 @@ export function UserManagement() {
       alert(`User role updated to ${newRole}`)
     } catch (error) {
       console.error('Error updating user role:', error)
-      alert('Failed to update user role')
+      alert('Failed to update user role: ' + (error instanceof Error ? error.message : 'Unknown error'))
     }
   }
 
   const updateUserStatus = async (userId: string, newStatus: boolean) => {
     try {
-      const { error } = await supabase
+      // First check if user has a profile, if not create one
+      const userToUpdate = users.find(u => u.id === userId)
+      if (!userToUpdate) {
+        throw new Error('User not found')
+      }
+
+      // Try to update existing profile
+      let { error } = await supabase
         .from('user_profiles')
         .update({ is_verified: newStatus })
         .eq('id', userId)
         .select()
 
-      if (error) {
+      // If profile doesn't exist, create it
+      if (error && error.code === 'PGRST116') {
+        console.log('Profile not found, creating new profile for user:', userId)
+        const { error: insertError } = await supabase
+          .from('user_profiles')
+          .insert({
+            id: userId,
+            email: userToUpdate.email,
+            full_name: userToUpdate.full_name,
+            role: userToUpdate.role || 'buyer',
+            is_verified: newStatus
+          })
+
+        if (insertError) throw insertError
+      } else if (error) {
         console.error('Supabase error:', error)
         throw new Error(error.message || 'Failed to update user verification status')
       }
