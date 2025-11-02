@@ -23,12 +23,16 @@ interface User {
   email: string
   full_name: string
   role: string
-  account_status: string
+  creator_status?: string | null
+  is_verified?: boolean
   created_at: string
   avatar_url?: string
   bio?: string
   discipline?: string
   location?: string
+  country?: string
+  phone?: string
+  rating?: number
 }
 
 export function UserManagement() {
@@ -88,7 +92,7 @@ export function UserManagement() {
 
       const { data, error } = await supabase
         .from('user_profiles')
-        .select('id, email, full_name, role, account_status, created_at, avatar_url, bio, discipline, location')
+        .select('id, email, full_name, role, creator_status, is_verified, created_at, avatar_url, bio, discipline, location, country, phone, rating')
         .order('created_at', { ascending: false })
 
       if (error) {
@@ -139,7 +143,11 @@ export function UserManagement() {
     }
 
     if (statusFilter !== 'all') {
-      filtered = filtered.filter(user => user.account_status === statusFilter)
+      if (statusFilter === 'verified') {
+        filtered = filtered.filter(user => user.is_verified === true)
+      } else if (statusFilter === 'unverified') {
+        filtered = filtered.filter(user => user.is_verified === false)
+      }
     }
 
     setFilteredUsers(filtered)
@@ -165,24 +173,24 @@ export function UserManagement() {
     }
   }
 
-  const updateUserStatus = async (userId: string, newStatus: string) => {
+  const updateUserStatus = async (userId: string, newStatus: boolean) => {
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('user_profiles')
-        .update({ account_status: newStatus })
+        .update({ is_verified: newStatus })
         .eq('id', userId)
         .select()
 
       if (error) {
         console.error('Supabase error:', error)
-        throw new Error(error.message || 'Failed to update user status')
+        throw new Error(error.message || 'Failed to update user verification status')
       }
 
       setUsers(prev => prev.map(user => 
-        user.id === userId ? { ...user, account_status: newStatus } : user
+        user.id === userId ? { ...user, is_verified: newStatus } : user
       ))
 
-      alert(`User account status updated to ${newStatus}`)
+      alert(`User verification status updated to ${newStatus ? 'verified' : 'unverified'}`)
     } catch (error) {
       console.error('Error updating user status:', error)
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
@@ -202,15 +210,11 @@ export function UserManagement() {
     return <Badge className={config.color}>{config.label}</Badge>
   }
 
-  const getStatusBadge = (status: string) => {
-    const statusConfig = {
-      active: { color: 'bg-green-100 text-green-800', label: 'Active' },
-      suspended: { color: 'bg-red-100 text-red-800', label: 'Suspended' },
-      pending: { color: 'bg-yellow-100 text-yellow-800', label: 'Pending' }
+  const getStatusBadge = (isVerified?: boolean) => {
+    if (isVerified) {
+      return <Badge className="bg-green-100 text-green-800">Verified</Badge>
     }
-
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.active
-    return <Badge className={config.color}>{config.label}</Badge>
+    return <Badge className="bg-yellow-100 text-yellow-800">Unverified</Badge>
   }
 
   if (loading) {
@@ -293,9 +297,8 @@ export function UserManagement() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="suspended">Suspended</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="verified">Verified</SelectItem>
+                <SelectItem value="unverified">Unverified</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -340,7 +343,7 @@ export function UserManagement() {
 
                 <div className="flex items-center space-x-4">
                   {getRoleBadge(user.role)}
-                  {getStatusBadge(user.account_status)}
+                  {getStatusBadge(user.is_verified)}
                   
                   <div className="flex items-center space-x-2">
                     <Dialog open={isDialogOpen && selectedUser?.id === user.id} onOpenChange={setIsDialogOpen}>
@@ -377,18 +380,17 @@ export function UserManagement() {
                           </div>
 
                           <div>
-                            <Label>Change Status</Label>
+                            <Label>Verification Status</Label>
                             <Select
-                              value={user.account_status}
-                              onValueChange={(value) => updateUserStatus(user.id, value)}
+                              value={user.is_verified ? 'verified' : 'unverified'}
+                              onValueChange={(value) => updateUserStatus(user.id, value === 'verified')}
                             >
                               <SelectTrigger>
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="active">Active</SelectItem>
-                                <SelectItem value="suspended">Suspended</SelectItem>
-                                <SelectItem value="pending">Pending</SelectItem>
+                                <SelectItem value="verified">Verified</SelectItem>
+                                <SelectItem value="unverified">Unverified</SelectItem>
                               </SelectContent>
                             </Select>
                           </div>
@@ -397,17 +399,17 @@ export function UserManagement() {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => updateUserStatus(user.id, user.account_status === 'active' ? 'suspended' : 'active')}
+                              onClick={() => updateUserStatus(user.id, !user.is_verified)}
                             >
-                              {user.account_status === 'active' ? (
+                              {user.is_verified ? (
                                 <>
                                   <Ban className="w-4 h-4 mr-2" />
-                                  Suspend
+                                  Unverify
                                 </>
                               ) : (
                                 <>
                                   <CheckCircle className="w-4 h-4 mr-2" />
-                                  Activate
+                                  Verify
                                 </>
                               )}
                             </Button>

@@ -114,7 +114,22 @@ export function AdminDashboard() {
 
             const { data: submissionsData, error } = await query
 
-            if (error) throw error
+            if (error) {
+                // Check if table doesn't exist
+                if (error.message?.includes('does not exist') || error.code === '42P01') {
+                    console.warn('project_submissions table does not exist yet')
+                    setSubmissions([])
+                    setStats({
+                        total_submissions: 0,
+                        pending_review: 0,
+                        approved_today: 0,
+                        rejection_rate: 0
+                    })
+                    setLoading(false)
+                    return
+                }
+                throw error
+            }
 
             if (submissionsData) {
                 // Fetch additional details for each submission
