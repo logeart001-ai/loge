@@ -88,26 +88,72 @@ export function UserManagement() {
         throw new Error('User not authenticated')
       }
 
-      console.log('User authenticated, fetching profiles...')
+      console.log('User authenticated, fetching all users...')
 
-      const { data, error } = await supabase
+      // First, get all user profiles
+      const { data: profilesData, error: profilesError } = await supabase
         .from('user_profiles')
         .select('id, email, full_name, role, creator_status, is_verified, created_at, avatar_url, bio, discipline, location, country, phone, rating')
         .order('created_at', { ascending: false })
 
-      if (error) {
+      if (profilesError) {
         console.error('Supabase error details:', {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code
+          message: profilesError.message,
+          details: profilesError.details,
+          hint: profilesError.hint,
+          code: profilesError.code
         })
-        throw new Error(`Database error: ${error.message}`)
+        throw new Error(`Database error: ${profilesError.message}`)
+      }
+
+      // Try to get additional users from auth.users that might not have profiles
+      // This uses a custom API endpoint since auth.users is not directly accessible
+      let allUsers = profilesData || []
+      
+      try {
+        console.log('Fetching additional auth users...')
+        const response = await fetch('/api/admin/users')
+        if (response.ok) {
+          const authUsersData = await response.json()
+          console.log('Auth users response:', authUsersData)
+          
+          if (authUsersData.users) {
+            // Merge auth users with profile data
+            const profileMap = new Map(allUsers.map(p => [p.id, p]))
+            
+            authUsersData.users.forEach((authUser: any) => {
+              if (!profileMap.has(authUser.id)) {
+                // Add users who don't have profiles yet
+                allUsers.push({
+                  id: authUser.id,
+                  email: authUser.email,
+                  full_name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'Unknown User',
+                  role: 'buyer', // Default role
+                  creator_status: null,
+                  is_verified: authUser.email_confirmed_at ? true : false,
+                  created_at: authUser.created_at,
+                  avatar_url: authUser.user_metadata?.avatar_url || null,
+                  bio: null,
+                  discipline: null,
+                  location: null,
+                  country: null,
+                  phone: null,
+                  rating: 0
+                })
+              }
+            })
+          }
+        } else {
+          console.warn('Could not fetch auth users, showing profile users only')
+        }
+      } catch (authFetchError) {
+        console.warn('Failed to fetch auth users:', authFetchError)
+        console.log('Showing profile users only')
       }
       
-      setUsers(data || [])
+      setUsers(allUsers)
       setError(null)
-      console.log(`✅ Successfully loaded ${data?.length || 0} users`)
+      console.log(`✅ Successfully loaded ${allUsers.length} users (${profilesData?.length || 0} with profiles)`)
     } catch (error) {
       console.error('❌ Error fetching users:', error)
       
