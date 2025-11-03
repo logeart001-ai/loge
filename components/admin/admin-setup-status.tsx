@@ -51,7 +51,7 @@ export function AdminSetupStatus() {
             .limit(1)
 
           const exists = !error || (error.code !== '42P01' && !error.message?.includes('does not exist'))
-          
+
           statuses.push({
             ...table,
             exists
@@ -124,11 +124,10 @@ export function AdminSetupStatus() {
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Overall Status */}
-        <div className={`p-4 rounded-lg border ${
-          isFullyConfigured 
-            ? 'bg-green-50 border-green-200' 
-            : 'bg-yellow-50 border-yellow-200'
-        }`}>
+        <div className={`p-4 rounded-lg border ${isFullyConfigured
+          ? 'bg-green-50 border-green-200'
+          : 'bg-yellow-50 border-yellow-200'
+          }`}>
           <div className="flex items-center space-x-2 mb-2">
             {isFullyConfigured ? (
               <CheckCircle className="w-5 h-5 text-green-500" />
@@ -140,7 +139,7 @@ export function AdminSetupStatus() {
             </h3>
           </div>
           <p className="text-sm text-gray-600">
-            {isFullyConfigured 
+            {isFullyConfigured
               ? 'All required database tables are configured and ready to use.'
               : `${readyRequiredTables}/${requiredTablesCount} required tables are configured.`
             }

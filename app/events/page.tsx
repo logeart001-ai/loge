@@ -1,14 +1,39 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase-client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Calendar, MapPin, Clock, Users, Search, Filter, Grid, List, Star, Ticket, Video, Globe } from 'lucide-react'
+import { EventShareButton } from '@/components/ui/share-button'
 import { Navbar } from '@/components/navbar'
 import Image from 'next/image'
+
+interface Event {
+  id: string
+  title: string
+  description?: string | null
+  event_type: string
+  event_date?: string | null
+  city?: string | null
+  country?: string | null
+  venue_name?: string | null
+  address?: string | null
+  capacity?: number | null
+  registration_url?: string | null
+  is_free: boolean
+  ticket_price?: number | null
+  is_featured: boolean
+  is_published: boolean
+  image_url?: string | null
+  organizer?: {
+    full_name: string
+    email: string
+  }
+}
 
 export default function EventsPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
@@ -17,8 +42,58 @@ export default function EventsPage() {
   const [selectedLocation, setSelectedLocation] = useState('all')
   const [selectedDate, setSelectedDate] = useState('all')
   const [sortBy, setSortBy] = useState('date')
+  const [events, setEvents] = useState<Event[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  
+  const supabase = createClient()
 
-  const events = [
+  useEffect(() => {
+    fetchEvents()
+  }, [])
+
+  const fetchEvents = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      // Fetch published events with organizer info
+      const { data, error } = await supabase
+        .from('events')
+        .select(`
+          *,
+          organizer:user_profiles!organizer_id(full_name, email)
+        `)
+        .eq('is_published', true)
+        .order('event_date', { ascending: true })
+
+      if (error) {
+        // Fallback: try without organizer relationship
+        const { data: fallbackData, error: fallbackError } = await supabase
+          .from('events')
+          .select('*')
+          .eq('is_published', true)
+          .order('event_date', { ascending: true })
+
+        if (fallbackError) {
+          throw fallbackError
+        }
+
+        setEvents(fallbackData || [])
+      } else {
+        setEvents(data || [])
+      }
+    } catch (err) {
+      console.error('Error fetching events:', err)
+      setError('Failed to load events')
+      setEvents([]) // Use empty array as fallback
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Mock events for fallback (keeping some for demonstration)
+  const mockEvents = [
     {
       id: 1,
       title: 'African Art Exhibition: Contemporary Voices',
@@ -188,15 +263,16 @@ export default function EventsPage() {
 
   const filteredEvents = events.filter(event => {
     const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         event.organizer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         event.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+                         (event.organizer?.full_name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         (event.description || '').toLowerCase().includes(searchQuery.toLowerCase())
     
     const matchesCategory = selectedCategory === 'all' || 
-                           event.category.toLowerCase().replace(' ', '-') === selectedCategory
+                           event.event_type.toLowerCase().replace('_', '-') === selectedCategory
     
+    const eventLocation = `${event.city || ''}, ${event.country || ''}`.toLowerCase()
     const matchesLocation = selectedLocation === 'all' || 
-                           event.location.toLowerCase().replace(/[^a-z0-9]/g, '-') === selectedLocation ||
-                           (selectedLocation === 'virtual' && event.type === 'Virtual')
+                           eventLocation.replace(/[^a-z0-9]/g, '-').includes(selectedLocation) ||
+                           (selectedLocation === 'virtual' && event.venue_name?.toLowerCase().includes('virtual'))
     
     return matchesSearch && matchesCategory && matchesLocation
   })
@@ -394,122 +470,149 @@ export default function EventsPage() {
               ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6' 
               : 'space-y-6'
             }>
-              {filteredEvents.map((event) => (
-                <Card key={event.id} className="group cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-                  <CardContent className="p-0">
-                    <div className="relative overflow-hidden">
-                      <Image
-                        src={event.image || "/image/placeholder.svg"}
-                        alt={event.title}
-                        width={400}
-                        height={300}
-                        className={`w-full object-cover group-hover:scale-110 transition-transform duration-500 ${
-                          viewMode === 'grid' ? 'h-48' : 'h-40'
-                        }`}
-                      />
-                      {event.featured && (
-                        <Badge className="absolute top-4 left-4 bg-orange-500 text-white">
-                          Featured
-                        </Badge>
-                      )}
-                      {event.originalPrice && (
-                        <Badge className="absolute top-4 right-4 bg-red-500 text-white">
-                          Sale
-                        </Badge>
-                      )}
-                      <div className="absolute bottom-4 right-4">
-                        {event.type === 'Virtual' && (
-                          <Badge className="bg-brand-orange text-white">
-                            <Video className="w-3 h-3 mr-1" />
-                            Virtual
+              {loading ? (
+                <div className="col-span-full flex items-center justify-center py-12">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto mb-4"></div>
+                    <p className="text-gray-600">Loading events...</p>
+                  </div>
+                </div>
+              ) : error ? (
+                <div className="col-span-full flex items-center justify-center py-12">
+                  <div className="text-center">
+                    <p className="text-red-600 mb-4">{error}</p>
+                    <Button onClick={fetchEvents} variant="outline">
+                      Try Again
+                    </Button>
+                  </div>
+                </div>
+              ) : filteredEvents.length === 0 ? (
+                <div className="col-span-full flex items-center justify-center py-12">
+                  <div className="text-center">
+                    <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600 mb-2">No events found</p>
+                    <p className="text-sm text-gray-500">Try adjusting your search or filters</p>
+                  </div>
+                </div>
+              ) : (
+                filteredEvents.map((event) => (
+                  <Card key={event.id} className="group cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                    <CardContent className="p-0">
+                      <div className="relative overflow-hidden">
+                        <Image
+                          src={event.image_url || "/image/placeholder.svg"}
+                          alt={event.title}
+                          width={400}
+                          height={300}
+                          className={`w-full object-cover group-hover:scale-110 transition-transform duration-500 ${
+                            viewMode === 'grid' ? 'h-48' : 'h-40'
+                          }`}
+                        />
+                        {event.is_featured && (
+                          <Badge className="absolute top-4 left-4 bg-orange-500 text-white">
+                            <Star className="w-3 h-3 mr-1" />
+                            Featured
                           </Badge>
                         )}
-                        {event.type === 'Hybrid' && (
-                          <Badge className="bg-brand-red text-white">
-                            <Globe className="w-3 h-3 mr-1" />
-                            Hybrid
+                        {event.is_free && (
+                          <Badge className="absolute top-4 right-4 bg-green-500 text-white">
+                            Free
                           </Badge>
                         )}
-                      </div>
-                    </div>
-                    
-                    <div className="p-6 overflow-hidden">
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-bold text-lg text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-2 wrap-break-word">
-                            {event.title}
-                          </h3>
-                          <p className="text-gray-600 text-sm mt-1 truncate">
-                            by {event.organizer}
-                          </p>
-                        </div>
-                        <Badge variant="secondary" className="shrink-0">{event.category}</Badge>
-                      </div>
-                      
-                      <div className="space-y-2 mb-4">
-                        <div className="flex items-center text-sm text-gray-600">
-                          <Calendar className="w-4 h-4 mr-2 shrink-0" />
-                          <span className="truncate">{formatDate(event.date)}</span>
-                        </div>
-                        <div className="flex items-center text-sm text-gray-600">
-                          <Clock className="w-4 h-4 mr-2 shrink-0" />
-                          <span className="truncate">{event.time}</span>
-                        </div>
-                        <div className="flex items-center text-sm text-gray-600">
-                          <MapPin className="w-4 h-4 mr-2 shrink-0" />
-                          <span className="truncate">{event.location}</span>
-                        </div>
-                        <div className="flex items-center text-sm text-gray-600">
-                          <Users className="w-4 h-4 mr-2 shrink-0" />
-                          {event.registered}/{event.capacity} registered
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center mb-4">
-                        <div className="flex items-center">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`w-4 h-4 ${
-                                i < Math.floor(event.rating)
-                                  ? 'text-yellow-400 fill-current'
-                                  : 'text-gray-300'
-                              }`}
-                            />
-                          ))}
-                          <span className="ml-2 text-sm text-gray-600">
-                            {event.rating} ({event.reviews} reviews)
-                          </span>
-                        </div>
-                      </div>
-                      
-                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                        {event.description}
-                      </p>
-                      
-                      <div className="flex flex-col gap-3">
-                        {/* Price Display - Current price first, original price below */}
-                        <div className="flex flex-col gap-1">
-                          <span className="text-lg font-bold text-gray-900">
-                            ₦{event.price.toLocaleString()}
-                          </span>
-                          {event.originalPrice && (
-                            <span className="text-xs text-gray-500 line-through">
-                              ₦{event.originalPrice.toLocaleString()}
-                            </span>
+                        <div className="absolute bottom-4 right-4">
+                          {event.venue_name?.toLowerCase().includes('virtual') && (
+                            <Badge className="bg-blue-500 text-white">
+                              <Video className="w-3 h-3 mr-1" />
+                              Virtual
+                            </Badge>
                           )}
                         </div>
-                        
-                        {/* Get Ticket Button */}
-                        <Button size="sm" className="bg-orange-600 hover:bg-orange-700 w-full">
-                          <Ticket className="w-4 h-4 mr-2" />
-                          Get Ticket
-                        </Button>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                      
+                      <div className="p-6 overflow-hidden">
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-bold text-lg text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-2 wrap-break-word">
+                              {event.title}
+                            </h3>
+                            <p className="text-gray-600 text-sm mt-1 truncate">
+                              by {event.organizer?.full_name || 'Unknown Organizer'}
+                            </p>
+                          </div>
+                          <Badge variant="secondary" className="shrink-0 capitalize">
+                            {event.event_type.replace('_', ' ')}
+                          </Badge>
+                        </div>
+                      
+                        <div className="space-y-2 mb-4">
+                          {event.event_date && (
+                            <div className="flex items-center text-sm text-gray-600">
+                              <Calendar className="w-4 h-4 mr-2 shrink-0" />
+                              <span className="truncate">{formatDate(event.event_date)}</span>
+                            </div>
+                          )}
+                          {(event.city || event.country) && (
+                            <div className="flex items-center text-sm text-gray-600">
+                              <MapPin className="w-4 h-4 mr-2 shrink-0" />
+                              <span className="truncate">
+                                {event.venue_name ? `${event.venue_name}, ` : ''}
+                                {event.city}{event.city && event.country ? ', ' : ''}{event.country}
+                              </span>
+                            </div>
+                          )}
+                          {event.capacity && (
+                            <div className="flex items-center text-sm text-gray-600">
+                              <Users className="w-4 h-4 mr-2 shrink-0" />
+                              <span className="truncate">Capacity: {event.capacity}</span>
+                            </div>
+                          )}
+                        </div>
+                      
+                        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                          {event.description || 'No description available'}
+                        </p>
+                        
+                        <div className="flex flex-col gap-3">
+                          {/* Price Display */}
+                          <div className="flex flex-col gap-1">
+                            {event.is_free ? (
+                              <span className="text-lg font-bold text-green-600">
+                                Free Event
+                              </span>
+                            ) : (
+                              <span className="text-lg font-bold text-gray-900">
+                                ₦{(event.ticket_price || 0).toLocaleString()}
+                              </span>
+                            )}
+                          </div>
+                          
+                          {/* Action Buttons */}
+                          <div className="flex gap-2">
+                            <Button 
+                              size="sm" 
+                              className="bg-orange-600 hover:bg-orange-700 flex-1"
+                              onClick={() => {
+                                if (event.registration_url) {
+                                  window.open(event.registration_url, '_blank')
+                                }
+                              }}
+                            >
+                              <Ticket className="w-4 h-4 mr-2" />
+                              {event.registration_url ? 'Register' : 'Get Ticket'}
+                            </Button>
+                            
+                            <EventShareButton 
+                              event={event}
+                              variant="outline"
+                              size="sm"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
             </div>
 
             {/* Load More Button */}

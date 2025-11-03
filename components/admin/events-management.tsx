@@ -21,22 +21,28 @@ import {
   Users
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
+import { fileUploadService } from '@/lib/file-upload'
 
 interface Event {
   id: string
   organizer_id: string
   title: string
-  description: string
+  description?: string | null
   event_type: 'exhibition' | 'workshop' | 'gallery_opening' | 'art_fair' | 'networking'
-  event_date: string
-  start_date: string
-  end_date: string
-  city: string
-  country: string
+  event_date?: string | null
+  start_date?: string | null
+  end_date?: string | null
+  city?: string | null
+  country?: string | null
   is_free: boolean
-  ticket_price?: number
+  ticket_price?: number | null
   is_featured: boolean
   is_published: boolean
+  image_url?: string | null
+  venue_name?: string | null
+  address?: string | null
+  capacity?: number | null
+  registration_url?: string | null
   created_at: string
   updated_at: string
   organizer?: {
@@ -54,6 +60,10 @@ interface EventFormData {
   end_date: string
   city: string
   country: string
+  venue_name: string
+  address: string
+  capacity: string
+  registration_url: string
   is_free: boolean
   ticket_price: string
   is_featured: boolean
@@ -65,6 +75,9 @@ export function EventsManagement() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingEvent, setEditingEvent] = useState<Event | null>(null)
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [uploadingImage, setUploadingImage] = useState(false)
   const [formData, setFormData] = useState<EventFormData>({
     title: '',
     description: '',
@@ -74,6 +87,10 @@ export function EventsManagement() {
     end_date: '',
     city: '',
     country: 'Nigeria',
+    venue_name: '',
+    address: '',
+    capacity: '',
+    registration_url: '',
     is_free: false,
     ticket_price: '',
     is_featured: false,
@@ -86,6 +103,62 @@ export function EventsManagement() {
     fetchEvents()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file')
+      return
+    }
+
+    // Validate file size (10MB limit)
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Image must be less than 10MB')
+      return
+    }
+
+    setImageFile(file)
+
+    // Create preview
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      setImagePreview(e.target?.result as string)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const uploadEventImage = async (eventId: string): Promise<string | null> => {
+    if (!imageFile) return null
+
+    setUploadingImage(true)
+    try {
+      const result = await fileUploadService.uploadFile(
+        imageFile,
+        'event-images',
+        eventId
+      )
+
+      if (!result.success) {
+        throw new Error(result.error || 'Upload failed')
+      }
+
+      return result.url || null
+    } catch (error) {
+      console.error('Image upload error:', error)
+      alert('Failed to upload image: ' + (error instanceof Error ? error.message : 'Unknown error'))
+      return null
+    } finally {
+      setUploadingImage(false)
+    }
+  }
+
+  const clearImageSelection = () => {
+    setImageFile(null)
+    setImagePreview(null)
+  }
 
   const fetchEvents = async () => {
     try {
@@ -158,12 +231,17 @@ export function EventsManagement() {
       end_date: '',
       city: '',
       country: 'Nigeria',
+      venue_name: '',
+      address: '',
+      capacity: '',
+      registration_url: '',
       is_free: false,
       ticket_price: '',
       is_featured: false,
       is_published: true
     })
     setEditingEvent(null)
+    clearImageSelection()
     setShowForm(false)
   }
 
@@ -178,6 +256,19 @@ export function EventsManagement() {
         return
       }
 
+      let imageUrl = editingEvent?.image_url || null
+
+      // Handle image upload for new events or when image is changed
+      if (imageFile) {
+        if (editingEvent) {
+          // Upload new image for existing event
+          imageUrl = await uploadEventImage(editingEvent.id)
+        } else {
+          // For new events, we'll upload after creating the event
+          // This is handled below
+        }
+      }
+
       const eventData = {
         title: formData.title,
         description: formData.description,
@@ -187,10 +278,15 @@ export function EventsManagement() {
         end_date: formData.end_date || formData.event_date,
         city: formData.city,
         country: formData.country,
+        venue_name: formData.venue_name || null,
+        address: formData.address || null,
+        capacity: formData.capacity ? parseInt(formData.capacity) : null,
+        registration_url: formData.registration_url || null,
         is_free: formData.is_free,
         ticket_price: formData.is_free ? null : parseFloat(formData.ticket_price) || null,
         is_featured: formData.is_featured,
         is_published: formData.is_published,
+        image_url: imageUrl,
         organizer_id: user.id
       }
 
@@ -205,11 +301,26 @@ export function EventsManagement() {
         alert('Event updated successfully!')
       } else {
         // Create new event
-        const { error } = await supabase
+        const { data: newEvent, error } = await supabase
           .from('events')
           .insert([eventData])
+          .select('id')
+          .single()
 
         if (error) throw error
+
+        // Upload image for new event if provided
+        if (imageFile && newEvent) {
+          const uploadedImageUrl = await uploadEventImage(newEvent.id)
+          if (uploadedImageUrl) {
+            // Update the event with the image URL
+            await supabase
+              .from('events')
+              .update({ image_url: uploadedImageUrl })
+              .eq('id', newEvent.id)
+          }
+        }
+
         alert('Event created successfully!')
       }
 
@@ -224,19 +335,32 @@ export function EventsManagement() {
   const handleEdit = (event: Event) => {
     setEditingEvent(event)
     setFormData({
-      title: event.title,
-      description: event.description,
-      event_type: event.event_type,
-      event_date: event.event_date.split('T')[0],
-      start_date: event.start_date.split('T')[0],
-      end_date: event.end_date.split('T')[0],
-      city: event.city,
-      country: event.country,
-      is_free: event.is_free,
+      title: event.title || '',
+      description: event.description || '',
+      event_type: event.event_type || '',
+      event_date: event.event_date ? event.event_date.split('T')[0] : '',
+      start_date: event.start_date ? event.start_date.split('T')[0] : '',
+      end_date: event.end_date ? event.end_date.split('T')[0] : '',
+      city: event.city || '',
+      country: event.country || '',
+      venue_name: event.venue_name || '',
+      address: event.address || '',
+      capacity: event.capacity?.toString() || '',
+      registration_url: event.registration_url || '',
+      is_free: event.is_free ?? true,
       ticket_price: event.ticket_price?.toString() || '',
-      is_featured: event.is_featured,
-      is_published: event.is_published
+      is_featured: event.is_featured ?? false,
+      is_published: event.is_published ?? true
     })
+    
+    // Set current image for preview
+    if (event.image_url) {
+      setImagePreview(event.image_url)
+    } else {
+      setImagePreview(null)
+    }
+    setImageFile(null)
+    
     setShowForm(true)
   }
 
@@ -403,6 +527,55 @@ export function EventsManagement() {
                   />
                 </div>
 
+                {/* Event Image Upload */}
+                <div className="md:col-span-2">
+                  <Label>Event Image</Label>
+                  <div className="mt-2">
+                    {imagePreview ? (
+                      <div className="relative">
+                        <img
+                          src={imagePreview}
+                          alt="Event preview"
+                          className="w-full h-48 object-cover rounded-lg border"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={clearImageSelection}
+                          className="absolute top-2 right-2 bg-white"
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageSelect}
+                          className="hidden"
+                          id="event-image"
+                        />
+                        <label
+                          htmlFor="event-image"
+                          className="cursor-pointer flex flex-col items-center"
+                        >
+                          <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-2">
+                            <Plus className="w-6 h-6 text-gray-400" />
+                          </div>
+                          <p className="text-sm text-gray-600">
+                            Click to upload event image
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            JPG, PNG up to 10MB
+                          </p>
+                        </label>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 <div>
                   <Label htmlFor="event_type">Event Type *</Label>
                   <Select
@@ -472,6 +645,49 @@ export function EventsManagement() {
                     onChange={(e) => handleInputChange('country', e.target.value)}
                     placeholder="e.g., Nigeria"
                     required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="venue_name">Venue Name</Label>
+                  <Input
+                    id="venue_name"
+                    value={formData.venue_name}
+                    onChange={(e) => handleInputChange('venue_name', e.target.value)}
+                    placeholder="e.g., National Theatre Lagos"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="address">Address</Label>
+                  <Input
+                    id="address"
+                    value={formData.address}
+                    onChange={(e) => handleInputChange('address', e.target.value)}
+                    placeholder="Full address of the venue"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="capacity">Capacity</Label>
+                  <Input
+                    id="capacity"
+                    type="number"
+                    value={formData.capacity}
+                    onChange={(e) => handleInputChange('capacity', e.target.value)}
+                    placeholder="Maximum attendees"
+                    min="1"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="registration_url">Registration URL</Label>
+                  <Input
+                    id="registration_url"
+                    type="url"
+                    value={formData.registration_url}
+                    onChange={(e) => handleInputChange('registration_url', e.target.value)}
+                    placeholder="https://example.com/register"
                   />
                 </div>
 
@@ -604,20 +820,20 @@ export function EventsManagement() {
                       </div>
                     </div>
 
-                    <p className="text-gray-600 mb-3 line-clamp-2">{event.description}</p>
+                    <p className="text-gray-600 mb-3 line-clamp-2">{event.description || 'No description provided'}</p>
 
                     <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                       <div className="flex items-center">
                         <Calendar className="w-4 h-4 mr-1" />
-                        {new Date(event.event_date).toLocaleDateString('en-US', {
+                        {event.event_date ? new Date(event.event_date).toLocaleDateString('en-US', {
                           year: 'numeric',
                           month: 'short',
                           day: 'numeric'
-                        })}
+                        }) : 'Date TBD'}
                       </div>
                       <div className="flex items-center">
                         <MapPin className="w-4 h-4 mr-1" />
-                        {event.city}, {event.country}
+                        {event.city || 'Location TBD'}, {event.country || 'Country TBD'}
                       </div>
                     </div>
                   </div>
