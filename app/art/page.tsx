@@ -49,8 +49,6 @@ export default function ArtPage() {
       isLiked: true,
       tags: ['sculpture', 'bronze', 'mother', 'earth', 'traditional']
     },
-    tags: ['sculpture', 'bronze', 'mother', 'earth', 'traditional']
-    },
     {
       id: '550e8400-e29b-41d4-a716-446655440003',
       title: 'Urban Dreams',
@@ -98,21 +96,14 @@ export default function ArtPage() {
       title: 'Golden Threads',
       artist: 'Amara Kone',
       price: 180000,
-  image: '/image/placeholder.svg',
+      image: '/image/placeholder.svg',
       category: 'Textile Art',
-    {
-      id: 4,
-      title: 'Ancestral Wisdom',
-      artist: 'Chinua Okoro',
-      price: 95000,
-      image: '/image/Ancestral Wisdom.png',
-      category: 'Mixed Media',
-      medium: 'Mixed Media on Wood',
-      size: '80x60 cm',
-      rating: 4.6,
-      reviews: 15,
+      medium: 'Woven Textile',
+      size: '100x150 cm',
+      rating: 4.9,
+      reviews: 18,
       isLiked: false,
-      tags: ['mixed-media', 'ancestral', 'wisdom', 'wood']
+      tags: ['textile', 'golden', 'threads', 'woven']
     },
     {
       id: 5,
