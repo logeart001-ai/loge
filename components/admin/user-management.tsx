@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase-client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -33,6 +34,17 @@ interface User {
   country?: string
   phone?: string
   rating?: number
+}
+
+interface AuthUser {
+  id: string
+  email: string | null
+  created_at: string
+  email_confirmed_at?: string | null
+  user_metadata?: {
+    full_name?: string | null
+    avatar_url?: string | null
+  } | null
 }
 
 export function UserManagement() {
@@ -109,7 +121,7 @@ export function UserManagement() {
 
       // Try to get additional users from auth.users that might not have profiles
       // This uses a custom API endpoint since auth.users is not directly accessible
-      let allUsers = profilesData || []
+  const allUsers = [...(profilesData ?? [])]
       
       try {
         console.log('Fetching additional auth users...')
@@ -128,20 +140,23 @@ export function UserManagement() {
         clearTimeout(timeoutId)
         
         if (response.ok) {
-          const authUsersData = await response.json()
+          const authUsersData = (await response.json()) as { users?: AuthUser[] }
           console.log('Auth users response:', authUsersData)
           
-          if (authUsersData.users && Array.isArray(authUsersData.users)) {
+          if (Array.isArray(authUsersData.users)) {
             // Merge auth users with profile data
             const profileMap = new Map(allUsers.map(p => [p.id, p]))
             
-            authUsersData.users.forEach((authUser: any) => {
+            authUsersData.users.forEach((authUser) => {
               if (!profileMap.has(authUser.id)) {
                 // Add users who don't have profiles yet
                 allUsers.push({
                   id: authUser.id,
-                  email: authUser.email,
-                  full_name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'Unknown User',
+                  email: authUser.email ?? '',
+                  full_name:
+                    authUser.user_metadata?.full_name ||
+                    authUser.email?.split('@')[0] ||
+                    'Unknown User',
                   role: 'buyer', // Default role
                   creator_status: null,
                   is_verified: authUser.email_confirmed_at ? true : false,
@@ -231,7 +246,7 @@ export function UserManagement() {
       }
 
       // Try to update existing profile
-      let { error } = await supabase
+      const { error } = await supabase
         .from('user_profiles')
         .update({ role: newRole })
         .eq('id', userId)
@@ -274,7 +289,7 @@ export function UserManagement() {
       }
 
       // Try to update existing profile
-      let { error } = await supabase
+      const { error } = await supabase
         .from('user_profiles')
         .update({ is_verified: newStatus })
         .eq('id', userId)
@@ -456,10 +471,13 @@ export function UserManagement() {
                 <div className="flex items-center space-x-4">
                   <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
                     {user.avatar_url ? (
-                      <img
+                      <Image
                         src={user.avatar_url}
                         alt={user.full_name}
-                        className="w-10 h-10 rounded-full object-cover"
+                        width={40}
+                        height={40}
+                        className="h-10 w-10 rounded-full object-cover"
+                        unoptimized
                       />
                     ) : (
                       <span className="text-gray-600 font-semibold">
