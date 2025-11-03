@@ -404,7 +404,7 @@ export default function ArtPage() {
                         </div>
                         
                         {/* Add to Cart Button */}
-                        <AddToCartButton artworkId={artwork.id} />
+                        <AddToCartButton artworkId={String(artwork.id)} />
                       </div>
                     </div>
                   </CardContent>
