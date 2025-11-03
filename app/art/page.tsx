@@ -7,8 +7,9 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Slider } from '@/components/ui/slider'
-import { Heart, Search, Filter, Grid, List, Star, ShoppingCart } from 'lucide-react'
+import { Heart, Search, Filter, Grid, List, Star } from 'lucide-react'
 import { Navbar } from '@/components/navbar'
+import { AddToCartButton } from '@/components/cart/add-to-cart-button'
 import Image from 'next/image'
 
 export default function ArtPage() {
@@ -375,10 +376,7 @@ export default function ArtPage() {
                         </div>
                         
                         {/* Add to Cart Button */}
-                        <Button size="sm" className="bg-orange-600 hover:bg-orange-700 w-full">
-                          <ShoppingCart className="w-4 h-4 mr-2" />
-                          Add to Cart
-                        </Button>
+                        <AddToCartButton artworkId={artwork.id.toString()} />
                       </div>
                     </div>
                   </CardContent>
