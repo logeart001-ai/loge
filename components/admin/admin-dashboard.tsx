@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -144,12 +145,28 @@ export function AdminDashboard() {
             const { data: submissionsData, error } = await query
 
             if (error) {
-                console.error('❌ Supabase query error:', {
-                    message: error.message,
-                    details: error.details,
-                    hint: error.hint,
-                    code: error.code
-                })
+                console.error('❌ Supabase query error:', JSON.stringify(error, null, 2))
+
+                // Check for various error conditions that indicate missing/misconfigured tables
+                const isMissingTable = error.message?.includes('does not exist') || 
+                                     error.code === '42P01' ||
+                                     error.code === 'PGRST200' ||
+                                     error.message?.includes('relationship') ||
+                                     error.message?.includes('foreign key') ||
+                                     error.message?.includes('schema cache')
+
+                if (isMissingTable) {
+                    console.warn('⚠️ Submissions system not fully configured yet')
+                    setSubmissions([])
+                    setStats({
+                        total_submissions: 0,
+                        pending_review: 0,
+                        approved_today: 0,
+                        rejection_rate: 0
+                    })
+                    setLoading(false)
+                    return
+                }
                 throw error
             }
 
@@ -217,17 +234,17 @@ export function AdminDashboard() {
                 })
             }
         } catch (error) {
-            console.error('❌ Error fetching submissions:', error)
+            console.error('❌ Error fetching submissions:', JSON.stringify(error, null, 2))
             
-            // Provide more detailed error information
-            if (error instanceof Error) {
-                console.error('Error details:', {
-                    name: error.name,
-                    message: error.message,
-                    stack: error.stack
-                })
-            } else if (typeof error === 'object' && error !== null) {
-                console.error('Error object:', JSON.stringify(error, null, 2))
+            // Check if this is a database configuration issue
+            const isConfigIssue = error && typeof error === 'object' && 
+                                 (error.code === 'PGRST200' || 
+                                  error.message?.includes('relationship') ||
+                                  error.message?.includes('schema cache') ||
+                                  error.message?.includes('foreign key'))
+
+            if (isConfigIssue) {
+                console.warn('⚠️ Database tables need to be set up. Run the fix-admin-dashboard-errors.sql script.')
             }
 
             // Set empty state on error
@@ -325,8 +342,22 @@ export function AdminDashboard() {
             setSelectedSubmission(null)
             fetchSubmissions()
         } catch (error) {
-            console.error('Error submitting review:', error)
-            alert('Error submitting review')
+            console.error('❌ Error submitting review:', error)
+            
+            // Provide detailed error information
+            if (error instanceof Error) {
+                console.error('Review submission error details:', {
+                    name: error.name,
+                    message: error.message,
+                    stack: error.stack
+                })
+                alert(`Error submitting review: ${error.message}`)
+            } else if (typeof error === 'object' && error !== null) {
+                console.error('Review submission error object:', JSON.stringify(error, null, 2))
+                alert('Error submitting review. Check console for details.')
+            } else {
+                alert('Unknown error occurred while submitting review')
+            }
         } finally {
             setSubmitting(false)
         }
@@ -415,6 +446,18 @@ export function AdminDashboard() {
             
         } catch (error) {
             console.error('❌ Error creating marketplace item:', error)
+            
+            // Provide detailed error information for marketplace item creation
+            if (error instanceof Error) {
+                console.error('Marketplace item creation error:', {
+                    name: error.name,
+                    message: error.message,
+                    stack: error.stack
+                })
+            } else if (typeof error === 'object' && error !== null) {
+                console.error('Marketplace error object:', JSON.stringify(error, null, 2))
+            }
+            
             throw error
         }
     }
@@ -624,10 +667,13 @@ export function AdminDashboard() {
                                                 {selectedSubmission.media_files.slice(0, 4).map((file, index) => (
                                                     <div key={index} className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
                                                         {file.file_type === 'image' ? (
-                                                            <img
+                                                            <Image
                                                                 src={file.file_url}
                                                                 alt={file.caption || 'Submission media'}
+                                                                width={300}
+                                                                height={300}
                                                                 className="w-full h-full object-cover rounded-lg"
+                                                                unoptimized
                                                             />
                                                         ) : (
                                                             <FileText className="w-8 h-8 text-gray-400" />

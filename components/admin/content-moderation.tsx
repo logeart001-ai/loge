@@ -100,10 +100,15 @@ export function ContentModeration() {
       const { data, error } = await query
 
       if (error) {
-        console.error('Error fetching reports:', error)
-        // Check if table doesn't exist
-        if (error.message?.includes('does not exist') || error.code === '42P01') {
-          console.warn('content_reports table does not exist yet')
+        console.error('Error fetching reports:', JSON.stringify(error, null, 2))
+        // Check if table doesn't exist or has configuration issues
+        const isMissingTable = error.message?.includes('does not exist') || 
+                              error.code === '42P01' ||
+                              error.code === 'PGRST200' ||
+                              error.message?.includes('relation')
+        
+        if (isMissingTable) {
+          console.warn('⚠️ content_reports table does not exist yet. Run fix-admin-dashboard-errors.sql to create it.')
           setReports([])
           return
         }
@@ -158,10 +163,19 @@ export function ContentModeration() {
       setReports(enrichedReports)
       setError(null)
     } catch (error) {
-      console.error('Error fetching reports:', error)
-      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch reports'
+      console.error('Error fetching reports:', JSON.stringify(error, null, 2))
+      
+      // Check if this is a configuration issue
+      const isConfigIssue = error && typeof error === 'object' && 
+                           (error.code === '42P01' || 
+                            error.message?.includes('does not exist') ||
+                            error.message?.includes('relation'))
+      
+      const errorMessage = isConfigIssue 
+        ? 'Content moderation tables need to be set up. Please run the database setup script.'
+        : (error instanceof Error ? error.message : 'Failed to fetch reports')
+      
       setError(errorMessage)
-      // Set empty array if there's an error
       setReports([])
     } finally {
       setLoading(false)
