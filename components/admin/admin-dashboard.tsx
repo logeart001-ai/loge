@@ -94,6 +94,35 @@ export function AdminDashboard() {
 
     const fetchSubmissions = async () => {
         try {
+            setLoading(true)
+            
+            // First check if table exists by attempting a simple query
+            const { error: tableCheckError } = await supabase
+                .from('project_submissions')
+                .select('id')
+                .limit(1)
+
+            if (tableCheckError) {
+                // Check if table doesn't exist
+                if (tableCheckError.message?.includes('does not exist') || 
+                    tableCheckError.code === '42P01' ||
+                    tableCheckError.message?.includes('relation') ||
+                    tableCheckError.message?.includes('table')) {
+                    console.warn('⚠️ project_submissions table does not exist yet')
+                    setSubmissions([])
+                    setStats({
+                        total_submissions: 0,
+                        pending_review: 0,
+                        approved_today: 0,
+                        rejection_rate: 0
+                    })
+                    setLoading(false)
+                    return
+                }
+                // Log other errors but continue
+                console.warn('Table check warning:', tableCheckError)
+            }
+
             let query = supabase
                 .from('project_submissions')
                 .select(`
@@ -115,19 +144,12 @@ export function AdminDashboard() {
             const { data: submissionsData, error } = await query
 
             if (error) {
-                // Check if table doesn't exist
-                if (error.message?.includes('does not exist') || error.code === '42P01') {
-                    console.warn('project_submissions table does not exist yet')
-                    setSubmissions([])
-                    setStats({
-                        total_submissions: 0,
-                        pending_review: 0,
-                        approved_today: 0,
-                        rejection_rate: 0
-                    })
-                    setLoading(false)
-                    return
-                }
+                console.error('❌ Supabase query error:', {
+                    message: error.message,
+                    details: error.details,
+                    hint: error.hint,
+                    code: error.code
+                })
                 throw error
             }
 
@@ -195,7 +217,27 @@ export function AdminDashboard() {
                 })
             }
         } catch (error) {
-            console.error('Error fetching submissions:', error)
+            console.error('❌ Error fetching submissions:', error)
+            
+            // Provide more detailed error information
+            if (error instanceof Error) {
+                console.error('Error details:', {
+                    name: error.name,
+                    message: error.message,
+                    stack: error.stack
+                })
+            } else if (typeof error === 'object' && error !== null) {
+                console.error('Error object:', JSON.stringify(error, null, 2))
+            }
+
+            // Set empty state on error
+            setSubmissions([])
+            setStats({
+                total_submissions: 0,
+                pending_review: 0,
+                approved_today: 0,
+                rejection_rate: 0
+            })
         } finally {
             setLoading(false)
         }
