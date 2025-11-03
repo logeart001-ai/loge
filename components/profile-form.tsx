@@ -1,11 +1,12 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { updateUserProfile } from '@/lib/auth'
+import { ProfileAvatarUpload } from '@/components/profile-avatar-upload'
 import { Loader2 } from 'lucide-react'
 
 interface ProfileFormProps {
@@ -15,9 +16,21 @@ interface ProfileFormProps {
 
 export function ProfileForm({ user, profile }: ProfileFormProps) {
   const [state, action, isPending] = useActionState(updateUserProfile, null)
+  const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url || '')
 
   return (
     <form action={action} className="space-y-6">
+      {/* Profile Picture Section */}
+      <div className="flex flex-col items-center space-y-4 pb-6 border-b border-gray-200">
+        <h3 className="text-lg font-medium text-gray-900">Profile Picture</h3>
+        <ProfileAvatarUpload
+          currentAvatarUrl={avatarUrl}
+          userId={user.id}
+          userName={profile?.full_name || user.user_metadata?.full_name || user.email}
+          onAvatarUpdate={setAvatarUrl}
+        />
+      </div>
+
       <div className="grid md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <Label htmlFor="fullName">Full Name</Label>

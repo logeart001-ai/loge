@@ -8,7 +8,7 @@ export async function GET() {
     // Test auth
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     
-    const result = {
+    const result: any = {
       timestamp: new Date().toISOString(),
       auth: {
         success: !authError,

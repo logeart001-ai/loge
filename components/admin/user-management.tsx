@@ -46,6 +46,7 @@ export function UserManagement() {
   const [statusFilter, setStatusFilter] = useState('all')
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [connectionStatus, setConnectionStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking')
   const supabase = createClient()
 
   useEffect(() => {
@@ -112,12 +113,25 @@ export function UserManagement() {
       
       try {
         console.log('Fetching additional auth users...')
-        const response = await fetch('/api/admin/users')
+        
+        // Add timeout and retry logic for the fetch
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
+        
+        const response = await fetch('/api/admin/users', {
+          signal: controller.signal,
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        })
+        
+        clearTimeout(timeoutId)
+        
         if (response.ok) {
           const authUsersData = await response.json()
           console.log('Auth users response:', authUsersData)
           
-          if (authUsersData.users) {
+          if (authUsersData.users && Array.isArray(authUsersData.users)) {
             // Merge auth users with profile data
             const profileMap = new Map(allUsers.map(p => [p.id, p]))
             
@@ -142,17 +156,25 @@ export function UserManagement() {
                 })
               }
             })
+            console.log(`✅ Merged ${authUsersData.users.length} auth users with ${profilesData?.length || 0} profile users`)
           }
         } else {
-          console.warn('Could not fetch auth users, showing profile users only')
+          const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
+          console.warn('Could not fetch auth users:', response.status, errorData)
+          console.log('Showing profile users only')
         }
       } catch (authFetchError) {
-        console.warn('Failed to fetch auth users:', authFetchError)
+        if (authFetchError instanceof Error && authFetchError.name === 'AbortError') {
+          console.warn('Auth users fetch timed out, showing profile users only')
+        } else {
+          console.warn('Failed to fetch auth users:', authFetchError)
+        }
         console.log('Showing profile users only')
       }
       
       setUsers(allUsers)
       setError(null)
+      setConnectionStatus('connected')
       console.log(`✅ Successfully loaded ${allUsers.length} users (${profilesData?.length || 0} with profiles)`)
     } catch (error) {
       console.error('❌ Error fetching users:', error)
@@ -164,6 +186,7 @@ export function UserManagement() {
       }
       
       setError(errorMessage)
+      setConnectionStatus('disconnected')
     } finally {
       setLoading(false)
     }
@@ -351,6 +374,26 @@ export function UserManagement() {
         <div>
           <h2 className="text-2xl font-bold text-gray-900">User Management</h2>
           <p className="text-gray-600">Manage user accounts, roles, and permissions</p>
+        </div>
+        <div className="flex items-center gap-2">
+          {connectionStatus === 'connected' && (
+            <Badge className="bg-green-100 text-green-800">
+              <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+              Connected
+            </Badge>
+          )}
+          {connectionStatus === 'disconnected' && (
+            <Badge className="bg-red-100 text-red-800">
+              <div className="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
+              Disconnected
+            </Badge>
+          )}
+          {connectionStatus === 'checking' && (
+            <Badge className="bg-yellow-100 text-yellow-800">
+              <div className="w-2 h-2 bg-yellow-500 rounded-full mr-2 animate-pulse"></div>
+              Checking...
+            </Badge>
+          )}
         </div>
       </div>
 
