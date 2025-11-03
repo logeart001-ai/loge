@@ -238,10 +238,10 @@ export function AdminDashboard() {
             
             // Check if this is a database configuration issue
             const isConfigIssue = error && typeof error === 'object' && 
-                                 (error.code === 'PGRST200' || 
-                                  error.message?.includes('relationship') ||
-                                  error.message?.includes('schema cache') ||
-                                  error.message?.includes('foreign key'))
+                                 ((error as any).code === 'PGRST200' || 
+                                  (error as any).message?.includes('relationship') ||
+                                  (error as any).message?.includes('schema cache') ||
+                                  (error as any).message?.includes('foreign key'))
 
             if (isConfigIssue) {
                 console.warn('⚠️ Database tables need to be set up. Run the fix-admin-dashboard-errors.sql script.')

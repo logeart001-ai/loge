@@ -141,8 +141,21 @@ export async function POST(req: NextRequest) {
       .select('id, price, is_available')
       .eq('id', artworkId)
       .single()
-    if (artErr) throw artErr
-    if (!artwork.is_available) return NextResponse.json({ error: 'Artwork not available' }, { status: 400 })
+    
+    if (artErr) {
+      if (artErr.code === 'PGRST116') {
+        return NextResponse.json({ error: `Artwork with ID ${artworkId} not found` }, { status: 404 })
+      }
+      throw artErr
+    }
+    
+    if (!artwork) {
+      return NextResponse.json({ error: `Artwork with ID ${artworkId} not found` }, { status: 404 })
+    }
+    
+    if (!artwork.is_available) {
+      return NextResponse.json({ error: 'Artwork not available' }, { status: 400 })
+    }
 
     const cart = await getOrCreateActiveCart(supabase, user.id)
 
