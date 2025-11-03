@@ -10,6 +10,14 @@ import { OptimizedImage } from '@/components/optimized-image'
 async function getCollectorStats(userId: string) {
   try {
     const supabase = await createServerClient()
+    
+    // Get user profile with avatar
+    const { data: userProfile } = await supabase
+      .from('user_profiles')
+      .select('avatar_url, full_name')
+      .eq('id', userId)
+      .single()
+    
     // Orders count
     const { count: ordersCount } = await supabase
       .from('orders')
@@ -64,11 +72,12 @@ async function getCollectorStats(userId: string) {
       ordersCount: ordersCount || 0,
       wishlistCount,
       followingCount,
-      recentOrders: recentOrders || []
+      recentOrders: recentOrders || [],
+      userProfile
     }
   } catch (e) {
     console.error('Error computing collector stats:', e)
-  return { ordersCount: 0, wishlistCount: 0, followingCount: 0, recentOrders: [] as { id?: string; created_at?: string; total_amount?: number | string; status?: string }[] }
+  return { ordersCount: 0, wishlistCount: 0, followingCount: 0, recentOrders: [] as { id?: string; created_at?: string; total_amount?: number | string; status?: string }[], userProfile: null }
   }
 }
 
@@ -87,7 +96,7 @@ export default async function CollectorDashboard() {
           </Link>
           
           <div className="flex items-center space-x-4">
-            <span className="text-gray-600">Welcome, {user.user_metadata?.full_name || user.email}</span>
+            <span className="text-gray-600">Welcome, {stats.userProfile?.full_name || user.user_metadata?.full_name || user.email}</span>
             <form action={signOut}>
               <Button variant="outline" size="sm" type="submit">
                 <LogOut className="w-4 h-4 mr-2" />
@@ -106,10 +115,10 @@ export default async function CollectorDashboard() {
               <CardContent className="p-6">
                 <div className="flex items-center space-x-3 mb-6">
                   <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
-                    {user.user_metadata?.avatar_url ? (
+                    {stats.userProfile?.avatar_url ? (
                       <OptimizedImage
-                        src={user.user_metadata.avatar_url || "/image/placeholder.svg"}
-                        alt={user.user_metadata?.full_name || 'Profile avatar'}
+                        src={stats.userProfile.avatar_url}
+                        alt={stats.userProfile?.full_name || user.user_metadata?.full_name || 'Profile avatar'}
                         width={48}
                         height={48}
                         className="rounded-full object-cover"
@@ -119,7 +128,7 @@ export default async function CollectorDashboard() {
                     )}
                   </div>
                   <div>
-                    <h3 className="card-title font-semibold">{user.user_metadata?.full_name || user.email}</h3>
+                    <h3 className="card-title font-semibold">{stats.userProfile?.full_name || user.user_metadata?.full_name || user.email}</h3>
                     <Badge variant="secondary">Art Collector</Badge>
                   </div>
                 </div>
@@ -159,7 +168,7 @@ export default async function CollectorDashboard() {
             {/* Welcome Section */}
             <Card>
               <CardHeader>
-                <CardTitle>Welcome back, {user.user_metadata?.full_name || user.email}!</CardTitle>
+                <CardTitle>Welcome back, {stats.userProfile?.full_name || user.user_metadata?.full_name || user.email}!</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600 mb-4">

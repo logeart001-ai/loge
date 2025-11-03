@@ -22,7 +22,7 @@ export default function BooksPage() {
 
   const books = [
     {
-      id: 1,
+      id: '750e8400-e29b-41d4-a716-446655440001',
       title: 'Whispers of the Savannah',
       author: 'Amara Kone',
       price: 6800,
@@ -41,7 +41,7 @@ export default function BooksPage() {
       tags: ['family', 'secrets', 'mali', 'generations']
     },
     {
-      id: 2,
+      id: '750e8400-e29b-41d4-a716-446655440002',
       title: 'Lagos Noir',
       author: 'Tunde Adebayo',
       price: 5200,
@@ -59,7 +59,7 @@ export default function BooksPage() {
       tags: ['crime', 'nigeria', 'lagos', 'mystery']
     },
     {
-      id: 3,
+      id: '750e8400-e29b-41d4-a716-446655440003',
       title: 'The Baobab\'s Daughter',
       author: 'Fatou Diop',
       price: 7600,
@@ -77,7 +77,7 @@ export default function BooksPage() {
       tags: ['historical', 'west-africa', 'journey', 'woman']
     },
     {
-      id: 4,
+      id: '750e8400-e29b-41d4-a716-446655440004',
       title: 'Ubuntu Philosophy',
       author: 'Dr. Mandla Mbeki',
       price: 9200,
@@ -95,7 +95,7 @@ export default function BooksPage() {
       tags: ['ubuntu', 'philosophy', 'african', 'wisdom']
     },
     {
-      id: 5,
+      id: '750e8400-e29b-41d4-a716-446655440005',
       title: 'Rhythms of the Sahel',
       author: 'Aminata Traore',
       price: 4800,
@@ -113,7 +113,7 @@ export default function BooksPage() {
       tags: ['poetry', 'sahel', 'landscape', 'bilingual']
     },
     {
-      id: 6,
+      id: '750e8400-e29b-41d4-a716-446655440006',
       title: 'Digital Africa',
       author: 'Kwame Nkrumah Jr.',
       price: 8900,

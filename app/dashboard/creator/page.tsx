@@ -22,7 +22,14 @@ interface Submission {
 
 async function getCreatorStats(userId: string) {
   const supabase = await createServerClient()
-  
+
+  // Get user profile with avatar
+  const { data: userProfile } = await supabase
+    .from('user_profiles')
+    .select('avatar_url, full_name')
+    .eq('id', userId)
+    .single()
+
   // Get artworks count
   const { count: artworksCount } = await supabase
     .from('artworks')
@@ -34,7 +41,7 @@ async function getCreatorStats(userId: string) {
     .from('artworks')
     .select('views_count')
     .eq('creator_id', userId)
-  
+
   const totalViews = viewsData?.reduce((sum, artwork) => sum + (artwork.views_count || 0), 0) || 0
 
   // Get total earnings
@@ -43,7 +50,7 @@ async function getCreatorStats(userId: string) {
     .select('total_amount')
     .eq('creator_id', userId)
     .eq('status', 'delivered')
-  
+
   const totalEarnings = ordersData?.reduce((sum, order) => sum + parseFloat(order.total_amount), 0) || 0
 
   // Get orders count
@@ -81,13 +88,14 @@ async function getCreatorStats(userId: string) {
     ordersCount: ordersCount || 0,
     recentArtworks: recentArtworks || [],
     submissions: submissions || [],
-    submissionStats
+    submissionStats,
+    userProfile
   }
 }
 
 export default async function CreatorDashboard() {
   const user = await requireAuth()
-  
+
   if (user.user_metadata?.user_type !== 'creator') {
     redirect('/dashboard/collector')
   }
@@ -103,9 +111,9 @@ export default async function CreatorDashboard() {
             <OptimizedImage src="/image/logelogo.png" alt="L'oge Arts logo" width={64} height={64} priority />
             <span className="brand-text font-bold text-lg">L&apos;oge Arts</span>
           </Link>
-          
+
           <div className="flex items-center space-x-4">
-            <span className="text-gray-600">Welcome, {user.user_metadata?.full_name || user.email}</span>
+            <span className="text-gray-600">Welcome, {stats.userProfile?.full_name || user.user_metadata?.full_name || user.email}</span>
             <form action={signOut}>
               <Button variant="outline" size="sm" type="submit">
                 <LogOut className="w-4 h-4 mr-2" />
@@ -124,18 +132,24 @@ export default async function CreatorDashboard() {
               <CardContent className="p-6">
                 <div className="flex items-center space-x-3 mb-6">
                   <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
-                    {user.user_metadata?.avatar_url ? (
-                      <OptimizedImage src={user.user_metadata.avatar_url || "/image/placeholder.svg"} alt={user.user_metadata?.full_name || 'Profile avatar'} width={48} height={48} className="rounded-full object-cover" />
+                    {stats.userProfile?.avatar_url ? (
+                      <OptimizedImage
+                        src={stats.userProfile.avatar_url}
+                        alt={stats.userProfile?.full_name || user.email || 'User'}
+                        width={48}
+                        height={48}
+                        className="rounded-full object-cover"
+                      />
                     ) : (
-                      <Upload className="w-6 h-6 text-gray-600" />
+                      <Upload className="w-6 h-6 text-gray-400" />
                     )}
                   </div>
                   <div>
-                    <h3 className="font-semibold">{user.user_metadata?.full_name || user.email}</h3>
-                    <Badge className="bg-orange-100 text-orange-800">Creator</Badge>
+                    <h3 className="font-semibold">{stats.userProfile?.full_name || user.user_metadata?.full_name || user.email}</h3>
+                    <Badge className="bg-orange-100 text-orange-600">Creator</Badge>
                   </div>
                 </div>
-                
+
                 <nav className="space-y-2">
                   <Link href="/dashboard/creator" className="flex items-center space-x-2 p-2 bg-orange-50 text-orange-600 rounded">
                     <BarChart3 className="w-4 h-4" />
@@ -211,7 +225,7 @@ export default async function CreatorDashboard() {
                   <div className="text-gray-600 text-sm">Artworks</div>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardContent className="p-6 text-center">
                   <FileText className="w-8 h-8 text-blue-600 mx-auto mb-2" />
@@ -219,7 +233,7 @@ export default async function CreatorDashboard() {
                   <div className="text-gray-600 text-sm">Submissions</div>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardContent className="p-6 text-center">
                   <Eye className="w-8 h-8 text-brand-yellow mx-auto mb-2" />
@@ -227,7 +241,7 @@ export default async function CreatorDashboard() {
                   <div className="text-gray-600 text-sm">Total Views</div>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardContent className="p-6 text-center">
                   <DollarSign className="w-8 h-8 text-brand-orange mx-auto mb-2" />
@@ -235,7 +249,7 @@ export default async function CreatorDashboard() {
                   <div className="text-gray-600 text-sm">Earnings</div>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardContent className="p-6 text-center">
                   <TrendingUp className="w-8 h-8 text-brand-red mx-auto mb-2" />
@@ -295,7 +309,7 @@ export default async function CreatorDashboard() {
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-gray-600">Approval Rate</span>
                         <span className="font-semibold">
-                          {stats.submissionStats.total > 0 
+                          {stats.submissionStats.total > 0
                             ? Math.round((stats.submissionStats.approved / stats.submissionStats.total) * 100)
                             : 0}%
                         </span>
@@ -307,7 +321,7 @@ export default async function CreatorDashboard() {
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-gray-600">Conversion Rate</span>
                         <span className="font-semibold">
-                          {stats.totalViews > 0 
+                          {stats.totalViews > 0
                             ? ((stats.ordersCount / stats.totalViews) * 100).toFixed(1)
                             : 0}%
                         </span>
@@ -436,7 +450,7 @@ export default async function CreatorDashboard() {
                               <div>
                                 <h3 className="font-semibold text-gray-900">{submission.title}</h3>
                                 <p className="text-sm text-gray-600">
-                                  {submission.creator_type?.replace('_', ' ')} • 
+                                  {submission.creator_type?.replace('_', ' ')} •
                                   Submitted {new Date(submission.submission_date || submission.created_at).toLocaleDateString()}
                                 </p>
                               </div>
@@ -448,11 +462,11 @@ export default async function CreatorDashboard() {
                                 </span>
                               )}
                               <Badge className={
-                                submission.status === 'approved' || submission.status === 'published' 
+                                submission.status === 'approved' || submission.status === 'published'
                                   ? 'bg-green-100 text-green-800'
                                   : submission.status === 'rejected'
-                                  ? 'bg-red-100 text-red-800'
-                                  : 'bg-yellow-100 text-yellow-800'
+                                    ? 'bg-red-100 text-red-800'
+                                    : 'bg-yellow-100 text-yellow-800'
                               }>
                                 {submission.status}
                               </Badge>
@@ -499,7 +513,7 @@ export default async function CreatorDashboard() {
                           </Button>
                         </Link>
                       </div>
-                      
+
                       <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
                         <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
                           <span className="text-orange-600 font-bold text-sm">2</span>
@@ -514,7 +528,7 @@ export default async function CreatorDashboard() {
                           </Button>
                         </Link>
                       </div>
-                      
+
                       <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
                         <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
                           <span className="text-orange-600 font-bold text-sm">3</span>
@@ -529,7 +543,7 @@ export default async function CreatorDashboard() {
                           </Button>
                         </Link>
                       </div>
-                      
+
                       <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
                         <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
                           <span className="text-orange-600 font-bold text-sm">4</span>

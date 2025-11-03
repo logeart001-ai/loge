@@ -21,7 +21,7 @@ export default function ArtPage() {
 
   const artworks = [
     {
-      id: 1,
+      id: '550e8400-e29b-41d4-a716-446655440001',
       title: 'Sunset Over Lagos',
       artist: 'Adunni Olorisha',
       price: 75000,
@@ -36,7 +36,7 @@ export default function ArtPage() {
       tags: ['landscape', 'sunset', 'lagos', 'contemporary']
     },
     {
-      id: 2,
+      id: '550e8400-e29b-41d4-a716-446655440002',
       title: 'Mother Earth',
       artist: 'Kwame Asante',
       price: 120000,
@@ -49,8 +49,10 @@ export default function ArtPage() {
       isLiked: true,
       tags: ['sculpture', 'bronze', 'mother', 'earth', 'traditional']
     },
+    tags: ['sculpture', 'bronze', 'mother', 'earth', 'traditional']
+    },
     {
-      id: 3,
+      id: '550e8400-e29b-41d4-a716-446655440003',
       title: 'Urban Dreams',
       artist: 'Zara Mthembu',
       price: 45000,
@@ -63,6 +65,41 @@ export default function ArtPage() {
       isLiked: false,
       tags: ['digital', 'urban', 'contemporary', 'dreams']
     },
+    {
+      id: '550e8400-e29b-41d4-a716-446655440004',
+      title: 'Ancestral Wisdom',
+      artist: 'Chinua Okoro',
+      price: 95000,
+      image: '/image/Ancestral Wisdom.png',
+      category: 'Mixed Media',
+      medium: 'Mixed Media on Wood',
+      size: '80x60 cm',
+      rating: 4.6,
+      reviews: 15,
+      isLiked: false,
+      tags: ['mixed-media', 'ancestral', 'wisdom', 'wood']
+    },
+    {
+      id: '550e8400-e29b-41d4-a716-446655440005',
+      title: 'Rhythms of the Sahel',
+      artist: 'Fatima Al-Zahra',
+      price: 65000,
+      image: '/image/Rhythms of the Sahel.png',
+      category: 'Painting',
+      medium: 'Acrylic on Canvas',
+      size: '70x50 cm',
+      rating: 4.8,
+      reviews: 22,
+      isLiked: true,
+      tags: ['painting', 'sahel', 'rhythms', 'acrylic']
+    },
+    {
+      id: '550e8400-e29b-41d4-a716-446655440006',
+      title: 'Golden Threads',
+      artist: 'Amara Kone',
+      price: 180000,
+  image: '/image/placeholder.svg',
+      category: 'Textile Art',
     {
       id: 4,
       title: 'Ancestral Wisdom',
@@ -376,7 +413,7 @@ export default function ArtPage() {
                         </div>
                         
                         {/* Add to Cart Button */}
-                        <AddToCartButton artworkId={artwork.id.toString()} />
+                        <AddToCartButton artworkId={artwork.id} />
                       </div>
                     </div>
                   </CardContent>

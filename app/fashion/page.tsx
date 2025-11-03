@@ -22,7 +22,7 @@ export default function FashionPage() {
 
   const fashionItems = [
     {
-      id: 1,
+      id: '650e8400-e29b-41d4-a716-446655440001',
       title: 'Ankara Print Dress',
       designer: 'Kemi Fashion House',
       price: 45000,
@@ -39,7 +39,7 @@ export default function FashionPage() {
       tags: ['ankara', 'traditional', 'dress', 'colorful']
     },
     {
-      id: 2,
+      id: '650e8400-e29b-41d4-a716-446655440002',
       title: 'Kente Blazer',
       designer: 'Accra Couture',
       price: 72000,
@@ -55,7 +55,7 @@ export default function FashionPage() {
       tags: ['kente', 'blazer', 'formal', 'traditional']
     },
     {
-      id: 3,
+      id: '650e8400-e29b-41d4-a716-446655440003',
       title: 'Dashiki Shirt',
       designer: 'Lagos Style Co.',
       price: 28000,
@@ -71,7 +71,7 @@ export default function FashionPage() {
       tags: ['dashiki', 'shirt', 'casual', 'embroidered']
     },
     {
-      id: 4,
+      id: '650e8400-e29b-41d4-a716-446655440004',
       title: 'Adire Maxi Skirt',
       designer: 'Ibadan Textiles',
       price: 35000,
@@ -87,7 +87,7 @@ export default function FashionPage() {
       tags: ['adire', 'maxi', 'skirt', 'indigo']
     },
     {
-      id: 5,
+      id: '650e8400-e29b-41d4-a716-446655440005',
       title: 'Bogolan Jacket',
       designer: 'Mali Heritage',
       price: 85000,
@@ -103,7 +103,7 @@ export default function FashionPage() {
       tags: ['bogolan', 'jacket', 'mudcloth', 'traditional']
     },
     {
-      id: 6,
+      id: '650e8400-e29b-41d4-a716-446655440006',
       title: 'Wax Print Jumpsuit',
       designer: 'Dakar Designs',
       price: 58000,
