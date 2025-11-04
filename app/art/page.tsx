@@ -43,20 +43,25 @@ export default async function ArtPage() {
     .limit(50)
 
   // Transform the data to match the expected format
-  const transformedArtworks = (artworks || []).map((art: ArtworkData) => ({
-    id: art.id,
-    title: art.title || 'Untitled',
-    artist: art.user_profiles?.full_name || art.user_profiles?.username || 'Unknown Artist',
-    price: art.price || 0,
-    image: art.thumbnail_url || '/image/placeholder.svg',
-    category: art.category || 'Uncategorized',
-    medium: art.medium || 'Mixed Media',
-    size: art.dimensions || 'Various',
-    rating: 4.5, // Default rating since we don't have reviews yet
-    reviews: 0,
-    isLiked: false,
-    tags: [art.category?.toLowerCase() || 'art', art.medium?.toLowerCase() || 'mixed']
-  }))
+  const transformedArtworks = (artworks || []).map((art) => {
+    // Handle both single object and array responses from Supabase
+    const profile = Array.isArray(art.user_profiles) ? art.user_profiles[0] : art.user_profiles
+    
+    return {
+      id: art.id,
+      title: art.title || 'Untitled',
+      artist: profile?.full_name || profile?.username || 'Unknown Artist',
+      price: art.price || 0,
+      image: art.thumbnail_url || '/image/placeholder.svg',
+      category: art.category || 'Uncategorized',
+      medium: art.medium || 'Mixed Media',
+      size: art.dimensions || 'Various',
+      rating: 4.5, // Default rating since we don't have reviews yet
+      reviews: 0,
+      isLiked: false,
+      tags: [art.category?.toLowerCase() || 'art', art.medium?.toLowerCase() || 'mixed']
+    }
+  })
 
   return <ArtPageClient initialArtworks={transformedArtworks} />
 }
