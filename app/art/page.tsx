@@ -1,11 +1,27 @@
 import { createServerClient } from '@/lib/supabase'
 import { ArtPageClient } from './art-page-client'
 
+interface ArtworkData {
+  id: string
+  title: string | null
+  price: number | null
+  thumbnail_url: string | null
+  description: string | null
+  medium: string | null
+  dimensions: string | null
+  is_available: boolean
+  category: string | null
+  user_profiles: {
+    full_name: string | null
+    username: string | null
+  } | null
+}
+
 export default async function ArtPage() {
   // Fetch real artworks from the database
   const supabase = await createServerClient()
   
-  const { data: artworks, error } = await supabase
+  const { data: artworks } = await supabase
     .from('artworks')
     .select(`
       id,
@@ -27,7 +43,7 @@ export default async function ArtPage() {
     .limit(50)
 
   // Transform the data to match the expected format
-  const transformedArtworks = (artworks || []).map((art: any) => ({
+  const transformedArtworks = (artworks || []).map((art: ArtworkData) => ({
     id: art.id,
     title: art.title || 'Untitled',
     artist: art.user_profiles?.full_name || art.user_profiles?.username || 'Unknown Artist',
