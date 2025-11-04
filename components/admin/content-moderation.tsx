@@ -167,9 +167,9 @@ export function ContentModeration() {
       
       // Check if this is a configuration issue
       const isConfigIssue = error && typeof error === 'object' && 
-                           (error.code === '42P01' || 
-                            error.message?.includes('does not exist') ||
-                            error.message?.includes('relation'))
+                           ('code' in error && error.code === '42P01') || 
+                            ('message' in error && typeof error.message === 'string' && 
+                             (error.message.includes('does not exist') || error.message.includes('relation')))
       
       const errorMessage = isConfigIssue 
         ? 'Content moderation tables need to be set up. Please run the database setup script.'
