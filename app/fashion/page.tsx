@@ -1,53 +1,59 @@
-'use client'
+import { createServerClient } from '@/lib/supabase'
+import { FashionPageClient } from './fashion-page-client'
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Slider } from '@/components/ui/slider'
-import { Heart, Search, Filter, Grid, List, Star, Truck } from 'lucide-react'
-import { Navbar } from '@/components/navbar'
-import { AddToCartButton } from '@/components/cart/add-to-cart-button'
-import Image from 'next/image'
+export default async function FashionPage() {
+  // Fetch real fashion items from the database
+  const supabase = await createServerClient()
+  
+  const { data: artworks } = await supabase
+    .from('artworks')
+    .select(`
+      id,
+      title,
+      price,
+      thumbnail_url,
+      description,
+      medium,
+      dimensions,
+      is_available,
+      category,
+      user_profiles!creator_id (
+        full_name,
+        username
+      )
+    `)
+    .eq('is_available', true)
+    .eq('category', 'Fashion')
+    .order('created_at', { ascending: false })
+    .limit(50)
 
-export default function FashionPage() {
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [priceRange, setPriceRange] = useState([0, 200000])
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('all')
-  const [selectedSize, setSelectedSize] = useState('all')
-  const [sortBy, setSortBy] = useState('newest')
-
-  const fashionItems = [
-    {
-      id: '650e8400-e29b-41d4-a716-446655440001',
-      title: 'Ankara Print Dress',
-      designer: 'Kemi Fashion House',
-      price: 45000,
-      originalPrice: 55000,
-  image: '/image/Fashion Week Image.png',
-      category: 'Dresses',
-      sizes: ['S', 'M', 'L', 'XL'],
-      colors: ['Red', 'Blue', 'Green'],
-      rating: 4.8,
-      reviews: 32,
+  // Transform the data to match the expected format
+  const transformedItems = (artworks || []).map((art) => {
+    const profile = Array.isArray(art.user_profiles) ? art.user_profiles[0] : art.user_profiles
+    
+    return {
+      id: art.id,
+      title: art.title || 'Untitled',
+      designer: profile?.full_name || profile?.username || 'Unknown Designer',
+      price: art.price || 0,
+      originalPrice: undefined,
+      image: art.thumbnail_url || '/image/placeholder.svg',
+      category: 'Fashion',
+      sizes: ['S', 'M', 'L', 'XL'], // Default sizes since we don't have this in DB yet
+      colors: ['Various'], // Default colors
+      rating: 4.5,
+      reviews: 0,
       isLiked: false,
       inStock: true,
-      fastShipping: true,
-      tags: ['ankara', 'traditional', 'dress', 'colorful']
-    },
-    {
-      id: '650e8400-e29b-41d4-a716-446655440002',
-      title: 'Kente Blazer',
-      designer: 'Accra Couture',
-      price: 72000,
-  image: '/image/ankarablazers.jpg',
-      category: 'Blazers',
-      sizes: ['M', 'L', 'XL', 'XXL'],
-      colors: ['Gold', 'Black', 'Red'],
-      rating: 4.9,
+      fastShipping: false,
+      tags: ['fashion', art.medium?.toLowerCase() || 'clothing']
+    }
+  })
+
+  // If no fashion items found, show message in client component
+  return <FashionPageClient initialItems={transformedItems} />
+}
+
       reviews: 18,
       isLiked: true,
       inStock: true,

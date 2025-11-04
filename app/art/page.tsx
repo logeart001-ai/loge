@@ -21,7 +21,7 @@ export default async function ArtPage() {
   // Fetch real artworks from the database
   const supabase = await createServerClient()
   
-  const { data: artworks } = await supabase
+  const { data: artworks, error } = await supabase
     .from('artworks')
     .select(`
       id,
@@ -41,6 +41,13 @@ export default async function ArtPage() {
     .eq('is_available', true)
     .order('created_at', { ascending: false })
     .limit(50)
+
+  // Debug logging
+  console.log('Artworks query result:', { 
+    artworksCount: artworks?.length || 0, 
+    error: error?.message,
+    sampleArtwork: artworks?.[0] 
+  })
 
   // Transform the data to match the expected format
   const transformedArtworks = (artworks || []).map((art) => {
@@ -63,5 +70,53 @@ export default async function ArtPage() {
     }
   })
 
-  return <ArtPageClient initialArtworks={transformedArtworks} />
+  // If no artworks found, provide sample data for demonstration
+  const finalArtworks = transformedArtworks.length > 0 ? transformedArtworks : [
+    {
+      id: 'sample-1',
+      title: 'Heritage Tapestry',
+      artist: 'Adunni Olorunnisola',
+      price: 150000,
+      image: '/image/AdunniOlorunnisola.jpg',
+      category: 'Painting',
+      medium: 'Acrylic on Canvas',
+      size: '60cm x 80cm',
+      rating: 4.8,
+      reviews: 12,
+      isLiked: false,
+      tags: ['painting', 'heritage', 'contemporary']
+    },
+    {
+      id: 'sample-2',
+      title: 'Resilience Sculpture',
+      artist: 'Kwame Asante',
+      price: 200000,
+      image: '/image/KwameAsante.jpg',
+      category: 'Sculpture',
+      medium: 'Bronze',
+      size: '40cm x 30cm x 50cm',
+      rating: 4.6,
+      reviews: 8,
+      isLiked: false,
+      tags: ['sculpture', 'bronze', 'strength']
+    },
+    {
+      id: 'sample-3',
+      title: 'Modern Kente Collection',
+      artist: 'Amara Diallo',
+      price: 75000,
+      image: '/image/AmaraDiallo.jpg',
+      category: 'Fashion',
+      medium: 'Textile',
+      size: 'Size M',
+      rating: 4.7,
+      reviews: 15,
+      isLiked: false,
+      tags: ['fashion', 'kente', 'modern']
+    }
+  ]
+
+  console.log('Final artworks for display:', finalArtworks.length)
+
+  return <ArtPageClient initialArtworks={finalArtworks} />
 }
