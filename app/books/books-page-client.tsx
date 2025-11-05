@@ -44,7 +44,7 @@ export function BooksPageClient({ initialBooks }: BooksPageClientProps) {
   const [selectedFormat, setSelectedFormat] = useState('all')
   const [sortBy, setSortBy] = useState('newest')
 
-  const books = initialBooks
+  const books = initialBooks.length > 0 ? initialBooks : [
     {
       id: '750e8400-e29b-41d4-a716-446655440001',
       title: 'Whispers of the Savannah',
