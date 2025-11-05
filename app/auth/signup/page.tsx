@@ -29,13 +29,10 @@ export default function SignUpPage() {
 
   console.log('🎯 SIGNUP PAGE STATE:', JSON.stringify(state, null, 2))
 
-  // Password validation state
+  // Simplified password validation state
   const [passwordValidation, setPasswordValidation] = useState({
     minLength: false,
-    hasUpperCase: false,
-    hasLowerCase: false,
-    hasNumbers: false,
-    hasSpecialChar: false
+    hasLetterAndNumber: false
   })
 
   // Email validation
@@ -44,11 +41,8 @@ export default function SignUpPage() {
   useEffect(() => {
     // Validate password in real-time
     setPasswordValidation({
-      minLength: password.length >= 8,
-      hasUpperCase: /[A-Z]/.test(password),
-      hasLowerCase: /[a-z]/.test(password),
-      hasNumbers: /\d/.test(password),
-      hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+      minLength: password.length >= 6,
+      hasLetterAndNumber: /^(?=.*[a-zA-Z])(?=.*\d)/.test(password)
     })
   }, [password])
 
@@ -214,22 +208,19 @@ export default function SignUpPage() {
                   <p className="text-sm font-medium text-gray-700">Password Requirements:</p>
                   <div className="space-y-1">
                     {[
-                      { key: 'minLength', label: 'At least 8 characters' },
-                      { key: 'hasUpperCase', label: 'One uppercase letter' },
-                      { key: 'hasLowerCase', label: 'One lowercase letter' },
-                      { key: 'hasNumbers', label: 'One number' },
-                      { key: 'hasSpecialChar', label: 'One special character' }
+                      { key: 'minLength', label: 'At least 6 characters' },
+                      { key: 'hasLetterAndNumber', label: 'Contains letters and numbers' }
                     ].map(({ key, label }) => (
                       <div key={key} className="flex items-center space-x-2">
                         {passwordValidation[key as keyof typeof passwordValidation] ? (
-                          <Check className="h-4 w-4 text-brand-yellow" />
+                          <Check className="h-4 w-4 text-green-500" />
                         ) : (
-                          <X className="h-4 w-4 text-brand-red" />
+                          <X className="h-4 w-4 text-red-500" />
                         )}
                         <span className={`text-sm ${
                           passwordValidation[key as keyof typeof passwordValidation] 
-                            ? 'text-brand-yellow' 
-                            : 'text-brand-red'
+                            ? 'text-green-600' 
+                            : 'text-red-600'
                         }`}>
                           {label}
                         </span>
@@ -240,18 +231,21 @@ export default function SignUpPage() {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="userType">I am a...</Label>
-              <Select name="userType" required disabled={isPending} value={userType} onValueChange={setUserType}>
+              <Label htmlFor="userType">I'm interested in... (optional)</Label>
+              <Select name="userType" disabled={isPending} value={userType} onValueChange={setUserType}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select your role" />
+                  <SelectValue placeholder="Choose what interests you most" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="collector">Art Enthusiast/Collector</SelectItem>
-                  <SelectItem value="creator">Artist/Creator</SelectItem>
+                  <SelectItem value="collector">Discovering and collecting art</SelectItem>
+                  <SelectItem value="creator">Creating and selling my art</SelectItem>
                 </SelectContent>
               </Select>
               {/* Hidden input to ensure userType is included in form data */}
-              <input type="hidden" name="userType" value={userType} />
+              <input type="hidden" name="userType" value={userType || 'collector'} />
+              <p className="text-xs text-gray-500">
+                Don't worry, you can change this later in your profile settings.
+              </p>
             </div>
             {state && 'error' in state && state.error && (
               <div className="text-red-600 text-sm bg-red-50 p-3 rounded-md">

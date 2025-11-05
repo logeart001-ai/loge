@@ -6,28 +6,16 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
 
-// Password validation helper
+// Simplified password validation helper
 function validatePassword(password: string): { isValid: boolean; message?: string } {
-  const minLength = 8
-  const hasUpperCase = /[A-Z]/.test(password)
-  const hasLowerCase = /[a-z]/.test(password)
-  const hasNumbers = /\d/.test(password)
-  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password)
+  const minLength = 6
+  const hasLetterAndNumber = /^(?=.*[a-zA-Z])(?=.*\d)/.test(password)
 
   if (password.length < minLength) {
-    return { isValid: false, message: 'Password must be at least 8 characters long' }
+    return { isValid: false, message: 'Password must be at least 6 characters long' }
   }
-  if (!hasUpperCase) {
-    return { isValid: false, message: 'Password must contain at least one uppercase letter' }
-  }
-  if (!hasLowerCase) {
-    return { isValid: false, message: 'Password must contain at least one lowercase letter' }
-  }
-  if (!hasNumbers) {
-    return { isValid: false, message: 'Password must contain at least one number' }
-  }
-  if (!hasSpecialChar) {
-    return { isValid: false, message: 'Password must contain at least one special character' }
+  if (!hasLetterAndNumber) {
+    return { isValid: false, message: 'Password must contain at least one letter and one number' }
   }
 
   return { isValid: true }
@@ -49,10 +37,10 @@ export async function signUp(prevState: unknown, formData: FormData) {
   console.log('Form data received:', { email, fullName, userType })
 
   // Enhanced validation
-  if (!email || !password || !fullName || !userType) {
-    console.log('🔥 VALIDATION ERROR: Missing fields')
+  if (!email || !password || !fullName) {
+    console.log('🔥 VALIDATION ERROR: Missing required fields')
     return {
-      error: 'All fields are required'
+      error: 'Name, email, and password are required'
     }
   }
 
@@ -82,8 +70,8 @@ export async function signUp(prevState: unknown, formData: FormData) {
     console.log('🔥 Starting Supabase auth.signUp...')
     const supabase = await createServerActionClient()
     
-    // Map 'collector' to 'buyer' for database compatibility
-    const mappedRole = userType === 'collector' ? 'buyer' : userType
+    // Map 'collector' to 'buyer' for database compatibility, default to 'buyer' if no type selected
+    const mappedRole = userType === 'creator' ? 'creator' : 'buyer'
     
     const { data, error } = await supabase.auth.signUp({
       email: email.toLowerCase().trim(),

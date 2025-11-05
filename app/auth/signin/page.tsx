@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { signIn, resendConfirmation } from '@/lib/auth'
 import { Loader2, Eye, EyeOff } from 'lucide-react'
 import { GoogleSignInButton } from '@/components/google-signin-button'
+import { AuthErrorHandler } from '@/components/auth/auth-error-handler'
 
 function SignInForm() {
   const [state, action, isPending] = useActionState(signIn, null)
@@ -179,9 +180,12 @@ function SignInForm() {
                 </div>
               </div>
               {state?.error && (
-                <div className="text-red-600 text-sm bg-red-50 p-3 rounded-md">
-                  {state.error}
-                </div>
+                <AuthErrorHandler 
+                  error={state.error}
+                  showMagicLinkOption={true}
+                  userEmail={userEmail}
+                  onRetry={() => window.location.reload()}
+                />
               )}
               <Button 
                 type="submit" 
@@ -210,13 +214,20 @@ function SignInForm() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <GoogleSignInButton userType="creator" variant="outline">
-                  <span className="text-xs">Creator</span>
-                </GoogleSignInButton>
-                <GoogleSignInButton userType="collector" variant="outline">
-                  <span className="text-xs">Collector</span>
-                </GoogleSignInButton>
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <GoogleSignInButton userType="creator" variant="outline">
+                    <span className="text-xs">Creator</span>
+                  </GoogleSignInButton>
+                  <GoogleSignInButton userType="collector" variant="outline">
+                    <span className="text-xs">Collector</span>
+                  </GoogleSignInButton>
+                </div>
+                <Link href="/auth/magic-signin">
+                  <Button variant="outline" className="w-full">
+                    <span className="text-sm">✨ Sign in with Magic Link</span>
+                  </Button>
+                </Link>
               </div>
             </form>
           ) : (

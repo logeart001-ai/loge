@@ -210,14 +210,14 @@ export function Navbar() {
               </div>
             ) : (
               <>
-                <Link href="/auth/signin">
+                <Link href="/auth/magic-signin">
                   <Button variant="ghost" className="text-gray-700 hover:text-orange-500">
                     Sign In
                   </Button>
                 </Link>
                 <Link href="/auth/signup">
-                  <Button className="bg-orange-500 hover:bg-orange-600 text-white px-6">
-                    Join
+                  <Button className="bg-orange-500 hover:bg-orange-600 text-white px-6 shadow-sm">
+                    Get Started
                   </Button>
                 </Link>
                 <Link href="/cart" className="relative flex items-center text-gray-700 hover:text-orange-500">
@@ -339,14 +339,19 @@ export function Navbar() {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <Link href="/auth/signin" onClick={() => setIsOpen(false)}>
+                    <Link href="/auth/magic-signin" onClick={() => setIsOpen(false)}>
                       <Button variant="ghost" className="w-full justify-start text-left h-12">
-                        Sign In
+                        ✨ Sign In with Magic Link
+                      </Button>
+                    </Link>
+                    <Link href="/auth/signin" onClick={() => setIsOpen(false)}>
+                      <Button variant="outline" className="w-full justify-start text-left h-12">
+                        Sign In with Password
                       </Button>
                     </Link>
                     <Link href="/auth/signup" onClick={() => setIsOpen(false)}>
                       <Button className="w-full bg-orange-500 hover:bg-orange-600 h-12">
-                        Join L&apos;oge Arts
+                        Get Started Free
                       </Button>
                     </Link>
                   </div>
