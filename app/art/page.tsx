@@ -1,7 +1,7 @@
 import { createServerClient } from '@/lib/supabase'
 import { ArtPageClient } from './art-page-client'
 
-interface ArtworkData {
+interface BasicArtworkData {
   id: string
   title: string | null
   price: number | null
@@ -11,6 +11,12 @@ interface ArtworkData {
   category: string | null
   creator_id: string | null
   created_at: string
+  medium?: string | null
+  dimensions?: string | null
+  views_count?: number | null
+}
+
+interface ArtworkWithCreator extends BasicArtworkData {
   creator?: {
     id: string
     full_name: string | null
@@ -23,7 +29,10 @@ export default async function ArtPage() {
   const supabase = await createServerClient()
   
   // Try enhanced query first, fall back to basic if columns don't exist
-  let { data: artworks, error } = await supabase
+  let artworks: BasicArtworkData[] | null = null
+  let error: { message?: string } | null = null
+
+  const enhancedQuery = await supabase
     .from('artworks')
     .select(`
       id,
@@ -42,6 +51,9 @@ export default async function ArtPage() {
     .eq('is_available', true)
     .order('created_at', { ascending: false })
     .limit(50)
+
+  artworks = enhancedQuery.data as BasicArtworkData[] | null
+  error = enhancedQuery.error
 
   // If enhanced query fails due to missing columns, try basic query
   if (error && error.message?.includes('does not exist')) {
@@ -63,12 +75,17 @@ export default async function ArtPage() {
       .order('created_at', { ascending: false })
       .limit(50)
     
-    artworks = basicQuery.data
+    artworks = (basicQuery.data as BasicArtworkData[] | null)?.map(art => ({
+      ...art,
+      medium: null,
+      dimensions: null,
+      views_count: null
+    })) || null
     error = basicQuery.error
   }
 
   // Get creator information separately to avoid relationship issues
-  let artworksWithCreators = artworks || []
+  let artworksWithCreators: ArtworkWithCreator[] = artworks || []
   if (artworks && artworks.length > 0) {
     const creatorIds = [...new Set(artworks.map(art => art.creator_id).filter(Boolean))]
     
@@ -93,7 +110,7 @@ export default async function ArtPage() {
   })
 
   // Transform the data to match the expected format
-  const transformedArtworks = artworksWithCreators.map((art: any) => {
+  const transformedArtworks = artworksWithCreators.map((art: ArtworkWithCreator) => {
     return {
       id: art.id,
       title: art.title || 'Untitled',
