@@ -22,7 +22,8 @@ export default async function ArtPage() {
   // Fetch real artworks from the database
   const supabase = await createServerClient()
   
-  const { data: artworks, error } = await supabase
+  // Try enhanced query first, fall back to basic if columns don't exist
+  let { data: artworks, error } = await supabase
     .from('artworks')
     .select(`
       id,
@@ -41,6 +42,30 @@ export default async function ArtPage() {
     .eq('is_available', true)
     .order('created_at', { ascending: false })
     .limit(50)
+
+  // If enhanced query fails due to missing columns, try basic query
+  if (error && error.message?.includes('does not exist')) {
+    console.log('Enhanced query failed, trying basic query:', error.message)
+    const basicQuery = await supabase
+      .from('artworks')
+      .select(`
+        id,
+        title,
+        price,
+        thumbnail_url,
+        description,
+        is_available,
+        category,
+        creator_id,
+        created_at
+      `)
+      .eq('is_available', true)
+      .order('created_at', { ascending: false })
+      .limit(50)
+    
+    artworks = basicQuery.data
+    error = basicQuery.error
+  }
 
   // Get creator information separately to avoid relationship issues
   let artworksWithCreators = artworks || []
