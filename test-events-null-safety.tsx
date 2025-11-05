@@ -50,13 +50,13 @@ export default function TestEventsNullSafety() {
         title: event.title || '',
         description: event.description || '',
         event_type: event.event_type || '',
-        event_date: event.event_date ? event.event_date.split('T')[0] : '',
-        start_date: event.start_date ? event.start_date.split('T')[0] : '',
-        end_date: event.end_date ? event.end_date.split('T')[0] : '',
+        event_date: event.event_date ? String(event.event_date).split('T')[0] : '',
+        start_date: event.start_date ? String(event.start_date).split('T')[0] : '',
+        end_date: event.end_date ? String(event.end_date).split('T')[0] : '',
         city: event.city || '',
         country: event.country || '',
         is_free: event.is_free ?? true,
-        ticket_price: event.ticket_price?.toString() || '',
+        ticket_price: event.ticket_price ? String(event.ticket_price) : '',
         is_featured: event.is_featured ?? false,
         is_published: event.is_published ?? true
       })

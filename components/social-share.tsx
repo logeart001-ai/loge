@@ -123,7 +123,7 @@ export function SocialShare({
   return (
     <div className={`${containerClass} ${className}`}>
       {/* Native Share (Mobile) */}
-      {typeof navigator !== 'undefined' && navigator.share && (
+      {typeof navigator !== 'undefined' && 'share' in navigator && (
         <Button
           variant="outline"
           size="sm"

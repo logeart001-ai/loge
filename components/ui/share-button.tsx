@@ -111,7 +111,7 @@ export function ShareButton({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
         {/* Native Share (Mobile) */}
-        {typeof navigator !== 'undefined' && navigator.share && (
+        {typeof navigator !== 'undefined' && 'share' in navigator && (
           <DropdownMenuItem onClick={handleNativeShare}>
             <Share2 className="w-4 h-4 mr-2" />
             Share...
