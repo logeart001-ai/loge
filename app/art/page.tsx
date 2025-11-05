@@ -7,11 +7,12 @@ interface ArtworkData {
   price: number | null
   thumbnail_url: string | null
   description: string | null
-  medium: string | null
-  dimensions: string | null
   is_available: boolean
   category: string | null
-  user_profiles: {
+  creator_id: string | null
+  created_at: string
+  creator?: {
+    id: string
     full_name: string | null
     username: string | null
   } | null
@@ -29,18 +30,35 @@ export default async function ArtPage() {
       price,
       thumbnail_url,
       description,
-      medium,
-      dimensions,
       is_available,
       category,
-      user_profiles!creator_id (
-        full_name,
-        username
-      )
+      creator_id,
+      created_at,
+      medium,
+      dimensions,
+      views_count
     `)
     .eq('is_available', true)
     .order('created_at', { ascending: false })
     .limit(50)
+
+  // Get creator information separately to avoid relationship issues
+  let artworksWithCreators = artworks || []
+  if (artworks && artworks.length > 0) {
+    const creatorIds = [...new Set(artworks.map(art => art.creator_id).filter(Boolean))]
+    
+    if (creatorIds.length > 0) {
+      const { data: creators } = await supabase
+        .from('user_profiles')
+        .select('id, full_name, username')
+        .in('id', creatorIds)
+      
+      artworksWithCreators = artworks.map(art => ({
+        ...art,
+        creator: creators?.find(c => c.id === art.creator_id) || null
+      }))
+    }
+  }
 
   // Debug logging
   console.log('Artworks query result:', { 
@@ -50,21 +68,18 @@ export default async function ArtPage() {
   })
 
   // Transform the data to match the expected format
-  const transformedArtworks = (artworks || []).map((art) => {
-    // Handle both single object and array responses from Supabase
-    const profile = Array.isArray(art.user_profiles) ? art.user_profiles[0] : art.user_profiles
-    
+  const transformedArtworks = artworksWithCreators.map((art: any) => {
     return {
       id: art.id,
       title: art.title || 'Untitled',
-      artist: profile?.full_name || profile?.username || 'Unknown Artist',
+      artist: art.creator?.full_name || art.creator?.username || 'Unknown Artist',
       price: art.price || 0,
       image: art.thumbnail_url || '/image/placeholder.svg',
       category: art.category || 'Uncategorized',
       medium: art.medium || 'Mixed Media',
       size: art.dimensions || 'Various',
       rating: 4.5, // Default rating since we don't have reviews yet
-      reviews: 0,
+      reviews: art.views_count || 0,
       isLiked: false,
       tags: [art.category?.toLowerCase() || 'art', art.medium?.toLowerCase() || 'mixed']
     }
@@ -78,13 +93,13 @@ export default async function ArtPage() {
       artist: 'Adunni Olorunnisola',
       price: 150000,
       image: '/image/AdunniOlorunnisola.jpg',
-      category: 'Painting',
-      medium: 'Acrylic on Canvas',
+      category: 'Art Design',
+      medium: 'Mixed Media',
       size: '60cm x 80cm',
       rating: 4.8,
       reviews: 12,
       isLiked: false,
-      tags: ['painting', 'heritage', 'contemporary']
+      tags: ['art_design', 'heritage', 'contemporary']
     },
     {
       id: 'sample-2',
