@@ -486,7 +486,7 @@ export function EventsManagement() {
               <div>
                 <p className="text-sm text-gray-600">Upcoming</p>
                 <p className="text-2xl font-bold">
-                  {events.filter(e => new Date(e.event_date) >= new Date()).length}
+                  {events.filter(e => e.event_date && new Date(e.event_date) >= new Date()).length}
                 </p>
               </div>
               <Users className="w-8 h-8 text-blue-400" />
