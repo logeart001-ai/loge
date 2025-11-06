@@ -16,7 +16,7 @@ export default function MagicSignInPage() {
 
   if (state?.success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-orange-50 to-red-50">
         <div className="absolute top-4 left-4">
           <Link href="/" className="text-orange-600 hover:text-orange-700 font-medium">
             ← Back to Home
@@ -25,19 +25,19 @@ export default function MagicSignInPage() {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
-              <Mail className="h-12 w-12 text-blue-500" />
+              <Mail className="h-12 w-12 text-brand-yellow" />
             </div>
-            <CardTitle className="text-blue-600">Check Your Email!</CardTitle>
+            <CardTitle className="text-brand-yellow">Check Your Email!</CardTitle>
             <CardDescription>
               {state.message}
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center space-y-4">
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <p className="text-sm text-blue-700 font-medium mb-2">
+            <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
+              <p className="text-sm text-orange-700 font-medium mb-2">
                 We sent a magic link to:
               </p>
-              <p className="text-blue-800 font-semibold">{state.email}</p>
+              <p className="text-orange-800 font-semibold">{state.email}</p>
             </div>
             <p className="text-gray-600 text-sm">
               Click the link in your email to sign in instantly. No password needed!
@@ -57,7 +57,7 @@ export default function MagicSignInPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-orange-50 to-red-50">
       <div className="absolute top-4 left-4">
         <Link href="/" className="text-orange-600 hover:text-orange-700 font-medium">
           ← Back to Home
@@ -66,8 +66,10 @@ export default function MagicSignInPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex items-center justify-center space-x-2 mb-4">
-            <Sparkles className="w-8 h-8 text-blue-500" />
-            <span className="font-semibold text-lg text-gray-900">Magic Sign In</span>
+            <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+              <span className="text-white font-bold text-sm">L</span>
+            </div>
+            <span className="font-semibold text-lg text-gray-900">L&apos;oge Arts</span>
           </div>
           <CardTitle className="text-2xl font-bold">Welcome Back!</CardTitle>
           <CardDescription>
@@ -121,7 +123,7 @@ export default function MagicSignInPage() {
               
               <Button 
                 type="submit" 
-                className="w-full bg-blue-500 hover:bg-blue-600" 
+                className="w-full bg-orange-500 hover:bg-orange-600" 
                 disabled={isPending || !email}
               >
                 {isPending ? (

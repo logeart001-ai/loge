@@ -225,7 +225,7 @@ function SignInForm() {
                 </div>
                 <Link href="/auth/magic-signin">
                   <Button variant="outline" className="w-full">
-                    <span className="text-sm">✨ Sign in with Magic Link</span>
+                    <span className="text-sm">🔗 Sign in with Email Link</span>
                   </Button>
                 </Link>
               </div>

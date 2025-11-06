@@ -210,7 +210,7 @@ export function Navbar() {
               </div>
             ) : (
               <>
-                <Link href="/auth/magic-signin">
+                <Link href="/auth/signin">
                   <Button variant="ghost" className="text-gray-700 hover:text-orange-500">
                     Sign In
                   </Button>
@@ -341,7 +341,7 @@ export function Navbar() {
                   <div className="space-y-2">
                     <Link href="/auth/magic-signin" onClick={() => setIsOpen(false)}>
                       <Button variant="ghost" className="w-full justify-start text-left h-12">
-                        ✨ Sign In with Magic Link
+                        🔗 Sign In with Email Link
                       </Button>
                     </Link>
                     <Link href="/auth/signin" onClick={() => setIsOpen(false)}>

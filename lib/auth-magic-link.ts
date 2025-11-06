@@ -29,7 +29,7 @@ export async function sendMagicLink(prevState: unknown, formData: FormData) {
     const { error } = await supabase.auth.signInWithOtp({
       email: email.toLowerCase().trim(),
       options: {
-        emailRedirectTo: `${origin}/auth/callback?user_type=${userType}`,
+        emailRedirectTo: `${origin}/auth/confirm?next=/dashboard`,
         data: {
           user_type: userType === 'creator' ? 'creator' : 'buyer',
           role: userType === 'creator' ? 'creator' : 'buyer'
@@ -92,7 +92,7 @@ export async function signUpWithMagicLink(prevState: unknown, formData: FormData
     const { error } = await supabase.auth.signInWithOtp({
       email: email.toLowerCase().trim(),
       options: {
-        emailRedirectTo: `${origin}/auth/callback?user_type=${userType}&welcome=true`,
+        emailRedirectTo: `${origin}/auth/confirm?next=/dashboard&welcome=true`,
         data: {
           full_name: fullName.trim(),
           user_type: mappedRole,

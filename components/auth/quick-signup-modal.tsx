@@ -49,7 +49,7 @@ export function QuickSignupModal({
       const result = await signUp(null, formData)
       
       if (result && 'error' in result) {
-        setError(result.error)
+        setError(result.error || 'An error occurred')
       } else {
         setStep('success')
         setTimeout(() => {
