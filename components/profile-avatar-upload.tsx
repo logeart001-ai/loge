@@ -57,36 +57,70 @@ export function ProfileAvatarUpload({
     setError(null)
 
     try {
-      // Upload to profile-images bucket
-      const result = await fileUploadService.uploadFile(
-        file,
-        'profile-images',
-        userId, // Use user ID as folder path
-        { upsert: true } // Allow overwriting existing avatar
-      )
+      // Try API route first (more reliable)
+      const formData = new FormData()
+      formData.append('file', file)
 
-      if (!result.success) {
-        throw new Error(result.error || 'Upload failed')
-      }
+      const response = await fetch('/api/avatar/upload', {
+        method: 'POST',
+        body: formData
+      })
 
-      // Update user profile in database
-      const { error: updateError } = await supabase
-        .from('user_profiles')
-        .update({ avatar_url: result.url })
-        .eq('id', userId)
+      const result = await response.json()
 
-      if (updateError) {
-        throw new Error('Failed to update profile')
+      if (!response.ok) {
+        console.error('API upload failed:', response.status, result)
+        throw new Error(result.error || `Upload failed (${response.status})`)
       }
 
       // Call parent callback
-      onAvatarUpdate(result.url!)
+      onAvatarUpdate(result.url)
       setPreviewUrl(null) // Clear preview since we now have the real URL
 
     } catch (error) {
       console.error('Avatar upload error:', error)
-      setError(error instanceof Error ? error.message : 'Upload failed')
-      setPreviewUrl(null)
+      
+      // Fallback: Try direct Supabase upload
+      try {
+        console.log('Trying direct Supabase upload as fallback...')
+        
+        const fileExt = file.name.split('.').pop()
+        const fileName = `avatar-${userId}-${Date.now()}.${fileExt}`
+        const filePath = `avatars/${fileName}`
+
+        const { data, error: uploadError } = await supabase.storage
+          .from('avatars')
+          .upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: true
+          })
+
+        if (uploadError) {
+          console.error('Direct Supabase upload failed:', uploadError)
+          throw new Error(`Storage error: ${uploadError.message}`)
+        }
+
+        const { data: urlData } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(data.path)
+
+        const { error: updateError } = await supabase
+          .from('user_profiles')
+          .update({ avatar_url: urlData.publicUrl })
+          .eq('id', userId)
+
+        if (updateError) {
+          throw new Error('Failed to update profile')
+        }
+
+        onAvatarUpdate(urlData.publicUrl)
+        setPreviewUrl(null)
+
+      } catch (fallbackError) {
+        console.error('Fallback upload also failed:', fallbackError)
+        setError(fallbackError instanceof Error ? fallbackError.message : 'Upload failed')
+        setPreviewUrl(null)
+      }
     } finally {
       setIsUploading(false)
     }
