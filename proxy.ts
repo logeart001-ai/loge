@@ -80,7 +80,32 @@ async function getSupabaseUser(request: NextRequest): Promise<SupabaseUser | nul
   }
 
   const cookieName = `${SUPABASE_AUTH_COOKIE_PREFIX}${projectRef}-auth-token`
-  const cookieValue = request.cookies.get(cookieName)?.value
+  
+  // Handle split cookies (Supabase sometimes splits large cookies)
+  let cookieValue = request.cookies.get(cookieName)?.value
+  
+  if (!cookieValue) {
+    // Try to reconstruct from split cookies
+    const splitCookies: string[] = []
+    let index = 0
+    
+    while (true) {
+      const splitCookieName = `${cookieName}.${index}`
+      const splitCookieValue = request.cookies.get(splitCookieName)?.value
+      
+      if (!splitCookieValue) {
+        break
+      }
+      
+      splitCookies.push(splitCookieValue)
+      index++
+    }
+    
+    if (splitCookies.length > 0) {
+      cookieValue = splitCookies.join('')
+      console.log('🔥 Reconstructed cookie from', splitCookies.length, 'parts')
+    }
+  }
   
   // Debug: Log all cookies
   const allCookies = request.cookies.getAll()
