@@ -1,13 +1,14 @@
-import { requireAuth, signOut } from '@/lib/auth'
+import { requireAuth } from '@/lib/auth'
 import { createServerClient } from '@/lib/supabase'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Upload, DollarSign, Eye, TrendingUp, Settings, LogOut, Plus, Package, BarChart3, MessageCircle, FileText, Clock, CheckCircle, XCircle, Wallet } from 'lucide-react'
+import { Upload, DollarSign, Eye, TrendingUp, Settings, Plus, Package, BarChart3, MessageCircle, FileText, Clock, CheckCircle, XCircle, Wallet } from 'lucide-react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { OptimizedImage } from '@/components/optimized-image'
+import { SignOutButton } from '@/components/dashboard/sign-out-button'
 
 interface Submission {
   id: string
@@ -95,12 +96,35 @@ async function getCreatorStats(userId: string) {
 
 export default async function CreatorDashboard() {
   const user = await requireAuth()
+  console.log('🔥 Creator Dashboard - User authenticated:', { 
+    id: user.id, 
+    email: user.email,
+    metadata: user.user_metadata 
+  })
 
-  if (user.user_metadata?.user_type !== 'creator') {
+  // Check user type from database profile first, then fall back to metadata
+  const supabase = await createServerClient()
+  const { data: profile, error: profileError } = await supabase
+    .from('user_profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  console.log('🔥 Creator Dashboard - Profile check:', { 
+    profile, 
+    profileError: profileError?.message 
+  })
+
+  const userType = profile?.role || user.user_metadata?.user_type || user.user_metadata?.role
+  console.log('🔥 Creator Dashboard - Determined user type:', userType)
+
+  if (userType !== 'creator') {
+    console.log('🔥 Creator Dashboard - Redirecting to collector dashboard')
     redirect('/dashboard/collector')
   }
 
   const stats = await getCreatorStats(user.id)
+  console.log('🔥 Creator Dashboard - Stats loaded successfully')
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -114,12 +138,7 @@ export default async function CreatorDashboard() {
 
           <div className="flex items-center space-x-4">
             <span className="text-gray-600">Welcome, {stats.userProfile?.full_name || user.user_metadata?.full_name || user.email}</span>
-            <form action={signOut}>
-              <Button variant="outline" size="sm" type="submit">
-                <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
-              </Button>
-            </form>
+            <SignOutButton />
           </div>
         </div>
       </header>

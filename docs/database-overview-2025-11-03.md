@@ -68,9 +68,9 @@
 
 ### Ancillary Tables
 
-- `creator_analytics`: reserved analytics snapshot (empty, 8 kB index-only footprint). 
+- `creator_analytics`: reserved analytics snapshot (empty, 8 kB index-only footprint).
 - `creator_wallets`, `wallet_payouts`, `wallet_transactions`: wallet accounting ecosystem (see [Identity & Account Infrastructure](#identity--account-infrastructure)).
-- `tracking_events`: logistic history feed (index-only footprint). 
+- `tracking_events`: logistic history feed (index-only footprint).
 
 ---
 

@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Menu, X, User, LogOut, ShoppingCart, Search } from 'lucide-react'
 import { createClient } from '@/lib/supabase-client'
+import { useUserType } from '@/hooks/use-user-type'
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -23,6 +24,9 @@ export function Navbar() {
   const router = useRouter()
   const pathname = usePathname()
   const inDashboard = pathname?.startsWith('/dashboard')
+  
+  // Get the correct user type from database
+  const { userType, loading: userTypeLoading } = useUserType(user)
 
   useEffect(() => {
     const supabase = createClient()
@@ -141,9 +145,9 @@ export function Navbar() {
               <Search className="h-4 w-4" />
               <span>Search</span>
             </Link>
-            {!loading && user && inDashboard && (
+            {!loading && user && inDashboard && !userTypeLoading && (
               <Link
-                href={user.user_metadata?.user_type === 'creator' ? '/dashboard/creator' : '/dashboard/collector'}
+                href={userType === 'creator' ? '/dashboard/creator' : '/dashboard/collector'}
                 className="text-orange-600 font-semibold"
               >
                 Dashboard Home
@@ -183,13 +187,15 @@ export function Navbar() {
                 >
                   <span>Saved</span>
                 </Link>
-                <Link
-                  href={user.user_metadata?.user_type === 'creator' ? '/dashboard/creator' : '/dashboard/collector'}
-                  className="flex items-center space-x-2 text-gray-700 hover:text-orange-500"
-                >
-                  <User className="h-4 w-4" />
-                  <span>Dashboard</span>
-                </Link>
+                {!userTypeLoading && (
+                  <Link
+                    href={userType === 'creator' ? '/dashboard/creator' : '/dashboard/collector'}
+                    className="flex items-center space-x-2 text-gray-700 hover:text-orange-500"
+                  >
+                    <User className="h-4 w-4" />
+                    <span>Dashboard</span>
+                  </Link>
+                )}
                 <Button
                   onClick={handleSignOut}
                   variant="outline"
@@ -309,17 +315,19 @@ export function Navbar() {
                     >
                       📖 Saved Articles
                     </Link>
-                    <Link
-                      href={user.user_metadata?.user_type === 'creator' ? '/dashboard/creator' : '/dashboard/collector'}
-                      className="flex items-center px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg font-medium transition-colors"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <User className="h-4 w-4 mr-2" />
-                      Dashboard
-                    </Link>
-                    {!loading && user && inDashboard && (
+                    {!userTypeLoading && (
                       <Link
-                        href={user.user_metadata?.user_type === 'creator' ? '/dashboard/creator' : '/dashboard/collector'}
+                        href={userType === 'creator' ? '/dashboard/creator' : '/dashboard/collector'}
+                        className="flex items-center px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg font-medium transition-colors"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        <User className="h-4 w-4 mr-2" />
+                        Dashboard
+                      </Link>
+                    )}
+                    {!loading && user && inDashboard && !userTypeLoading && (
+                      <Link
+                        href={userType === 'creator' ? '/dashboard/creator' : '/dashboard/collector'}
                         className="flex items-center px-4 py-3 text-orange-600 hover:bg-orange-50 rounded-lg font-semibold transition-colors"
                         onClick={() => setIsOpen(false)}
                       >

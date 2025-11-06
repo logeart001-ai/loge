@@ -1,11 +1,12 @@
-import { requireAuth, signOut } from '@/lib/auth'
+import { requireAuth } from '@/lib/auth'
 import { createServerClient } from '@/lib/supabase'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Heart, ShoppingBag, User, Bell, Settings, LogOut, MessageCircle } from 'lucide-react'
+import { Heart, ShoppingBag, User, Bell, Settings, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
 import { OptimizedImage } from '@/components/optimized-image'
+import { SignOutButton } from '@/components/dashboard/sign-out-button'
 
 async function getCollectorStats(userId: string) {
   try {
@@ -97,12 +98,7 @@ export default async function CollectorDashboard() {
           
           <div className="flex items-center space-x-4">
             <span className="text-gray-600">Welcome, {stats.userProfile?.full_name || user.user_metadata?.full_name || user.email}</span>
-            <form action={signOut}>
-              <Button variant="outline" size="sm" type="submit">
-                <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
-              </Button>
-            </form>
+            <SignOutButton />
           </div>
         </div>
       </header>
