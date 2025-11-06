@@ -113,13 +113,41 @@ export async function POST(request: NextRequest) {
     // For now, create a single order for the first item (simplified approach)
     const firstItem = cartItems[0]
     
+    // Safely get seller_id - verify the creator exists
+    let sellerId = null
+    if (firstItem.artworks?.creator_id) {
+      try {
+        // Check if the creator exists in profiles table (which should have valid user references)
+        const { data: creatorProfile, error: profileError } = await supabase
+          .from('profiles')
+          .select('id, user_type')
+          .eq('id', firstItem.artworks.creator_id)
+          .single()
+        
+        if (creatorProfile && !profileError) {
+          sellerId = firstItem.artworks.creator_id
+          console.log('🔥 Valid creator found:', sellerId, 'type:', creatorProfile.user_type)
+        } else {
+          console.warn('🔥 Creator profile not found for artwork:', firstItem.artwork_id, 'creator_id:', firstItem.artworks.creator_id, 'error:', profileError?.message)
+        }
+      } catch (error) {
+        console.error('🔥 Error checking creator:', error)
+      }
+    }
+    
+    // If no valid seller found, the order can still be created with seller_id = null
+    // This allows the payment to proceed, and the seller can be updated later
+    if (!sellerId) {
+      console.log('🔥 Creating order without seller_id - will need manual assignment later')
+    }
+    
     // Create order
     const { data: order, error: orderError } = await supabase
       .from('orders')
       .insert({
         order_number: orderNumber,
         buyer_id: user.id,
-        seller_id: firstItem.artworks?.creator_id || null,
+        seller_id: sellerId,
         item_id: firstItem.artwork_id,
         item_type: 'artwork',
         quantity: firstItem.quantity,
