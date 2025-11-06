@@ -1,57 +1,46 @@
--- Fix admin access to user_profiles table
+-- Fix admin access
 -- Run this in your Supabase SQL editor
 
--- Check current RLS policies on user_profiles
-SELECT schemaname, tablename, policyname, permissive, roles, cmd, qual 
-FROM pg_policies 
-WHERE tablename = 'user_profiles';
+-- 1. Check what admin users exist
+SELECT email, role, full_name, created_at 
+FROM user_profiles 
+WHERE role = 'admin'
+ORDER BY created_at;
 
--- Drop existing restrictive policies if they exist
-DROP POLICY IF EXISTS "Users can only view own profile" ON user_profiles;
-DROP POLICY IF EXISTS "Users can only update own profile" ON user_profiles;
+-- 2. Check your specific user (replace with your admin email)
+SELECT email, role, full_name, created_at 
+FROM user_profiles 
+WHERE email = 'stephenmayowa112@gmail.com';  -- Replace with your admin email
 
--- Create admin-friendly policies
--- Allow admins to view all profiles
-CREATE POLICY "Admins can view all profiles" ON user_profiles
-    FOR SELECT 
-    USING (
-        EXISTS (
-            SELECT 1 FROM user_profiles 
-            WHERE id = auth.uid() AND role = 'admin'
-        )
-        OR 
-        id = auth.uid()  -- Users can still view their own profile
-    );
+-- 3. Set your user as admin (replace with your admin email)
+UPDATE user_profiles 
+SET role = 'admin' 
+WHERE email = 'stephenmayowa112@gmail.com';  -- Replace with your admin email
 
--- Allow admins to update any profile
-CREATE POLICY "Admins can update all profiles" ON user_profiles
-    FOR UPDATE 
-    USING (
-        EXISTS (
-            SELECT 1 FROM user_profiles 
-            WHERE id = auth.uid() AND role = 'admin'
-        )
-        OR 
-        id = auth.uid()  -- Users can still update their own profile
-    );
+-- 4. If your user doesn't exist in user_profiles, create them
+-- (Replace the email and details with your actual admin account)
+INSERT INTO user_profiles (
+  id, 
+  email, 
+  full_name, 
+  role, 
+  created_at, 
+  updated_at
+) 
+SELECT 
+  auth.uid(),
+  'stephenmayowa112@gmail.com',  -- Replace with your admin email
+  'Admin User',                   -- Replace with your name
+  'admin',
+  NOW(),
+  NOW()
+FROM auth.users 
+WHERE email = 'stephenmayowa112@gmail.com'  -- Replace with your admin email
+AND NOT EXISTS (
+  SELECT 1 FROM user_profiles WHERE email = 'stephenmayowa112@gmail.com'  -- Replace with your admin email
+);
 
--- Allow users to insert their own profile
-CREATE POLICY "Users can insert own profile" ON user_profiles
-    FOR INSERT 
-    WITH CHECK (id = auth.uid());
-
--- Allow admins to delete profiles (be careful with this)
-CREATE POLICY "Admins can delete profiles" ON user_profiles
-    FOR DELETE 
-    USING (
-        EXISTS (
-            SELECT 1 FROM user_profiles 
-            WHERE id = auth.uid() AND role = 'admin'
-        )
-    );
-
--- Verify the policies were created
-SELECT schemaname, tablename, policyname, permissive, roles, cmd, qual 
-FROM pg_policies 
-WHERE tablename = 'user_profiles'
-ORDER BY policyname;
+-- 5. Verify the admin user was created/updated
+SELECT email, role, full_name 
+FROM user_profiles 
+WHERE email = 'stephenmayowa112@gmail.com';  -- Replace with your admin email
