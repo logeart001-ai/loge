@@ -158,10 +158,10 @@ async function getSupabaseUser(request: NextRequest): Promise<SupabaseUser | nul
   }
 }
 
-export default async function proxy(request: NextRequest) {
+export default async function middleware(request: NextRequest) {
   const user = await getSupabaseUser(request)
   
-  console.log('🔥 Proxy middleware:', {
+  console.log('🔥 Middleware:', {
     path: request.nextUrl.pathname,
     hasUser: !!user,
     userEmail: user?.email ?? null
