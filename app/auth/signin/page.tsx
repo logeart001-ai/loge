@@ -182,7 +182,6 @@ function SignInForm() {
               {state?.error && (
                 <AuthErrorHandler 
                   error={state.error}
-                  showMagicLinkOption={true}
                   userEmail={userEmail}
                   onRetry={() => window.location.reload()}
                 />
@@ -214,20 +213,13 @@ function SignInForm() {
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <GoogleSignInButton userType="creator" variant="outline">
-                    <span className="text-xs">Creator</span>
-                  </GoogleSignInButton>
-                  <GoogleSignInButton userType="collector" variant="outline">
-                    <span className="text-xs">Collector</span>
-                  </GoogleSignInButton>
-                </div>
-                <Link href="/auth/magic-signin">
-                  <Button variant="outline" className="w-full">
-                    <span className="text-sm">🔗 Sign in with Email Link</span>
-                  </Button>
-                </Link>
+              <div className="grid grid-cols-2 gap-4">
+                <GoogleSignInButton userType="creator" variant="outline">
+                  <span className="text-xs">Creator</span>
+                </GoogleSignInButton>
+                <GoogleSignInButton userType="collector" variant="outline">
+                  <span className="text-xs">Collector</span>
+                </GoogleSignInButton>
               </div>
             </form>
           ) : (

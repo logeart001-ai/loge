@@ -8,14 +8,12 @@ import Link from 'next/link'
 interface AuthErrorHandlerProps {
   error: string
   onRetry?: () => void
-  showMagicLinkOption?: boolean
   userEmail?: string
 }
 
 export function AuthErrorHandler({ 
   error, 
   onRetry, 
-  showMagicLinkOption = false,
   userEmail 
 }: AuthErrorHandlerProps) {
   const getErrorInfo = (errorMessage: string) => {
@@ -28,7 +26,7 @@ export function AuthErrorHandler({
         suggestions: [
           'Double-check your email address and password',
           'Try using the "Forgot Password" link to reset your password',
-          'Use the Magic Link option for password-free sign in'
+          'Make sure Caps Lock is off and try again'
         ],
         icon: Key,
         color: 'red'
@@ -55,7 +53,7 @@ export function AuthErrorHandler({
         description: 'Please wait a moment before trying again.',
         suggestions: [
           'Wait a few minutes before attempting to sign in again',
-          'Try using the Magic Link option instead',
+          'Try using Google sign-in instead',
           'Contact support if the issue persists'
         ],
         icon: AlertCircle,
@@ -140,13 +138,7 @@ export function AuthErrorHandler({
             </Button>
           )}
           
-          {showMagicLinkOption && (
-            <Link href="/auth/magic-signin">
-              <Button variant="outline" size="sm" className="bg-white">
-                ✨ Use Magic Link
-              </Button>
-            </Link>
-          )}
+
           
           {errorInfo.title === 'Sign In Failed' && (
             <Link href="/auth/forgot-password">

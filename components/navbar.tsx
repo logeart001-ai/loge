@@ -339,14 +339,9 @@ export function Navbar() {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <Link href="/auth/magic-signin" onClick={() => setIsOpen(false)}>
-                      <Button variant="ghost" className="w-full justify-start text-left h-12">
-                        🔗 Sign In with Email Link
-                      </Button>
-                    </Link>
                     <Link href="/auth/signin" onClick={() => setIsOpen(false)}>
-                      <Button variant="outline" className="w-full justify-start text-left h-12">
-                        Sign In with Password
+                      <Button variant="ghost" className="w-full justify-start text-left h-12">
+                        Sign In
                       </Button>
                     </Link>
                     <Link href="/auth/signup" onClick={() => setIsOpen(false)}>

@@ -94,15 +94,15 @@ function AuthErrorContent() {
           </div>
 
           <div className="space-y-3">
-            <Link href="/auth/magic-signin">
+            <Link href="/auth/signin">
               <Button className="w-full bg-orange-500 hover:bg-orange-600">
                 <RefreshCw className="w-4 h-4 mr-2" />
-                Try Magic Link Sign In
+                Try Signing In Again
               </Button>
             </Link>
-            <Link href="/auth/signin">
+            <Link href="/auth/signup">
               <Button variant="outline" className="w-full">
-                Back to Sign In
+                Create New Account
               </Button>
             </Link>
           </div>
