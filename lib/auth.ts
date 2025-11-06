@@ -70,7 +70,7 @@ export async function signUp(prevState: unknown, formData: FormData) {
     console.log('🔥 Starting Supabase auth.signUp...')
     const supabase = await createServerActionClient()
     
-    // Map 'collector' to 'buyer' for database compatibility, default to 'buyer' if no type selected
+    // Map user types to database enum values: creator -> creator, collector/buyer -> buyer
     const mappedRole = userType === 'creator' ? 'creator' : 'buyer'
     
     const { data, error } = await supabase.auth.signUp({
@@ -223,7 +223,7 @@ export async function signIn(prevState: unknown, formData: FormData) {
       ? '/dashboard/creator' 
       : (userType === 'collector' || userType === 'buyer')
         ? '/dashboard/collector' 
-        : '/dashboard'
+        : '/dashboard/collector'  // Default to collector dashboard
     
     // Only use redirectTo if it matches the user's role, otherwise use role-based dashboard
     let finalRedirect = roleDashboard

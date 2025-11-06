@@ -24,8 +24,18 @@ export function useUserType(user: any) {
           .single()
 
         // Check database first, then fall back to metadata
-        const detectedType = profile?.role || user.user_metadata?.user_type || user.user_metadata?.role || 'collector'
-        setUserType(detectedType)
+        // Handle inconsistency: if metadata says creator but DB says buyer, trust metadata
+        let detectedType = profile?.role || user.user_metadata?.user_type || user.user_metadata?.role || 'buyer'
+        
+        // Override if metadata clearly indicates creator
+        if (user.user_metadata?.user_type === 'creator' || user.user_metadata?.role === 'creator') {
+          detectedType = 'creator'
+        }
+        
+        // For UI purposes, show "buyer" as "collector" 
+        const displayType = detectedType === 'buyer' ? 'collector' : detectedType
+        
+        setUserType(displayType)
       } catch (error) {
         console.error('Error fetching user type:', error)
         // Fallback to metadata or default

@@ -118,7 +118,12 @@ export default async function CreatorDashboard() {
   const userType = profile?.role || user.user_metadata?.user_type || user.user_metadata?.role
   console.log('🔥 Creator Dashboard - Determined user type:', userType)
 
-  if (userType !== 'creator') {
+  // Allow access if user is creator (handle both metadata and database inconsistencies)
+  const isCreator = userType === 'creator' || 
+                   user.user_metadata?.user_type === 'creator' || 
+                   user.user_metadata?.role === 'creator'
+
+  if (!isCreator) {
     console.log('🔥 Creator Dashboard - Redirecting to collector dashboard')
     redirect('/dashboard/collector')
   }
