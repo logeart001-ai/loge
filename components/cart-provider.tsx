@@ -65,11 +65,11 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return
     }
 
-    if (!cart) return load()
     try {
       setRefreshing(true)
       const c = await getCart()
       setCart(c)
+      console.log('Cart refreshed:', c)
     } catch (e) {
       // Handle authentication errors gracefully
       const error = e as Error
@@ -78,12 +78,13 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setCart(null)
       } else {
         console.error('Failed to refresh cart', e)
-        setCart(null)
+        // On error, try to load fresh
+        await load()
       }
     } finally {
       setRefreshing(false)
     }
-  }, [cart, load, user])
+  }, [load, user])
 
   const addItem = useCallback(async (artworkId: string, qty: number = 1) => {
     // Require authentication to add items

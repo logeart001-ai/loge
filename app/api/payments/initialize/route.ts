@@ -185,9 +185,47 @@ export async function POST(request: NextRequest) {
 
     console.log('🔥 Order created successfully:', order.id)
 
-    // Note: For multi-item carts, you might want to create separate orders
-    // or modify your schema to handle multiple items per order
-    console.log('🔥 Order created for first item, additional items in cart:', cartItems.length - 1)
+    // Create order_items entries for each cart item
+    // This allows creators to see their sales in the dashboard
+    try {
+      const orderItemsToInsert = cartItems.map(item => ({
+        order_id: order.id,
+        artwork_id: item.artwork_id,
+        creator_id: item.artworks?.creator_id || sellerId,
+        artwork_title: item.artworks?.title || 'Untitled',
+        quantity: item.quantity,
+        price_at_purchase: typeof item.unit_price === 'string' 
+          ? parseFloat(item.unit_price) 
+          : item.unit_price,
+        total_price: (typeof item.unit_price === 'string' 
+          ? parseFloat(item.unit_price) 
+          : item.unit_price) * item.quantity,
+        creator_commission_rate: 0.85,
+        platform_fee_rate: 0.15,
+        creator_earnings: (typeof item.unit_price === 'string' 
+          ? parseFloat(item.unit_price) 
+          : item.unit_price) * item.quantity * 0.85,
+        platform_earnings: (typeof item.unit_price === 'string' 
+          ? parseFloat(item.unit_price) 
+          : item.unit_price) * item.quantity * 0.15,
+      }))
+
+      const { error: itemsError } = await supabase
+        .from('order_items')
+        .insert(orderItemsToInsert)
+
+      if (itemsError) {
+        console.error('🔥 Error creating order items:', itemsError)
+        // Don't fail the order creation, just log the error
+      } else {
+        console.log('🔥 Created', orderItemsToInsert.length, 'order items')
+      }
+    } catch (itemsErr) {
+      console.error('🔥 Exception creating order items:', itemsErr)
+      // Continue with payment initialization even if order_items creation fails
+    }
+
+    console.log('🔥 Order created for', cartItems.length, 'item(s)')
 
     // Initialize Paystack transaction
     const reference = `ORDER_${order.id}_${Date.now()}`
