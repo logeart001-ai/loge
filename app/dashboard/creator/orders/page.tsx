@@ -164,18 +164,18 @@ export default async function CreatorOrdersPage() {
                                   {item.artwork_title || 'Artwork'} × {item.quantity}
                                 </span>
                                 <span className="font-medium text-gray-900">
-                                  ₦{(item.price_at_purchase * item.quantity)ring()}
-                        >
-               
-            
-          
-   
-    )}         
-</div>        
-         })}             
-     )     
-        /div>      <      
-               )}              >     </div                iv> </d                   ))}                 </div>           </span       .toLocaleSt
+                                  ₦{(item.price_at_purchase * item.quantity).toLocaleString()}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

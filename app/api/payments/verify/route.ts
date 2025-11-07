@@ -179,19 +179,8 @@ export async function GET(request: NextRequest) {
     if (metadata?.cart_id) {
       console.log('🔥 Clearing cart:', metadata.cart_id)
       
-      // Mark cart as completed
-      const { error: cartUpdateError } = await supabase
-        .from('carts')
-        .update({ status: 'completed', updated_at: new Date().toISOString() })
-        .eq('id', metadata.cart_id)
-      
-      if (cartUpdateError) {
-        console.error('🔥 Error updating cart status:', cartUpdateError)
-      } else {
-        console.log('🔥 Cart marked as completed')
-      }
-      
-      // Also delete cart items to ensure they don't show up
+      // Delete cart items first - this is the most important step
+      // The cart API only shows items from 'active' carts, so deleting items effectively clears the cart
       const { error: deleteItemsError } = await supabase
         .from('cart_items')
         .delete()
@@ -200,7 +189,33 @@ export async function GET(request: NextRequest) {
       if (deleteItemsError) {
         console.error('🔥 Error deleting cart items:', deleteItemsError)
       } else {
-        console.log('🔥 Cart items deleted')
+        console.log('🔥 Cart items deleted successfully')
+      }
+      
+      // Try to update cart status to 'checked_out' or 'inactive'
+      // If the enum doesn't support these values, it will fail gracefully
+      const { error: cartUpdateError } = await supabase
+        .from('carts')
+        .update({ status: 'checked_out', updated_at: new Date().toISOString() })
+        .eq('id', metadata.cart_id)
+      
+      if (cartUpdateError) {
+        console.log('🔥 Could not update cart status (trying alternate status):', cartUpdateError.message)
+        
+        // Try 'inactive' as fallback
+        const { error: fallbackError } = await supabase
+          .from('carts')
+          .update({ status: 'inactive', updated_at: new Date().toISOString() })
+          .eq('id', metadata.cart_id)
+        
+        if (fallbackError) {
+          console.log('🔥 Could not update cart status with fallback:', fallbackError.message)
+          // Not critical - cart items are already deleted
+        } else {
+          console.log('🔥 Cart marked as inactive')
+        }
+      } else {
+        console.log('🔥 Cart marked as checked_out')
       }
     } else {
       console.log('🔥 No cart_id in metadata, skipping cart clearing')
