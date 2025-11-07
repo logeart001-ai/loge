@@ -108,14 +108,27 @@ export default function CartPage() {
                   </div>
                   
                   {selectedShipping ? (
-                    <div className="flex justify-between text-gray-700">
-                      <span>Shipping ({selectedShipping.provider})</span>
-                      <span className="font-semibold">₦{selectedShipping.price.toLocaleString()}</span>
+                    <div className="bg-green-50 border border-green-200 rounded-md p-3 space-y-1">
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-gray-700 font-medium">Shipping</span>
+                        <span className="font-semibold text-gray-900">₦{selectedShipping.price.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-xs text-gray-600">
+                        <span>{selectedShipping.provider} - {selectedShipping.service_type}</span>
+                        <button 
+                          onClick={() => setShowShipping(true)}
+                          className="text-orange-600 hover:text-orange-700 underline"
+                        >
+                          Change
+                        </button>
+                      </div>
                     </div>
                   ) : (
-                    <div className="flex justify-between text-gray-500">
-                      <span>Shipping</span>
-                      <span>Calculate below</span>
+                    <div className="bg-orange-50 border border-orange-200 rounded-md p-3">
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-gray-700">Shipping</span>
+                        <span className="text-orange-600 font-medium">Not calculated</span>
+                      </div>
                     </div>
                   )}
                   
@@ -126,14 +139,14 @@ export default function CartPage() {
                     <span>₦{(cart.subtotal + (selectedShipping?.price || 0)).toLocaleString()}</span>
                   </div>
                   
-                  {!showShipping && (
+                  {!showShipping && !selectedShipping && (
                     <Button 
                       variant="outline" 
-                      className="w-full"
+                      className="w-full border-orange-300 text-orange-700 hover:bg-orange-50"
                       onClick={() => setShowShipping(true)}
                     >
                       <Truck className="mr-2 h-4 w-4" />
-                      Calculate Shipping
+                      Calculate Shipping Cost
                     </Button>
                   )}
                   
@@ -166,7 +179,7 @@ export default function CartPage() {
               
               {/* Shipping Calculator */}
               {showShipping && (
-                <div className="w-full">
+                <Card className="w-full">
                   <ShippingCalculator
                     itemType="art"
                     itemValue={cart.subtotal}
@@ -174,9 +187,10 @@ export default function CartPage() {
                     onQuoteSelect={(quote) => {
                       setSelectedShipping(quote)
                       setError(null)
+                      setShowShipping(false) // Collapse after selection
                     }}
                   />
-                </div>
+                </Card>
               )}
             </div>
           </div>

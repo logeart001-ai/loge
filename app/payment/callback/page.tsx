@@ -5,10 +5,12 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { CheckCircle2, XCircle, Loader2 } from 'lucide-react'
+import { useCart } from '@/components/cart-provider'
 
 function PaymentCallbackContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const { refresh: refreshCart } = useCart()
   const [status, setStatus] = useState<'loading' | 'success' | 'failed'>('loading')
   const [message, setMessage] = useState('')
   const [orderData, setOrderData] = useState<{
@@ -41,6 +43,10 @@ function PaymentCallbackContent() {
           setStatus('success')
           setMessage('Payment successful!')
           setOrderData(data.data)
+          
+          // Refresh cart to clear purchased items
+          console.log('🔥 Refreshing cart after successful payment')
+          await refreshCart()
         } else {
           setStatus('failed')
           setMessage(data.message || 'Payment verification failed')
@@ -52,7 +58,7 @@ function PaymentCallbackContent() {
     }
 
     verifyPayment()
-  }, [searchParams])
+  }, [searchParams, refreshCart])
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-linear-to-br from-orange-50 to-red-50">

@@ -175,13 +175,35 @@ export async function GET(request: NextRequest) {
     })
 
     // Clear the cart if specified in metadata
-    const metadata = paymentData.metadata as { cart_id?: string } | undefined
+    const metadata = paymentData.metadata as { cart_id?: string; user_id?: string } | undefined
     if (metadata?.cart_id) {
       console.log('🔥 Clearing cart:', metadata.cart_id)
-      await supabase
+      
+      // Mark cart as completed
+      const { error: cartUpdateError } = await supabase
         .from('carts')
-        .update({ status: 'completed' })
+        .update({ status: 'completed', updated_at: new Date().toISOString() })
         .eq('id', metadata.cart_id)
+      
+      if (cartUpdateError) {
+        console.error('🔥 Error updating cart status:', cartUpdateError)
+      } else {
+        console.log('🔥 Cart marked as completed')
+      }
+      
+      // Also delete cart items to ensure they don't show up
+      const { error: deleteItemsError } = await supabase
+        .from('cart_items')
+        .delete()
+        .eq('cart_id', metadata.cart_id)
+      
+      if (deleteItemsError) {
+        console.error('🔥 Error deleting cart items:', deleteItemsError)
+      } else {
+        console.log('🔥 Cart items deleted')
+      }
+    } else {
+      console.log('🔥 No cart_id in metadata, skipping cart clearing')
     }
 
     return NextResponse.json({
