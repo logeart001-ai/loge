@@ -18,25 +18,19 @@ export default function ResetPasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const router = useRouter()
 
-  // Password validation state
+  // Password validation state - simplified to match server validation
   const [passwordValidation, setPasswordValidation] = useState({
     minLength: false,
-    hasUpperCase: false,
-    hasLowerCase: false,
-    hasNumbers: false,
-    hasSpecialChar: false
+    hasLettersAndNumbers: false
   })
 
   const [passwordsMatch, setPasswordsMatch] = useState(true)
 
   useEffect(() => {
-    // Validate password in real-time
+    // Validate password in real-time - matches server-side validation
     setPasswordValidation({
-      minLength: password.length >= 8,
-      hasUpperCase: /[A-Z]/.test(password),
-      hasLowerCase: /[a-z]/.test(password),
-      hasNumbers: /\d/.test(password),
-      hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+      minLength: password.length >= 6,
+      hasLettersAndNumbers: /^(?=.*[a-zA-Z])(?=.*\d)/.test(password)
     })
   }, [password])
 
@@ -133,22 +127,19 @@ export default function ResetPasswordPage() {
                   <p className="text-sm font-medium text-gray-700">Password Requirements:</p>
                   <div className="space-y-1">
                     {[
-                      { key: 'minLength', label: 'At least 8 characters' },
-                      { key: 'hasUpperCase', label: 'One uppercase letter' },
-                      { key: 'hasLowerCase', label: 'One lowercase letter' },
-                      { key: 'hasNumbers', label: 'One number' },
-                      { key: 'hasSpecialChar', label: 'One special character' }
+                      { key: 'minLength', label: 'At least 6 characters' },
+                      { key: 'hasLettersAndNumbers', label: 'Contains letters and numbers' }
                     ].map(({ key, label }) => (
                       <div key={key} className="flex items-center space-x-2">
                         {passwordValidation[key as keyof typeof passwordValidation] ? (
-                          <Check className="h-4 w-4 text-brand-yellow" />
+                          <Check className="h-4 w-4 text-green-600" />
                         ) : (
-                          <X className="h-4 w-4 text-brand-red" />
+                          <X className="h-4 w-4 text-red-600" />
                         )}
                         <span className={`text-sm ${
                           passwordValidation[key as keyof typeof passwordValidation] 
-                            ? 'text-brand-yellow' 
-                            : 'text-brand-red'
+                            ? 'text-green-600' 
+                            : 'text-gray-600'
                         }`}>
                           {label}
                         </span>

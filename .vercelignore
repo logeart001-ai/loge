@@ -1,0 +1,40 @@
+# Development files
+.env.local
+.env.development
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+coverage/
+.nyc_output/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+*.md
+!README.md
+
+# Scripts
+scripts/
+verify-db.js
+
+# SQL files
+*.sql
+
+# Large media files
+public/video/
+
+# Temporary files
+tmp/
+temp/

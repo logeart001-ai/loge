@@ -396,6 +396,8 @@ export async function updatePassword(prevState: unknown, formData: FormData) {
   const password = formData.get('password') as string
   const confirmPassword = formData.get('confirmPassword') as string
 
+  console.log('🔐 Password update attempt')
+
   if (!password || !confirmPassword) {
     return {
       error: 'Both password fields are required'
@@ -418,23 +420,48 @@ export async function updatePassword(prevState: unknown, formData: FormData) {
   try {
     const supabase = await createServerClient()
     
+    // Check if user is authenticated (has valid session from reset link)
+    const { data: { user }, error: userError } = await supabase.auth.getUser()
+    
+    if (userError || !user) {
+      console.error('🔐 User not authenticated:', userError)
+      return {
+        error: 'Your password reset link has expired or is invalid. Please request a new one.'
+      }
+    }
+
+    console.log('🔐 Updating password for user:', user.email)
+    
     const { error } = await supabase.auth.updateUser({
       password: password
     })
 
     if (error) {
+      console.error('🔐 Password update error:', error)
       return {
         error: error.message
       }
     }
 
+    console.log('🔐 Password updated successfully')
+
+    // Determine redirect based on user type
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    const userType = profile?.role || user.user_metadata?.user_type || 'collector'
+    const redirectPath = userType === 'creator' ? '/dashboard/creator' : '/dashboard/collector'
+
     return {
       success: true,
-      message: 'Password updated successfully!',
-      redirectTo: '/dashboard'
+      message: 'Password updated successfully! Redirecting to your dashboard...',
+      redirectTo: redirectPath
     }
   } catch (error) {
-    console.error('Password update error:', error)
+    console.error('🔐 Password update exception:', error)
     return {
       error: 'An unexpected error occurred. Please try again.'
     }

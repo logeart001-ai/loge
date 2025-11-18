@@ -97,14 +97,22 @@ export default function ForgotPasswordPage() {
             </Button>
           </form>
           
-          <div className="mt-6 text-center">
-            <Link 
-              href="/auth/signin" 
-              className="inline-flex items-center text-sm text-gray-600 hover:text-orange-500"
-            >
-              <ArrowLeft className="w-4 h-4 mr-1" />
-              Back to Sign In
-            </Link>
+          <div className="mt-6 space-y-3">
+            <div className="text-center">
+              <Link 
+                href="/auth/signin" 
+                className="inline-flex items-center text-sm text-gray-600 hover:text-orange-500"
+              >
+                <ArrowLeft className="w-4 h-4 mr-1" />
+                Back to Sign In
+              </Link>
+            </div>
+            <div className="text-center text-sm text-gray-500">
+              Don&apos;t have an account?{' '}
+              <Link href="/auth/signup" className="text-orange-600 hover:text-orange-700 font-medium">
+                Sign up
+              </Link>
+            </div>
           </div>
         </CardContent>
       </Card>
