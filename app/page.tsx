@@ -486,61 +486,56 @@ export default async function HomePage() {
               } | null;
             }, idx: number) => (
               <Reveal key={post.id} delay={([0, 100, 200] as const)[idx % 3]}>
-                <Card className="hover:shadow-lg transition-transform hover:-translate-y-1 pt-0">
-                  <CardContent className="p-0">
-                    <div className="relative h-48 bg-gray-200 rounded-t-lg overflow-hidden">
-                      <OptimizedImage
-                        src={post.featured_image_url || "/image/Blog Post Featured Images.png"}
-                        alt={post.title || 'Blog post'}
-                        fill
-                        className="object-cover rounded-t-lg"
-                        sizes="(min-width: 768px) 33vw, 100vw"
-                      />
-                    </div>
-
-                    <div className="p-6">
-                      <div className="flex items-center gap-2 mb-3">
+                <Link href={`/blog/${post.slug || post.id}`} className="block h-full">
+                  <Card className="hover:shadow-lg transition-transform hover:-translate-y-1 pt-0 h-full">
+                    <CardContent className="p-0 h-full flex flex-col">
+                      <div className="relative h-48 bg-gray-200 rounded-t-lg overflow-hidden shrink-0">
                         <OptimizedImage
-                          src={post.author?.avatar_url || "/image/Blog Author Avatars.png"}
-                          alt={post.author?.full_name || 'Author avatar'}
-                          width={32}
-                          height={32}
-                          className="rounded-full object-cover"
+                          src={post.featured_image_url || "/image/Blog%20Post%20Featured%20Images.png"}
+                          alt={post.title || 'Blog post'}
+                          fill
+                          className="object-cover rounded-t-lg"
+                          sizes="(min-width: 768px) 33vw, 100vw"
                         />
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">
-                            {post.author?.full_name}
-                          </div>
-                          <div className="text-xs text-gray-600">
-                            {post.published_at ? new Date(post.published_at).toLocaleDateString() : 'Recent'}
+                      </div>
+
+                      <div className="p-6 grow flex flex-col">
+                        <div className="flex items-center gap-2 mb-3">
+                          <OptimizedImage
+                            src={post.author?.avatar_url || "/image/Blog%20Author%20Avatars.png"}
+                            alt={post.author?.full_name || 'Author avatar'}
+                            width={32}
+                            height={32}
+                            className="rounded-full object-cover"
+                          />
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">
+                              {post.author?.full_name}
+                            </div>
+                            <div className="text-xs text-gray-600">
+                              {post.published_at ? new Date(post.published_at).toLocaleDateString() : 'Recent'}
+                            </div>
                           </div>
                         </div>
+
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+                          {post.title}
+                        </h3>
+                        <p className="text-gray-600 text-sm line-clamp-3 mb-4 grow">
+                          {post.excerpt}
+                        </p>
+                        
+                        <div className="flex flex-wrap gap-2 mt-auto">
+                          {post.tags?.slice(0, 2).map(tag => (
+                            <Badge key={tag} variant="secondary" className="text-xs">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
                       </div>
-
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-                        {post.title}
-                      </h3>
-
-                      <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                        {post.excerpt}
-                      </p>
-
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {post.tags?.slice(0, 2).map((tag: string) => (
-                          <Badge key={tag} variant="secondary" className="text-xs">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-
-                      <Link href={`/blog/${post.slug}`}>
-                        <Button variant="ghost" className="w-full text-orange-600 hover:bg-orange-50 transition-transform hover:-translate-y-0.5">
-                          Read Article
-                        </Button>
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </Link>
               </Reveal>
             ))}
           </div>
