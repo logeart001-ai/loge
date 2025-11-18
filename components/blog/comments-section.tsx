@@ -181,7 +181,7 @@ export function CommentsSection({ postId }: CommentsSectionProps) {
     <div className={`${isReply ? 'ml-8 border-l-2 border-gray-200 pl-4' : ''}`}>
       <div className="flex items-start gap-3 mb-4">
         <OptimizedImage
-          src={comment.user.avatar_url || "/image/Blog Author Avatars.png"}
+          src={comment.user.avatar_url || "/image/Blog%20Author%20Avatars.png"}
           alt={comment.user.full_name}
           width={40}
           height={40}
@@ -285,7 +285,7 @@ export function CommentsSection({ postId }: CommentsSectionProps) {
         <div className="mb-8 p-6 bg-gray-50 rounded-lg">
           <div className="flex items-start gap-3">
             <OptimizedImage
-              src={user.user_metadata?.avatar_url || "/image/Blog Author Avatars.png"}
+              src={user.user_metadata?.avatar_url || "/image/Blog%20Author%20Avatars.png"}
               alt={user.user_metadata?.full_name || 'Your avatar'}
               width={40}
               height={40}

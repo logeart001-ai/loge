@@ -60,7 +60,7 @@ export default async function SavedArticlesPage() {
                     <CardContent className="p-0">
                       <div className="relative h-48 bg-gray-200 rounded-t-lg overflow-hidden">
                         <OptimizedImage
-                          src={post.featured_image_url || "/image/Blog Post Featured Images.png"}
+                          src={post.featured_image_url || "/image/Blog%20Post%20Featured%20Images.png"}
                           alt={post.title}
                           fill
                           className="object-cover rounded-t-lg"
@@ -71,7 +71,7 @@ export default async function SavedArticlesPage() {
                       <div className="p-6">
                         <div className="flex items-center gap-2 mb-3">
                           <OptimizedImage
-                            src={post.author?.avatar_url || "/image/Blog Author Avatars.png"}
+                            src={post.author?.avatar_url || "/image/Blog%20Author%20Avatars.png"}
                             alt={post.author?.full_name || 'Author avatar'}
                             width={32}
                             height={32}

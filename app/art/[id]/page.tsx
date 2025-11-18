@@ -82,7 +82,7 @@ export default async function ArtworkDetailPage({ params }: { params: Promise<{ 
               <div className="flex items-center gap-3 mb-8">
                 <div className="relative w-10 h-10 rounded-full overflow-hidden bg-gray-200">
                   <OptimizedImage
-                    src={artwork.creator.avatar_url || '/image/Creator Avatars.png'}
+                    src={artwork.creator.avatar_url || '/image/Creator%20Avatars.png'}
                     alt={artwork.creator.full_name}
                     fill
                     className="object-cover"

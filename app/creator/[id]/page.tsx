@@ -123,9 +123,9 @@ export default async function CreatorProfilePage({ params }: { params: Promise<{
           <CardContent className="p-8">
             <div className="flex flex-col md:flex-row gap-6">
               {/* Avatar */}
-              <div className="relative w-32 h-32 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
+              <div className="relative w-32 h-32 rounded-full overflow-hidden bg-gray-200 shrink-0">
                 <OptimizedImage
-                  src={creator.avatar_url || '/image/Creator Avatars.png'}
+                  src={creator.avatar_url || '/image/Creator%20Avatars.png'}
                   alt={creator.full_name}
                   fill
                   className="object-cover"

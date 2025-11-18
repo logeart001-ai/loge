@@ -23,21 +23,21 @@ export default async function HomePage() {
   // Local image mapping for Featured Artworks (using actual available image files)
   const localArtworkImages: Record<string, string> = {
     'ancestral-echoes': '/image/AncestralEchoes.jpg',
-    'ancestral-wisdom': '/image/Ancestral Wisdom.png',
+    'ancestral-wisdom': '/image/Ancestral%20Wisdom.png',
     'urban-rythym': '/image/urbanRythym.jpg',
     'urban-rhythm': '/image/urbanRythym.jpg',
-    'urban-dreams': '/image/Urban Dreams.png',
+    'urban-dreams': '/image/Urban%20Dreams.png',
     'resilience-ii': '/image/resilence2.jpg',
     'resilence-2': '/image/resilence2.jpg',
     'ankara-blazers': '/image/ankarablazers.jpg',
     'kente': '/image/kente.jpg',
-    'mother-earth': '/image/Mother Earth.jpg',
-    'sunset-over-lagos': '/image/Sunset Over Lagos.png',
-    'rhythms-of-the-sahel': '/image/Rhythms of the Sahel.png',
-    'whispers-of-the-savannah': '/image/Whispers of the Savannah.png',
-    'lagos-noir': '/image/Lagos Noir.png',
-    'ubuntu-philosophy': '/image/Ubuntu Philosophy.png',
-    'the-baobabs-daughter': '/image/The Baobab\'s Daughter.png',
+    'mother-earth': '/image/Mother%20Earth.jpg',
+    'sunset-over-lagos': '/image/Sunset%20Over%20Lagos.png',
+    'rhythms-of-the-sahel': '/image/Rhythms%20of%20the%20Sahel.png',
+    'whispers-of-the-savannah': '/image/Whispers%20of%20the%20Savannah.png',
+    'lagos-noir': '/image/Lagos%20Noir.png',
+    'ubuntu-philosophy': '/image/Ubuntu%20Philosophy.png',
+    'the-baobabs-daughter': '/image/The%20Baobab\'s%20Daughter.png',
   }
   // Local image mapping for Featured Creators (using actual available image files)
   const localCreatorImages: Record<string, string> = {
@@ -51,7 +51,7 @@ export default async function HomePage() {
     const key = name.toLowerCase()
     if (localCreatorImages[key]) return localCreatorImages[key]
     // Fallback to remote avatar or placeholder
-    return creator.avatar_url || '/image/Creator Avatars.png'
+    return creator.avatar_url || '/image/Creator%20Avatars.png'
   }
 
   type ArtworkLike = { title?: string; thumbnail_url?: string | null; image_urls?: string[] | null }
@@ -99,11 +99,11 @@ export default async function HomePage() {
       price: 85000,
       original_price: 95000,
       category: 'painting',
-      thumbnail_url: '/image/Sunset Over Lagos.png',
+      thumbnail_url: '/image/Sunset%20Over%20Lagos.png',
       creator: {
         id: 'dummy-creator-1',
         full_name: 'Fatima Al-Rashid',
-        avatar_url: '/image/Creator Avatars female.png',
+        avatar_url: '/image/Creator%20Avatars%20female.png',
         location: 'Cairo, Egypt',
         rating: 4.6
       }
@@ -113,11 +113,11 @@ export default async function HomePage() {
       title: 'Urban Dreams',
       price: 72000,
       category: 'art_design',
-      thumbnail_url: '/image/Urban Dreams.png',
+      thumbnail_url: '/image/Urban%20Dreams.png',
       creator: {
         id: 'dummy-creator-2',
         full_name: 'Kofi Mensah',
-        avatar_url: '/image/Creator Avatars male.png',
+        avatar_url: '/image/Creator%20Avatars%20male.png',
         location: 'Cape Coast, Ghana',
         rating: 4.8
       }
@@ -127,11 +127,11 @@ export default async function HomePage() {
       title: 'Mother Earth',
       price: 110000,
       category: 'sculpture',
-      thumbnail_url: '/image/Mother Earth.jpg',
+      thumbnail_url: '/image/Mother%20Earth.jpg',
       creator: {
         id: 'dummy-creator-3',
         full_name: 'Amina Hassan',
-        avatar_url: '/image/Creator Avatars female.png',
+        avatar_url: '/image/Creator%20Avatars%20female.png',
         location: 'Marrakech, Morocco',
         rating: 4.7
       }
