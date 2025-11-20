@@ -47,32 +47,51 @@ export default async function HomePage() {
   }
 
   const getCreatorImageSrc = (creator: { full_name?: string | null; avatar_url?: string | null }): string => {
+    if (creator.avatar_url) {
+      if (creator.avatar_url.startsWith('/') && creator.avatar_url.includes(' ')) {
+        return creator.avatar_url.split('/').map(part => encodeURIComponent(part)).join('/')
+      }
+      return creator.avatar_url
+    }
+
     const name = (creator.full_name || '').normalize('NFKD').replace(/[^\p{L}\p{N}]+/gu, '')
     const key = name.toLowerCase()
     if (localCreatorImages[key]) return localCreatorImages[key]
     // Fallback to remote avatar or placeholder
-    return creator.avatar_url || '/image/Creator%20Avatars.png'
+    return '/image/Creator%20Avatars.png'
   }
 
   type ArtworkLike = { title?: string; thumbnail_url?: string | null; image_urls?: string[] | null }
   const getArtworkImageSrc = (artwork: ArtworkLike): string => {
+    // Check if database has a valid image first
+    if (artwork?.thumbnail_url) {
+      // If it's a local path with spaces, encode it
+      if (artwork.thumbnail_url.startsWith('/') && artwork.thumbnail_url.includes(' ')) {
+        return artwork.thumbnail_url.split('/').map(part => encodeURIComponent(part)).join('/')
+      }
+      return artwork.thumbnail_url
+    }
+    if (artwork?.image_urls?.[0]) {
+      const url = artwork.image_urls[0]
+      if (url.startsWith('/') && url.includes(' ')) {
+        return url.split('/').map(part => encodeURIComponent(part)).join('/')
+      }
+      return url
+    }
+
     const title: string = artwork?.title || ''
     const slug = title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '')
 
-    // First, try to find an exact match
+    // Fallback to local mapping if no DB image
     if (localArtworkImages[slug]) return localArtworkImages[slug]
     
     // Then try partial matches
     for (const key of Object.keys(localArtworkImages)) {
       if (slug.includes(key) || key.includes(slug)) return localArtworkImages[key]
     }
-    
-    // Check if database has a valid image
-    if (artwork?.thumbnail_url) return artwork.thumbnail_url
-    if (artwork?.image_urls?.[0]) return artwork.image_urls[0]
     
     // Fallback to a guaranteed existing image
     return "/image/AncestralEchoes.jpg"

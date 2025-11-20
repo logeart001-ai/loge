@@ -64,7 +64,7 @@ export function OptimizedImage({
   }
 
   return (
-    <div className={cn("relative overflow-hidden", className)}>
+    <div className={cn("relative overflow-hidden", fill && "w-full h-full", className)}>
       <Image
         src={src}
         alt={alt}
@@ -78,7 +78,8 @@ export function OptimizedImage({
         blurDataURL={finalPlaceholder === 'blur' ? blurDataURL : undefined}
         className={cn(
           "transition-opacity duration-300",
-          isLoading ? "opacity-0" : "opacity-100"
+          isLoading ? "opacity-0" : "opacity-100",
+          className
         )}
         onLoad={handleLoad}
         onError={handleError}
@@ -88,7 +89,6 @@ export function OptimizedImage({
       {isLoading && (
         <div
           className="absolute inset-0 bg-gray-200 animate-pulse"
-          style={{ width, height }}
         />
       )}
     </div>
