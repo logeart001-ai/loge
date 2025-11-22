@@ -92,14 +92,42 @@ export default function NewArtworkPage() {
 
       if (!user) {
         alert('Please sign in to upload artwork')
+        setLoading(false)
         return
       }
 
-      // For now, we'll create the artwork record without actual file upload
-      // In production, you'd upload files to Supabase Storage first
-      const imageUrls = images.map((_, index) => `/placeholder-artwork-${index + 1}.jpg`)
+      // Step 1: Upload images to Supabase Storage
+      const imageUrls: string[] = []
+      const uploadPromises = images.map(async (image, index) => {
+        const fileExt = image.name.split('.').pop()
+        const fileName = `${user.id}/${Date.now()}-${index}.${fileExt}`
+        
+        const { data, error } = await supabase.storage
+          .from('artworks')
+          .upload(fileName, image, {
+            cacheControl: '3600',
+            upsert: false
+          })
 
-      const { error } = await supabase
+        if (error) {
+          console.error('Error uploading image:', error)
+          throw new Error(`Failed to upload image: ${error.message}`)
+        }
+
+        // Get public URL
+        const { data: { publicUrl } } = supabase.storage
+          .from('artworks')
+          .getPublicUrl(fileName)
+
+        return publicUrl
+      })
+
+      // Wait for all uploads to complete
+      const uploadedUrls = await Promise.all(uploadPromises)
+      imageUrls.push(...uploadedUrls)
+
+      // Step 2: Create artwork record in database
+      const { error: dbError } = await supabase
         .from('artworks')
         .insert({
           creator_id: user.id,
@@ -117,25 +145,27 @@ export default function NewArtworkPage() {
           image_urls: imageUrls,
           thumbnail_url: imageUrls[0],
           tags: formData.tags,
-          is_available: true,
+          is_available: false, // Requires admin approval
+          is_featured: false,
+          approval_status: 'pending', // Pending admin approval
           views_count: 0,
           likes_count: 0
         })
         .select()
         .single()
 
-      if (error) {
-        console.error('Error creating artwork:', error)
+      if (dbError) {
+        console.error('Error creating artwork:', dbError)
         alert('Failed to create artwork. Please try again.')
         return
       }
 
-      alert('Artwork uploaded successfully!')
+      alert('Artwork submitted successfully! It will be visible once approved by admin.')
       router.push('/dashboard/creator/artworks')
 
     } catch (error) {
       console.error('Error uploading artwork:', error)
-      alert('An error occurred. Please try again.')
+      alert(`An error occurred: ${error instanceof Error ? error.message : 'Please try again.'}`)
     } finally {
       setLoading(false)
     }
