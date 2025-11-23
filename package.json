@@ -15,7 +15,9 @@
     "analyze": "ANALYZE=true npm run build",
     "lighthouse": "lhci autorun",
     "performance-audit": "node scripts/performance-audit.js",
-    "update-user": "node scripts/update-user-metadata.js"
+    "update-user": "node scripts/update-user-metadata.js",
+    "check-env": "tsx scripts/check-env.ts",
+    "validate-env": "tsx scripts/validate-env.ts"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.3.3",
