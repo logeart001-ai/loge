@@ -8,13 +8,15 @@ import {
   Flag,
   BarChart3,
   Shield,
-  Calendar
+  Calendar,
+  Image
 } from 'lucide-react'
 import { AdminDashboard } from './admin-dashboard'
 import { UserManagement } from './user-management'
 import { ContentModeration } from './content-moderation'
 import { AnalyticsDashboard } from './analytics-dashboard'
 import { EventsManagement } from './events-management'
+import { ArtworksManagement } from './artworks-management'
 
 export function AdminLayout() {
   const [activeTab, setActiveTab] = useState('dashboard')
@@ -27,6 +29,13 @@ export function AdminLayout() {
       icon: LayoutDashboard,
       component: AdminDashboard,
       description: 'Review submissions and manage content'
+    },
+    {
+      id: 'artworks',
+      label: 'Artworks',
+      icon: Image,
+      component: ArtworksManagement,
+      description: 'Review and approve creator artwork uploads'
     },
     {
       id: 'events',
