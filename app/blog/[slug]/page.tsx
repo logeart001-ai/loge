@@ -200,12 +200,12 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
     const relatedPosts = await getRelatedPosts(post.slug, post.tags || [])
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
-      
-      {/* Article Header */}
-      <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        
+        {/* Article Header */}
+        <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <Link href="/blog">
             <Button variant="ghost" className="mb-6 text-orange-600 hover:bg-orange-50">
@@ -374,11 +374,13 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         </div>
       </section>
     </div>
-  ) catch (error) {
+    )
+  } catch (error) {
     console.error('🔥 Error rendering blog post page:', error)
     console.error('Error details:', JSON.stringify(error, null, 2))
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
+        <Navbar />
         <h1 className="text-2xl font-bold text-red-600 mb-4">Error Loading Blog Post</h1>
         <p className="text-gray-600 mb-4">
           We encountered an error while loading this blog post. Please try again later.
