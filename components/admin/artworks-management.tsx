@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -51,11 +51,7 @@ export function ArtworksManagement() {
 
   const supabase = createClient()
 
-  useEffect(() => {
-    fetchArtworks()
-  }, [filter])
-
-  const fetchArtworks = async () => {
+  const fetchArtworks = useCallback(async () => {
     try {
       setLoading(true)
       
@@ -94,14 +90,24 @@ export function ArtworksManagement() {
         throw error
       }
 
-      setArtworks(data || [])
+      // Transform the data to ensure creator is a single object
+      const transformedData = (data || []).map(item => ({
+        ...item,
+        creator: Array.isArray(item.creator) ? item.creator[0] : item.creator
+      }))
+
+      setArtworks(transformedData)
     } catch (error) {
       console.error('Error in fetchArtworks:', error)
       setArtworks([])
     } finally {
       setLoading(false)
     }
-  }
+  }, [filter, supabase])
+
+  useEffect(() => {
+    fetchArtworks()
+  }, [fetchArtworks])
 
   const handleApprove = async () => {
     if (!selectedArtwork) return
@@ -430,6 +436,7 @@ export function ArtworksManagement() {
                         checked={setAsFeatured}
                         onChange={(e) => setSetAsFeatured(e.target.checked)}
                         className="rounded border-gray-300"
+                        aria-label="Set as featured artwork"
                       />
                       <Label htmlFor="set_featured" className="text-sm cursor-pointer">
                         Set as featured (will appear on homepage)
