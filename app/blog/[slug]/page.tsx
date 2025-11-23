@@ -69,6 +69,7 @@ async function getBlogPost(slug: string): Promise<BlogPost | null> {
 
     if (error) {
       console.error('Error fetching blog post:', error)
+      console.error('Error details:', JSON.stringify(error))
       return null
     }
 
@@ -80,14 +81,21 @@ async function getBlogPost(slug: string): Promise<BlogPost | null> {
     // Now get the author separately
     let author = null
     if (data.author_id) {
-      const { data: authorData, error: authorError } = await supabase
-        .from('user_profiles')
-        .select('full_name, avatar_url, bio')
-        .eq('id', data.author_id)
-        .single()
-      
-      if (!authorError && authorData) {
-        author = authorData
+      try {
+        const { data: authorData, error: authorError } = await supabase
+          .from('user_profiles')
+          .select('full_name, avatar_url, bio')
+          .eq('id', data.author_id)
+          .single()
+        
+        if (authorError) {
+          console.error('Error fetching author:', authorError)
+        } else if (authorData) {
+          author = authorData
+        }
+      } catch (authorErr) {
+        console.error('Exception fetching author:', authorErr)
+        // Continue without author data
       }
     }
 
@@ -99,12 +107,19 @@ async function getBlogPost(slug: string): Promise<BlogPost | null> {
     return normalizedPost
   } catch (error) {
     console.error('Unexpected error fetching blog post:', error)
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack')
     return null
   }
 }
 
 async function getRelatedPosts(currentSlug: string, tags: string[]): Promise<BlogPost[]> {
   try {
+    // Return early if no tags
+    if (!tags || tags.length === 0) {
+      console.log('No tags provided for related posts')
+      return []
+    }
+
     const supabase = await createServerClient()
     
     const { data, error } = await supabase
@@ -130,16 +145,30 @@ async function getRelatedPosts(currentSlug: string, tags: string[]): Promise<Blo
       return []
     }
 
-    if (!data) {
+    if (!data || data.length === 0) {
+      console.log('No related posts found')
       return []
     }
 
     // Get authors for all posts
     const authorIds = data.map(post => post.author_id).filter(Boolean)
-    const { data: authors } = await supabase
+    
+    if (authorIds.length === 0) {
+      console.log('No author IDs found for related posts')
+      return data.map((item) => ({
+        ...item,
+        author: null,
+      })) as BlogPost[]
+    }
+
+    const { data: authors, error: authorsError } = await supabase
       .from('user_profiles')
       .select('id, full_name, avatar_url, bio')
       .in('id', authorIds)
+
+    if (authorsError) {
+      console.error('Error fetching authors for related posts:', authorsError)
+    }
 
     const authorsMap = new Map(authors?.map(author => [author.id, author]) || [])
 
@@ -154,14 +183,22 @@ async function getRelatedPosts(currentSlug: string, tags: string[]): Promise<Blo
 }
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params
-  const post = await getBlogPost(slug)
-  
-  if (!post) {
-    notFound()
-  }
+  try {
+    const { slug } = await params
+    
+    if (!slug) {
+      console.error('No slug provided')
+      notFound()
+    }
 
-  const relatedPosts = await getRelatedPosts(post.slug, post.tags)
+    const post = await getBlogPost(slug)
+    
+    if (!post) {
+      console.log('Post not found for slug:', slug)
+      notFound()
+    }
+
+    const relatedPosts = await getRelatedPosts(post.slug, post.tags || [])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -337,7 +374,21 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         </div>
       </section>
     </div>
-  )
+  ) catch (error) {
+    console.error('🔥 Error rendering blog post page:', error)
+    console.error('Error details:', JSON.stringify(error, null, 2))
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <h1 className="text-2xl font-bold text-red-600 mb-4">Error Loading Blog Post</h1>
+        <p className="text-gray-600 mb-4">
+          We encountered an error while loading this blog post. Please try again later.
+        </p>
+        <pre className="bg-gray-100 p-4 rounded text-xs overflow-auto">
+          {error instanceof Error ? error.message : String(error)}
+        </pre>
+      </div>
+    )
+  }
 }
 
 export async function generateStaticParams() {

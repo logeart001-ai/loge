@@ -505,8 +505,8 @@ export default async function HomePage() {
               } | null;
             }, idx: number) => (
               <Reveal key={post.id} delay={([0, 100, 200] as const)[idx % 3]}>
-                <Link href={`/blog/${post.slug || post.id}`} className="block h-full">
-                  <Card className="hover:shadow-lg transition-transform hover:-translate-y-1 pt-0 h-full">
+                <Link href={`/blog/${post.slug || post.id}`} className="block h-full group">
+                  <Card className="hover:shadow-xl transition-all duration-300 hover:-translate-y-2 hover:border-orange-500 pt-0 h-full cursor-pointer">
                     <CardContent className="p-0 h-full flex flex-col">
                       <div className="relative h-48 bg-gray-200 rounded-t-lg overflow-hidden shrink-0">
                         <OptimizedImage
@@ -537,19 +537,24 @@ export default async function HomePage() {
                           </div>
                         </div>
 
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-orange-600 transition-colors">
                           {post.title}
                         </h3>
                         <p className="text-gray-600 text-sm line-clamp-3 mb-4 grow">
                           {post.excerpt}
                         </p>
                         
-                        <div className="flex flex-wrap gap-2 mt-auto">
-                          {post.tags?.slice(0, 2).map(tag => (
-                            <Badge key={tag} variant="secondary" className="text-xs">
-                              {tag}
-                            </Badge>
-                          ))}
+                        <div className="flex items-center justify-between mt-auto">
+                          <div className="flex flex-wrap gap-2">
+                            {post.tags?.slice(0, 2).map(tag => (
+                              <Badge key={tag} variant="secondary" className="text-xs">
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+                          <span className="text-orange-600 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                            Read <ArrowRight className="w-4 h-4" />
+                          </span>
                         </div>
                       </div>
                     </CardContent>
