@@ -393,20 +393,10 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   }
 }
 
-export async function generateStaticParams() {
-  try {
-    const supabase = await createServerClient()
-    
-    const { data: posts } = await supabase
-      .from('blog_posts')
-      .select('slug')
-      .eq('is_published', true)
+// Force dynamic rendering for blog posts
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
-    return posts?.map((post) => ({
-      slug: post.slug,
-    })) || []
-  } catch (error) {
-    console.error('Error generating static params:', error)
-    return []
-  }
-}
+// Remove static generation to fix production 500 errors
+// The blog posts will be rendered on-demand instead of at build time
+// This ensures the production database is always queried at runtime

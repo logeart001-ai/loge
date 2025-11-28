@@ -9,6 +9,10 @@ import { BlogSearch } from '@/components/blog/blog-search'
 import Link from 'next/link'
 import { Search, Calendar, ArrowRight } from 'lucide-react'
 
+// Force dynamic rendering to ensure production database is queried at runtime
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 interface BlogPost {
   id: string
   title: string
