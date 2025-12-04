@@ -620,7 +620,7 @@ export default async function HomePage() {
         <Reveal delay={300}>
           <Link href="https://t.me/logeartcreativecommunity" target="_blank" rel="noopener noreferrer">
             <Button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 text-lg">
-              Join Our Telegram Community
+              Join Our Community
             </Button>
           </Link>
         </Reveal>
