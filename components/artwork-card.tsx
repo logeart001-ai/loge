@@ -27,6 +27,8 @@ interface ArtworkCardProps {
     created_at?: string | null
     category?: string | null
     is_available?: boolean | null
+    approval_status?: string | null
+    status?: string | null
   }
   isCreatorView?: boolean
 }
@@ -93,6 +95,18 @@ export function ArtworkCard({ artwork, isCreatorView = false }: ArtworkCardProps
 
           {/* Status badges */}
           <div className="absolute top-2 left-2 flex flex-col space-y-1">
+            {isCreatorView && (artwork.approval_status || artwork.status) && (
+              <Badge 
+                className={
+                  (artwork.approval_status || artwork.status) === 'approved' ? 'bg-green-500 text-white text-xs' :
+                  (artwork.approval_status || artwork.status) === 'pending' ? 'bg-yellow-500 text-white text-xs' :
+                  (artwork.approval_status || artwork.status) === 'rejected' ? 'bg-red-500 text-white text-xs' :
+                  'bg-gray-500 text-white text-xs'
+                }
+              >
+                {(artwork.approval_status || artwork.status)?.charAt(0).toUpperCase() + (artwork.approval_status || artwork.status)?.slice(1)}
+              </Badge>
+            )}
             {artwork.is_featured && (
               <Badge className="bg-yellow-500 text-white text-xs">
                 Featured

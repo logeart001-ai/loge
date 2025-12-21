@@ -11,6 +11,7 @@ export async function getArtworkById(id: string) {
       .from('artworks')
       .select(`*`)
       .eq('id', id)
+      .eq('approval_status', 'approved')
       .single()
 
     if (error) {
@@ -29,13 +30,14 @@ export async function getFeaturedArtworks(limit = 8) {
   try {
     const supabase = await createServerClient()
 
-    // Primary query - featured artworks
+    // Primary query - featured artworks that are approved
     try {
       const { data, error } = await supabase
         .from('artworks')
         .select(`*`)
         .eq('is_available', true)
         .eq('is_featured', true)
+        .eq('approval_status', 'approved')
         .order('created_at', { ascending: false })
         .limit(limit)
 
@@ -48,17 +50,18 @@ export async function getFeaturedArtworks(limit = 8) {
       console.warn('Featured artworks query failed:', queryError)
     }
 
-    // Fallback 1: Try just available artworks
+    // Fallback 1: Try just available and approved artworks
     try {
       const { data: fallbackData, error: fallbackError } = await supabase
         .from('artworks')
         .select(`*`)
         .eq('is_available', true)
+        .eq('approval_status', 'approved')
         .order('created_at', { ascending: false })
         .limit(limit)
 
       if (!fallbackError && fallbackData && fallbackData.length > 0) {
-        console.log('Using fallback artworks (available only)')
+        console.log('Using fallback artworks (available and approved)')
         return fallbackData
       }
 
@@ -67,16 +70,17 @@ export async function getFeaturedArtworks(limit = 8) {
       console.warn('Fallback artworks query failed:', fallbackError)
     }
 
-    // Last resort: Get any artworks
+    // Last resort: Get any approved artworks
     try {
       const { data: softData, error: softError } = await supabase
         .from('artworks')
         .select(`*`)
+        .eq('approval_status', 'approved')
         .order('created_at', { ascending: false })
         .limit(limit)
 
       if (!softError && softData) {
-        console.log('Using soft fallback (any artworks)')
+        console.log('Using soft fallback (any approved artworks)')
         return softData
       }
 
@@ -104,6 +108,7 @@ export async function getArtworksByCategory(
       .from('artworks')
       .select(`*`)
       .eq('is_available', true)
+      .eq('approval_status', 'approved')
       .eq('category', category)
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1)
@@ -250,6 +255,7 @@ export async function searchArtworks(
         )
       `)
       .eq('is_available', true)
+      .eq('approval_status', 'approved')
 
     if (query) {
       queryBuilder = queryBuilder.textSearch('title,description', query)

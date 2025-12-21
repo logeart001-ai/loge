@@ -1,11 +1,14 @@
 import { createServerClient } from '@/lib/supabase'
 import { ArtPageClient } from './art-page-client'
 
+// Force dynamic rendering to always show fresh data
+export const dynamic = 'force-dynamic'
+
 export default async function ArtPage() {
   // Fetch real artworks from the database
   const supabase = await createServerClient()
   
-  // Try enhanced query first, fall back to basic if columns don't exist
+  // Only fetch approved and available artworks
   let { data: artworks, error } = await supabase
     .from('artworks')
     .select(`
@@ -17,9 +20,11 @@ export default async function ArtPage() {
       is_available,
       category,
       creator_id,
-      created_at
+      created_at,
+      approval_status
     `)
     .eq('is_available', true)
+    .eq('approval_status', 'approved')
     .order('created_at', { ascending: false })
     .limit(50)
 

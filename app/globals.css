@@ -5,71 +5,87 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  
+  /* Brand Colors - L'oge Arts Palette */
+  /* #1A1A1A - Dark Charcoal */
+  /* #C92A2A - Deep Red */
+  /* #FAF5F0 - Warm Cream */
+  /* #FFCB05 - Golden Yellow */
+  --brand-dark: #1A1A1A;
+  --brand-red: #C92A2A;
+  --brand-red-hover: #A82323;
+  --brand-red-light: #E53E3E;
+  --brand-cream: #FAF5F0;
+  --brand-cream-dark: #F5EDE5;
+  --brand-yellow: #FFCB05;
+  --brand-yellow-light: #FFD633;
+  --brand-yellow-dark: #E6B800;
+  
+  --background: #FAF5F0;
+  --foreground: #1A1A1A;
+  --card: #FFFFFF;
+  --card-foreground: #1A1A1A;
+  --popover: #FFFFFF;
+  --popover-foreground: #1A1A1A;
+  --primary: #C92A2A;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F5EDE5;
+  --secondary-foreground: #1A1A1A;
+  --muted: #F5EDE5;
+  --muted-foreground: #6B6B6B;
+  --accent: #FFCB05;
+  --accent-foreground: #1A1A1A;
+  --destructive: #C92A2A;
+  --border: #E5DDD5;
+  --input: #E5DDD5;
+  --ring: #C92A2A;
+  --chart-1: #C92A2A;
+  --chart-2: #FFCB05;
+  --chart-3: #1A1A1A;
+  --chart-4: #D4A5A5;
+  --chart-5: #F5EDE5;
+  --sidebar: #FAF5F0;
+  --sidebar-foreground: #1A1A1A;
+  --sidebar-primary: #C92A2A;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F5EDE5;
+  --sidebar-accent-foreground: #1A1A1A;
+  --sidebar-border: #E5DDD5;
+  --sidebar-ring: #C92A2A;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #1A1A1A;
+  --foreground: #FAF5F0;
+  --card: #2A2A2A;
+  --card-foreground: #FAF5F0;
+  --popover: #2A2A2A;
+  --popover-foreground: #FAF5F0;
+  --primary: #C92A2A;
+  --primary-foreground: #FFFFFF;
+  --secondary: #3A3A3A;
+  --secondary-foreground: #FAF5F0;
+  --muted: #3A3A3A;
+  --muted-foreground: #A0A0A0;
+  --accent: #FFCB05;
+  --accent-foreground: #1A1A1A;
+  --destructive: #E53E3E;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #C92A2A;
+  --chart-1: #C92A2A;
+  --chart-2: #FFCB05;
+  --chart-3: #FAF5F0;
+  --chart-4: #8B5A5A;
+  --chart-5: #E53E3E;
+  --sidebar: #2A2A2A;
+  --sidebar-foreground: #FAF5F0;
+  --sidebar-primary: #C92A2A;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #3A3A3A;
+  --sidebar-accent-foreground: #FAF5F0;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #C92A2A;
 }
 
 /* Base rules without @apply to avoid unknown at-rule warnings */
@@ -177,3 +193,39 @@ button {
   font-family: var(--font-body);
   font-weight: 500;
 }
+
+/* Brand Color Utility Classes */
+.bg-brand-dark { background-color: var(--brand-dark); }
+.bg-brand-red { background-color: var(--brand-red); }
+.bg-brand-red-hover { background-color: var(--brand-red-hover); }
+.bg-brand-cream { background-color: var(--brand-cream); }
+.bg-brand-cream-dark { background-color: var(--brand-cream-dark); }
+.bg-brand-yellow { background-color: var(--brand-yellow); }
+.bg-brand-yellow-light { background-color: var(--brand-yellow-light); }
+
+.text-brand-dark { color: var(--brand-dark); }
+.text-brand-red { color: var(--brand-red); }
+.text-brand-cream { color: var(--brand-cream); }
+.text-brand-yellow { color: var(--brand-yellow); }
+
+.border-brand-dark { border-color: var(--brand-dark); }
+.border-brand-red { border-color: var(--brand-red); }
+.border-brand-cream { border-color: var(--brand-cream); }
+.border-brand-yellow { border-color: var(--brand-yellow); }
+
+/* Hover states */
+.hover\:bg-brand-red-hover:hover { background-color: var(--brand-red-hover); }
+.hover\:bg-brand-red:hover { background-color: var(--brand-red); }
+.hover\:bg-brand-yellow:hover { background-color: var(--brand-yellow); }
+.hover\:text-brand-red:hover { color: var(--brand-red); }
+.hover\:text-brand-yellow:hover { color: var(--brand-yellow); }
+.hover\:border-brand-red:hover { border-color: var(--brand-red); }
+
+/* Focus states */
+.focus\:ring-brand-red:focus { --tw-ring-color: var(--brand-red); }
+.focus\:border-brand-red:focus { border-color: var(--brand-red); }
+
+/* Brand Orange (legacy support - maps to brand-red) */
+.bg-brand-orange { background-color: var(--brand-red); }
+.text-brand-orange { color: var(--brand-red); }
+.hover\:bg-brand-orange:hover { background-color: var(--brand-red); }

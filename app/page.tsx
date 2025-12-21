@@ -19,6 +19,9 @@ import { Users, BookOpen, MessageCircle, FileText, Instagram, Facebook, Twitter,
 import { Reveal } from '@/components/reveal'
 import { LazySection } from '@/components/lazy-section'
 
+// Revalidate every 60 seconds to show newly approved artworks quickly
+export const revalidate = 60
+
 export default async function HomePage() {
   // Local image mapping for Featured Artworks (using actual available image files)
   const localArtworkImages: Record<string, string> = {
@@ -177,7 +180,7 @@ export default async function HomePage() {
 
       {/* Hero Section with Video Background */}
       <ClientOnly>
-        <section className="relative bg-linear-to-br from-orange-50 via-red-50 to-yellow-50 overflow-hidden h-screen flex items-center">
+        <section className="relative bg-brand-cream overflow-hidden h-screen flex items-center">
         {/* Background Video */}
         <div className="absolute inset-0 w-full h-full">
           <BackgroundVideo
@@ -196,7 +199,7 @@ export default async function HomePage() {
           <div className="text-center mb-12">
             <Reveal>
               <h1 className="hero-title text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6 drop-shadow-lg">
-                <span className="text-orange-400">African Creativity</span>{" "}
+                <span className="text-brand-yellow">African Creativity</span>{" "}
                 <br className="hidden sm:block" />
                 <span className="text-white">Across All Mediums</span>
               </h1>
@@ -206,7 +209,7 @@ export default async function HomePage() {
                 Discover authentic art, fashion, and literature from Africa&apos;s most talented creators.
                 Support artists while building your collection of unique cultural treasures.
               </p>
-              <p className="accent-text text-lg md:text-xl text-orange-200 mb-8 md:mb-12 drop-shadow-md">
+              <p className="accent-text text-lg md:text-xl text-brand-yellow mb-8 md:mb-12 drop-shadow-md">
                 Where creativity meets culture
               </p>
             </Reveal>
@@ -215,21 +218,21 @@ export default async function HomePage() {
             <div className="grid grid-cols-2 sm:flex sm:flex-row gap-3 sm:gap-4 justify-center mb-12 max-w-lg sm:max-w-none mx-auto">
               <Reveal>
                 <Link href="/art">
-                  <Button className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white px-4 sm:px-6 md:px-8 py-3 text-sm sm:text-base md:text-lg">
+                  <Button className="w-full sm:w-auto bg-brand-red hover:bg-brand-red-hover text-white px-4 sm:px-6 md:px-8 py-3 text-sm sm:text-base md:text-lg">
                     Explore Gallery
                   </Button>
                 </Link>
               </Reveal>
               <Reveal delay={100}>
                 <Link href="/auth/signup?type=creator">
-                  <Button className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white px-4 sm:px-6 md:px-8 py-3 text-sm sm:text-base md:text-lg">
+                  <Button className="w-full sm:w-auto bg-brand-red hover:bg-brand-red-hover text-white px-4 sm:px-6 md:px-8 py-3 text-sm sm:text-base md:text-lg">
                     Join as Artist
                   </Button>
                 </Link>
               </Reveal>
               <Reveal delay={200}>
                 <Link href="/events" className="col-span-2 place-self-center sm:col-span-1">
-                  <Button className="w-auto sm:w-auto bg-orange-500 hover:bg-orange-600 text-white px-4 sm:px-6 md:px-8 py-3 text-sm sm:text-base md:text-lg">
+                  <Button className="w-auto sm:w-auto bg-brand-red hover:bg-brand-red-hover text-white px-4 sm:px-6 md:px-8 py-3 text-sm sm:text-base md:text-lg">
                     Attend Events
                   </Button>
                 </Link>
@@ -248,7 +251,7 @@ export default async function HomePage() {
                 <Link key={category.name} href={category.href}>
                   <Badge
                     variant="secondary"
-                    className="px-3 md:px-4 py-2 text-sm md:text-base bg-white bg-opacity-20 text-white hover:bg-orange-500 hover:text-white cursor-pointer transition-colors backdrop-blur-sm"
+                    className="px-3 md:px-4 py-2 text-sm md:text-base bg-white bg-opacity-20 text-white hover:bg-brand-red hover:text-white cursor-pointer transition-colors backdrop-blur-sm"
                   >
                     <span className="mr-2">{category.icon}</span>
                     {category.name}
@@ -401,7 +404,7 @@ export default async function HomePage() {
                           </div>
                           <div className="text-center">
                             <div className="font-bold text-sm text-gray-900 flex items-center gap-1">
-                              <Star className="w-3 h-3 text-yellow-400 fill-current" />
+                              <Star className="w-3 h-3 text-brand-yellow fill-current" />
                               {creator.rating?.toFixed(1) || 'New'}
                             </div>
                             <div className="text-xs text-gray-600">Rating</div>
@@ -409,7 +412,7 @@ export default async function HomePage() {
                         </div>
 
                         <Link href={`/creators/${creator.id}`}>
-                          <Button variant="outline" size="sm" className="w-full text-orange-500 border-orange-500 hover:bg-orange-50 text-xs">
+                          <Button variant="outline" size="sm" className="w-full text-brand-red border-brand-red hover:bg-red-50 text-xs">
                             View Profile
                           </Button>
                         </Link>
@@ -432,7 +435,7 @@ export default async function HomePage() {
       </LazySection>
 
       {/* Upcoming Events */}
-      <section className="py-6 bg-linear-to-r from-orange-500 to-red-500">
+      <section className="py-6 bg-brand-red">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-4">
             <h2 className="section-title text-lg md:text-xl font-bold text-white mb-1">Upcoming Events</h2>
@@ -466,7 +469,7 @@ export default async function HomePage() {
           )}
           <div className="text-center mt-4">
             <Link href="/events">
-              <Button variant="secondary" size="sm" className="bg-white text-orange-600 hover:bg-orange-50 text-xs px-3 py-1">
+              <Button variant="secondary" size="sm" className="bg-white text-brand-red hover:bg-red-50 text-xs px-3 py-1">
                 View All
               </Button>
             </Link>
@@ -506,7 +509,7 @@ export default async function HomePage() {
             }, idx: number) => (
               <Reveal key={post.id} delay={([0, 100, 200] as const)[idx % 3]}>
                 <Link href={`/blog/${post.slug || post.id}`} className="block h-full group">
-                  <Card className="hover:shadow-xl transition-all duration-300 hover:-translate-y-2 hover:border-orange-500 pt-0 h-full cursor-pointer">
+                  <Card className="hover:shadow-xl transition-all duration-300 hover:-translate-y-2 hover:border-brand-red pt-0 h-full cursor-pointer">
                     <CardContent className="p-0 h-full flex flex-col">
                       <div className="relative h-48 bg-gray-200 rounded-t-lg overflow-hidden shrink-0">
                         <OptimizedImage
@@ -537,7 +540,7 @@ export default async function HomePage() {
                           </div>
                         </div>
 
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-orange-600 transition-colors">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-brand-red transition-colors">
                           {post.title}
                         </h3>
                         <p className="text-gray-600 text-sm line-clamp-3 mb-4 grow">
@@ -552,7 +555,7 @@ export default async function HomePage() {
                               </Badge>
                             ))}
                           </div>
-                          <span className="text-orange-600 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                          <span className="text-brand-red text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
                             Read <ArrowRight className="w-4 h-4" />
                           </span>
                         </div>
@@ -607,8 +610,8 @@ export default async function HomePage() {
           ].map((feature, index) => (
             <Reveal key={index} delay={([0, 100, 200] as const)[index % 3]}>
               <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-100 rounded-lg mb-4">
-                  <feature.icon className="h-8 w-8 text-orange-600" />
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-lg mb-4">
+                  <feature.icon className="h-8 w-8 text-brand-red" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
                 <p className="text-gray-600">{feature.description}</p>
@@ -619,7 +622,7 @@ export default async function HomePage() {
 
         <Reveal delay={300}>
           <Link href="https://t.me/logeartcreativecommunity" target="_blank" rel="noopener noreferrer">
-            <Button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 text-lg">
+            <Button className="bg-brand-red hover:bg-brand-red-hover text-white px-8 py-3 text-lg">
               Join Our Community
             </Button>
           </Link>
@@ -628,7 +631,7 @@ export default async function HomePage() {
       </section>
 
       {/* Creator CTA */}
-      <section className="py-8 md:py-12 bg-linear-to-br from-yellow-50 to-orange-50">
+      <section className="py-8 md:py-12 bg-brand-cream">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Are You An African Creator?</h2>
         <p className="text-lg text-gray-600 mb-6">
@@ -637,7 +640,7 @@ export default async function HomePage() {
 
         <Link href="/auth/signup?type=creator">
           <Reveal>
-            <Button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2">
+            <Button className="bg-brand-red hover:bg-brand-red-hover text-white px-6 py-2">
               Start Selling Today
             </Button>
           </Reveal>
@@ -708,9 +711,9 @@ export default async function HomePage() {
               <Input
                 type="email"
                 placeholder="Enter your email"
-                className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:border-orange-500"
+                className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:border-brand-red"
               />
-              <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white">
+              <Button className="w-full bg-brand-red hover:bg-brand-red-hover text-white">
                 Subscribe
               </Button>
             </div>

@@ -117,38 +117,38 @@ export function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="/" className="text-gray-700 hover:text-orange-500 font-medium">
+            <Link href="/" className="text-gray-700 hover:text-brand-red font-medium">
               Home
             </Link>
-            <Link href="/art" className="text-gray-700 hover:text-orange-500 font-medium">
+            <Link href="/art" className="text-gray-700 hover:text-brand-red font-medium">
               Art
             </Link>
-            <Link href="/fashion" className="text-gray-700 hover:text-orange-500 font-medium">
+            <Link href="/fashion" className="text-gray-700 hover:text-brand-red font-medium">
               Fashion
             </Link>
-            <Link href="/books" className="text-gray-700 hover:text-orange-500 font-medium">
+            <Link href="/books" className="text-gray-700 hover:text-brand-red font-medium">
               Books
             </Link>
-            <Link href="/events" className="text-gray-700 hover:text-orange-500 font-medium">
+            <Link href="/events" className="text-gray-700 hover:text-brand-red font-medium">
               Events
             </Link>
-            <Link href="/blog" className="text-gray-700 hover:text-orange-500 font-medium">
+            <Link href="/blog" className="text-gray-700 hover:text-brand-red font-medium">
               Blog
             </Link>
-            <Link href="/about" className="text-gray-700 hover:text-orange-500 font-medium">
+            <Link href="/about" className="text-gray-700 hover:text-brand-red font-medium">
               About
             </Link>
-            <Link href="/support" className="text-gray-700 hover:text-orange-500 font-medium">
+            <Link href="/support" className="text-gray-700 hover:text-brand-red font-medium">
               Support
             </Link>
-            <Link href="/search" className="text-gray-700 hover:text-orange-500 font-medium flex items-center space-x-1">
+            <Link href="/search" className="text-gray-700 hover:text-brand-red font-medium flex items-center space-x-1">
               <Search className="h-4 w-4" />
               <span>Search</span>
             </Link>
             {!loading && user && inDashboard && !userTypeLoading && (
               <Link
                 href={userType === 'creator' ? '/dashboard/creator' : '/dashboard/collector'}
-                className="text-orange-600 font-semibold"
+                className="text-brand-red font-semibold"
               >
                 Dashboard Home
               </Link>
@@ -157,10 +157,10 @@ export function Navbar() {
 
           {/* Mobile Cart & Menu */}
           <div className="flex items-center space-x-2 md:hidden">
-            <Link href="/cart" className="relative flex items-center text-gray-700 hover:text-orange-500 p-2">
+            <Link href="/cart" className="relative flex items-center text-gray-700 hover:text-brand-red p-2">
               <ShoppingCart className="h-5 w-5" />
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-orange-600 text-white text-xs rounded-full px-1.5 py-0.5 min-w-4 text-center">
+                <span className="absolute -top-1 -right-1 bg-brand-red text-white text-xs rounded-full px-1.5 py-0.5 min-w-4 text-center">
                   {cartCount}
                 </span>
               )}
@@ -183,14 +183,14 @@ export function Navbar() {
               <div className="flex items-center space-x-4">
                 <Link
                   href="/blog/saved"
-                  className="flex items-center space-x-2 text-gray-700 hover:text-orange-500"
+                  className="flex items-center space-x-2 text-gray-700 hover:text-brand-red"
                 >
                   <span>Saved</span>
                 </Link>
                 {!userTypeLoading && (
                   <Link
                     href={userType === 'creator' ? '/dashboard/creator' : '/dashboard/collector'}
-                    className="flex items-center space-x-2 text-gray-700 hover:text-orange-500"
+                    className="flex items-center space-x-2 text-gray-700 hover:text-brand-red"
                   >
                     <User className="h-4 w-4" />
                     <span>Dashboard</span>
@@ -205,10 +205,10 @@ export function Navbar() {
                   <LogOut className="h-4 w-4" />
                   <span>Sign Out</span>
                 </Button>
-                <Link href="/cart" className="relative flex items-center text-gray-700 hover:text-orange-500">
+                <Link href="/cart" className="relative flex items-center text-gray-700 hover:text-brand-red">
                   <ShoppingCart className="h-5 w-5" />
                   {cartCount > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-orange-600 text-white text-xs rounded-full px-1.5 py-0.5 min-w-5 text-center">
+                    <span className="absolute -top-2 -right-2 bg-brand-red text-white text-xs rounded-full px-1.5 py-0.5 min-w-5 text-center">
                       {cartCount}
                     </span>
                   )}
@@ -217,19 +217,19 @@ export function Navbar() {
             ) : (
               <>
                 <Link href="/auth/signin">
-                  <Button variant="ghost" className="text-gray-700 hover:text-orange-500">
+                  <Button variant="ghost" className="text-gray-700 hover:text-brand-red">
                     Sign In
                   </Button>
                 </Link>
                 <Link href="/auth/signup">
-                  <Button className="bg-orange-500 hover:bg-orange-600 text-white px-6 shadow-sm">
+                  <Button className="bg-brand-red hover:bg-brand-red-hover text-white px-6 shadow-sm">
                     Get Started
                   </Button>
                 </Link>
-                <Link href="/cart" className="relative flex items-center text-gray-700 hover:text-orange-500">
+                <Link href="/cart" className="relative flex items-center text-gray-700 hover:text-brand-red">
                   <ShoppingCart className="h-5 w-5" />
                   {cartCount > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-orange-600 text-white text-xs rounded-full px-1.5 py-0.5 min-w-5 text-center">
+                    <span className="absolute -top-2 -right-2 bg-brand-red text-white text-xs rounded-full px-1.5 py-0.5 min-w-5 text-center">
                       {cartCount}
                     </span>
                   )}
@@ -247,49 +247,49 @@ export function Navbar() {
               <div className="space-y-1">
                 <Link
                   href="/"
-                  className="flex items-center px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg font-medium transition-colors"
+                  className="flex items-center px-4 py-3 text-gray-700 hover:text-brand-red hover:bg-red-50 rounded-lg font-medium transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   🏠 Home
                 </Link>
                 <Link
                   href="/art"
-                  className="flex items-center px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg font-medium transition-colors"
+                  className="flex items-center px-4 py-3 text-gray-700 hover:text-brand-red hover:bg-red-50 rounded-lg font-medium transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   🎨 Art
                 </Link>
                 <Link
                   href="/fashion"
-                  className="flex items-center px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg font-medium transition-colors"
+                  className="flex items-center px-4 py-3 text-gray-700 hover:text-brand-red hover:bg-red-50 rounded-lg font-medium transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   👗 Fashion
                 </Link>
                 <Link
                   href="/books"
-                  className="flex items-center px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg font-medium transition-colors"
+                  className="flex items-center px-4 py-3 text-gray-700 hover:text-brand-red hover:bg-red-50 rounded-lg font-medium transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   📚 Books
                 </Link>
                 <Link
                   href="/events"
-                  className="flex items-center px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg font-medium transition-colors"
+                  className="flex items-center px-4 py-3 text-gray-700 hover:text-brand-red hover:bg-red-50 rounded-lg font-medium transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   🎪 Events
                 </Link>
                 <Link
                   href="/blog"
-                  className="flex items-center px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg font-medium transition-colors"
+                  className="flex items-center px-4 py-3 text-gray-700 hover:text-brand-red hover:bg-red-50 rounded-lg font-medium transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   📝 Blog
                 </Link>
                 <Link
                   href="/search"
-                  className="flex items-center px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg font-medium transition-colors"
+                  className="flex items-center px-4 py-3 text-gray-700 hover:text-brand-red hover:bg-red-50 rounded-lg font-medium transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   <Search className="h-4 w-4 mr-2" />
@@ -310,7 +310,7 @@ export function Navbar() {
                     </div>
                     <Link
                       href="/blog/saved"
-                      className="flex items-center px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg font-medium transition-colors"
+                      className="flex items-center px-4 py-3 text-gray-700 hover:text-brand-red hover:bg-red-50 rounded-lg font-medium transition-colors"
                       onClick={() => setIsOpen(false)}
                     >
                       📖 Saved Articles
@@ -318,7 +318,7 @@ export function Navbar() {
                     {!userTypeLoading && (
                       <Link
                         href={userType === 'creator' ? '/dashboard/creator' : '/dashboard/collector'}
-                        className="flex items-center px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg font-medium transition-colors"
+                        className="flex items-center px-4 py-3 text-gray-700 hover:text-brand-red hover:bg-red-50 rounded-lg font-medium transition-colors"
                         onClick={() => setIsOpen(false)}
                       >
                         <User className="h-4 w-4 mr-2" />
@@ -328,7 +328,7 @@ export function Navbar() {
                     {!loading && user && inDashboard && !userTypeLoading && (
                       <Link
                         href={userType === 'creator' ? '/dashboard/creator' : '/dashboard/collector'}
-                        className="flex items-center px-4 py-3 text-orange-600 hover:bg-orange-50 rounded-lg font-semibold transition-colors"
+                        className="flex items-center px-4 py-3 text-brand-red hover:bg-red-50 rounded-lg font-semibold transition-colors"
                         onClick={() => setIsOpen(false)}
                       >
                         🏠 Dashboard Home
@@ -353,7 +353,7 @@ export function Navbar() {
                       </Button>
                     </Link>
                     <Link href="/auth/signup" onClick={() => setIsOpen(false)}>
-                      <Button className="w-full bg-orange-500 hover:bg-orange-600 h-12">
+                      <Button className="w-full bg-brand-red hover:bg-brand-red-hover h-12">
                         Get Started Free
                       </Button>
                     </Link>
@@ -365,14 +365,14 @@ export function Navbar() {
               <div className="border-t border-gray-200 pt-4 mt-4 space-y-1">
                 <Link
                   href="/about"
-                  className="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-orange-500 transition-colors"
+                  className="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-brand-red transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   About
                 </Link>
                 <Link
                   href="/support"
-                  className="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-orange-500 transition-colors"
+                  className="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-brand-red transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   Support

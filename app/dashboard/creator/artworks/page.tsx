@@ -14,7 +14,7 @@ async function getCreatorArtworks(userId: string) {
   const [artworksResult, submissionsResult] = await Promise.allSettled([
     supabase
       .from('artworks')
-      .select('*')
+      .select('*, approval_status')
       .eq('creator_id', userId)
       .order('created_at', { ascending: false }),
     
@@ -33,7 +33,7 @@ async function getCreatorArtworks(userId: string) {
     ...artworks.map(artwork => ({
       ...artwork,
       type: 'artwork',
-      status: 'published',
+      status: artwork.approval_status || 'pending', // Use approval_status from artworks table
       created_at: artwork.created_at
     })),
     ...submissions
@@ -60,8 +60,8 @@ export default async function CreatorArtworksPage() {
   const user = await requireAuth()
   const artworks = await getCreatorArtworks(user.id)
 
-  const publishedCount = artworks.filter(item => item.type === 'artwork' || item.status === 'published').length
-  const pendingCount = artworks.filter(item => item.status === 'submitted' || item.status === 'under_review').length
+  const publishedCount = artworks.filter(item => item.status === 'approved' || item.status === 'published').length
+  const pendingCount = artworks.filter(item => item.status === 'pending' || item.status === 'submitted' || item.status === 'under_review').length
   const rejectedCount = artworks.filter(item => item.status === 'rejected').length
   const totalViews = artworks.reduce((sum, artwork) => sum + (artwork.views_count || 0), 0)
 
