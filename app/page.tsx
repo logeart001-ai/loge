@@ -311,7 +311,7 @@ export default async function HomePage() {
                     creator={artwork.creator ? {
                       name: artwork.creator.full_name || 'Unknown Artist',
                       rating: artwork.creator.rating,
-                      reviewCount: Math.floor(Math.random() * 50) + 10
+                      reviewCount: 25 + (idx * 8)
                     } : undefined}
                     category={artwork.category?.replace('_', ' ') || 'Painting'}
                     medium="Oil on Canvas"
