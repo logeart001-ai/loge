@@ -184,7 +184,7 @@ export default async function HomePage() {
         {/* Background Video */}
         <div className="absolute inset-0 w-full h-full">
           <BackgroundVideo
-            src="/video/Nigerian_Art_Gallery_Video_Backdrop.mp4"
+            src="https://res.cloudinary.com/dxhpojurp/video/upload/v1767725033/Nigerian_Art_Gallery_Video_Backdrop_zhmsak.mp4"
             className="absolute inset-0 w-full h-full object-cover"
           />
           {/* Video Overlay for better text readability */}
