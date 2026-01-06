@@ -94,6 +94,13 @@
   /* Approximate Tailwind outline-ring/50 using rgba fallback */
   outline-color: rgba(0, 0, 0, 0.5);
 }
+
+/* Prevent horizontal scrolling on desktop */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
 body {
   background-color: var(--background);
   color: var(--foreground);
