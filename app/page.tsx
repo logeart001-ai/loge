@@ -173,14 +173,14 @@ export default async function HomePage() {
   artworks = artworks.slice(0, 3)
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-canvas">
       <ClientOnly>
         <Navbar />
       </ClientOnly>
 
       {/* Hero Section with Video Background */}
       <ClientOnly>
-        <section className="relative bg-brand-cream overflow-hidden h-screen flex items-center">
+        <section className="relative bg-brand-cream overflow-hidden h-screen flex items-center watercolor-blob">
         {/* Background Video */}
         <div className="absolute inset-0 w-full h-full">
           <BackgroundVideo
@@ -198,7 +198,7 @@ export default async function HomePage() {
         <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <Reveal>
-              <h1 className="hero-title text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6 drop-shadow-lg">
+              <h1 className="hero-title text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6 drop-shadow-lg artistic-underline">
                 <span className="text-brand-yellow">African Creativity</span>{" "}
                 <br className="hidden sm:block" />
                 <span className="text-white">Across All Mediums</span>
@@ -218,21 +218,21 @@ export default async function HomePage() {
             <div className="grid grid-cols-2 sm:flex sm:flex-row gap-3 sm:gap-4 justify-center mb-12 max-w-lg sm:max-w-none mx-auto">
               <Reveal>
                 <Link href="/art">
-                  <Button className="w-full sm:w-auto bg-brand-red hover:bg-brand-red-hover text-white px-4 sm:px-6 md:px-8 py-3 text-sm sm:text-base md:text-lg">
+                  <Button className="w-full sm:w-auto bg-brand-red hover:bg-brand-red-hover text-white px-4 sm:px-6 md:px-8 py-3 text-sm sm:text-base md:text-lg btn-artistic">
                     Explore Gallery
                   </Button>
                 </Link>
               </Reveal>
               <Reveal delay={100}>
                 <Link href="/auth/signup?type=creator">
-                  <Button className="w-full sm:w-auto bg-brand-red hover:bg-brand-red-hover text-white px-4 sm:px-6 md:px-8 py-3 text-sm sm:text-base md:text-lg">
+                  <Button className="w-full sm:w-auto bg-brand-red hover:bg-brand-red-hover text-white px-4 sm:px-6 md:px-8 py-3 text-sm sm:text-base md:text-lg btn-artistic">
                     Join as Artist
                   </Button>
                 </Link>
               </Reveal>
               <Reveal delay={200}>
                 <Link href="/events" className="col-span-2 place-self-center sm:col-span-1">
-                  <Button className="w-auto sm:w-auto bg-brand-red hover:bg-brand-red-hover text-white px-4 sm:px-6 md:px-8 py-3 text-sm sm:text-base md:text-lg">
+                  <Button className="w-auto sm:w-auto bg-brand-red hover:bg-brand-red-hover text-white px-4 sm:px-6 md:px-8 py-3 text-sm sm:text-base md:text-lg btn-artistic">
                     Attend Events
                   </Button>
                 </Link>
@@ -251,7 +251,7 @@ export default async function HomePage() {
                 <Link key={category.name} href={category.href}>
                   <Badge
                     variant="secondary"
-                    className="px-3 md:px-4 py-2 text-sm md:text-base bg-white bg-opacity-20 text-white hover:bg-brand-red hover:text-white cursor-pointer transition-colors backdrop-blur-sm"
+                    className="px-3 md:px-4 py-2 text-sm md:text-base bg-white bg-opacity-20 text-white hover:bg-brand-red hover:text-white cursor-pointer transition-colors backdrop-blur-sm badge-creative"
                   >
                     <span className="mr-2">{category.icon}</span>
                     {category.name}
@@ -265,11 +265,11 @@ export default async function HomePage() {
       </ClientOnly>
 
       {/* Search Section */}
-      <section className="py-12 md:py-16 bg-white border-b">
+      <section className="py-12 md:py-16 bg-white border-b texture-paper">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Reveal>
             <div className="text-center mb-8">
-              <h2 className="section-title text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+              <h2 className="section-title text-2xl md:text-3xl font-bold text-gray-900 mb-3 brush-underline">
                 Discover African Creativity
               </h2>
               <p className="text-gray-600 text-lg max-w-2xl mx-auto">
@@ -283,12 +283,15 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Artistic Separator */}
+      <div className="separator-artistic"></div>
+
       {/* Featured Art Expression */}
-      <section className="py-12 md:py-16 bg-gray-50">
+      <section className="py-12 md:py-16 bg-artistic-gradient">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-12">
             <div>
-              <h2 className="section-title text-2xl md:text-3xl font-bold text-gray-900 mb-2">Featured Art Expressions</h2>
+              <h2 className="section-title text-2xl md:text-3xl font-bold text-gray-900 mb-2 paint-accent">Featured Art Expressions</h2>
               <p className="text-gray-600">Handpicked pieces from our most talented creators</p>
             </div>
             <Link href="/art" className="mt-4 md:mt-0">
@@ -302,30 +305,32 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
               {artworks.map((artwork: ArtworkLike & { id: string; price?: number; original_price?: number; category?: string; creator?: { full_name?: string; rating?: number } }, idx: number) => (
                 <Reveal key={artwork.id} delay={([0, 100, 200] as const)[idx % 3]}>
-                  <ServerProductCard
-                    id={artwork.id}
-                    title={artwork.title || 'Untitled Artwork'}
-                    description="For those who crave peace louder than the city. This view isn't just scenery, it's a whole reset."
-                    price={artwork.price || 0}
-                    originalPrice={artwork.original_price}
-                    currency="₦"
-                    imageUrl={getArtworkImageSrc(artwork)}
-                    imageAlt={artwork.title || 'Artwork'}
-                    creator={artwork.creator ? {
-                      name: artwork.creator.full_name || 'Unknown Artist',
-                      rating: artwork.creator.rating,
-                      reviewCount: 25 + (idx * 8)
-                    } : undefined}
-                    category={artwork.category?.replace('_', ' ') || 'Painting'}
-                    medium="Oil on Canvas"
-                    dimensions="60×80 cm"
-                    badges={[
-                      ...(artwork.original_price ? [{ text: 'Sale', variant: 'destructive' as const }] : []),
-                      { text: 'Top Pick', variant: 'default' as const }
-                    ]}
-                    stockInfo="Only 9 vibes left"
-                    href={`/art/${artwork.id}`}
-                  />
+                  <div className="card-artistic gallery-frame">
+                    <ServerProductCard
+                      id={artwork.id}
+                      title={artwork.title || 'Untitled Artwork'}
+                      description="For those who crave peace louder than the city. This view isn't just scenery, it's a whole reset."
+                      price={artwork.price || 0}
+                      originalPrice={artwork.original_price}
+                      currency="₦"
+                      imageUrl={getArtworkImageSrc(artwork)}
+                      imageAlt={artwork.title || 'Artwork'}
+                      creator={artwork.creator ? {
+                        name: artwork.creator.full_name || 'Unknown Artist',
+                        rating: artwork.creator.rating,
+                        reviewCount: 25 + (idx * 8)
+                      } : undefined}
+                      category={artwork.category?.replace('_', ' ') || 'Painting'}
+                      medium="Oil on Canvas"
+                      dimensions="60×80 cm"
+                      badges={[
+                        ...(artwork.original_price ? [{ text: 'Sale', variant: 'destructive' as const }] : []),
+                        { text: 'Top Pick', variant: 'default' as const }
+                      ]}
+                      stockInfo="Only 9 vibes left"
+                      href={`/art/${artwork.id}`}
+                    />
+                  </div>
                 </Reveal>
               ))}
             </div>
@@ -343,10 +348,10 @@ export default async function HomePage() {
 
       {/* Creator Spotlight */}
       <LazySection>
-        <section className="py-8 md:py-12 bg-white">
+        <section className="py-8 md:py-12 bg-white texture-paper">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-6 md:mb-8">
-              <h2 className="section-title text-xl md:text-2xl font-bold text-gray-900 mb-2">Featured Creators</h2>
+              <h2 className="section-title text-xl md:text-2xl font-bold text-gray-900 mb-2 artistic-underline">Featured Creators</h2>
               <p className="text-gray-600 text-sm max-w-xl mx-auto">
                 Meet the talented artists shaping African creativity
               </p>
@@ -367,9 +372,9 @@ export default async function HomePage() {
                   artworks?: unknown[] 
                 }, idx: number) => (
                   <Reveal key={creator.id} delay={([0, 100, 200] as const)[idx % 3]}>
-                    <Card className="text-center hover:shadow-md transition-transform hover:-translate-y-1">
+                    <Card className="text-center hover:shadow-md transition-transform hover:-translate-y-1 card-artistic">
                       <CardContent className="p-4 md:p-5">
-                        <div className="relative mb-4 w-16 h-16 md:w-18 md:h-18 mx-auto">
+                        <div className="relative mb-4 w-16 h-16 md:w-18 md:h-18 mx-auto frame-artistic">
                           <OptimizedImage
                             src={getCreatorImageSrc(creator)}
                             alt={creator.full_name || 'Creator'}
@@ -379,7 +384,7 @@ export default async function HomePage() {
                           />
                           {creator.is_verified && (
                             <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2">
-                              <Badge className="bg-brand-red text-white text-xs px-1 py-0">Verified</Badge>
+                              <Badge className="bg-brand-red text-white text-xs px-1 py-0 badge-creative">Verified</Badge>
                             </div>
                           )}
                         </div>
@@ -412,7 +417,7 @@ export default async function HomePage() {
                         </div>
 
                         <Link href={`/creators/${creator.id}`}>
-                          <Button variant="outline" size="sm" className="w-full text-brand-red border-brand-red hover:bg-red-50 text-xs">
+                          <Button variant="outline" size="sm" className="w-full text-brand-red border-brand-red hover:bg-red-50 text-xs hover-glow">
                             View Profile
                           </Button>
                         </Link>
@@ -434,6 +439,9 @@ export default async function HomePage() {
         </section>
       </LazySection>
 
+      {/* Artistic Separator */}
+      <div className="separator-artistic"></div>
+
       {/* Upcoming Events */}
       <section className="py-6 bg-brand-red">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -444,7 +452,7 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {events.map((event, idx) => (
                 <Reveal key={event.id} delay={([0, 100, 200] as const)[idx % 3]}>
-                  <Card className="bg-white hover:shadow-md transition-transform hover:-translate-y-1">
+                  <Card className="bg-white hover:shadow-md transition-transform hover:-translate-y-1 card-artistic hover-glow">
                     <CardContent className="p-3">
                       <h3 className="text-sm font-semibold text-gray-900 mb-2 line-clamp-2">
                         {event.title}
@@ -478,11 +486,11 @@ export default async function HomePage() {
       </section>
 
       {/* Blog/Journal Section */}
-      <section className="py-12 md:py-16 bg-gray-50">
+      <section className="py-12 md:py-16 bg-canvas">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-12">
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Stories & Insights</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 brush-underline">Stories & Insights</h2>
             <p className="text-gray-600">Behind-the-scenes stories and cultural deep-dives</p>
           </div>
           <Link href="/blog" className="mt-4 md:mt-0">
@@ -509,7 +517,7 @@ export default async function HomePage() {
             }, idx: number) => (
               <Reveal key={post.id} delay={([0, 100, 200] as const)[idx % 3]}>
                 <Link href={`/blog/${post.slug || post.id}`} className="block h-full group">
-                  <Card className="hover:shadow-xl transition-all duration-300 hover:-translate-y-2 hover:border-brand-red pt-0 h-full cursor-pointer">
+                  <Card className="hover:shadow-xl transition-all duration-300 hover:-translate-y-2 hover:border-brand-red pt-0 h-full cursor-pointer card-artistic">
                     <CardContent className="p-0 h-full flex flex-col">
                       <div className="relative h-48 bg-gray-200 rounded-t-lg overflow-hidden shrink-0">
                         <OptimizedImage
@@ -579,9 +587,9 @@ export default async function HomePage() {
       </section>
 
       {/* Community Features */}
-      <section className="py-12 md:py-16 bg-white">
+      <section className="py-12 md:py-16 bg-white texture-paper">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Join Our Growing Community</h2>
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 paint-accent">Join Our Growing Community</h2>
         <p className="text-lg md:text-xl text-gray-600 mb-8 md:mb-12 max-w-3xl mx-auto">
           Connect with artists and art lovers across Africa and beyond. Share your passion,
           discover new talents, and be part of a vibrant creative ecosystem.
@@ -606,7 +614,7 @@ export default async function HomePage() {
               title: 'Featured Artist Program',
               description: 'Get spotlighted as our Artist of the Month and reach new audiences.',
               color: 'purple'
-            }
+            }      
           ].map((feature, index) => (
             <Reveal key={index} delay={([0, 100, 200] as const)[index % 3]}>
               <div className="text-center">
@@ -622,7 +630,7 @@ export default async function HomePage() {
 
         <Reveal delay={300}>
           <Link href="https://t.me/logeartcreativecommunity" target="_blank" rel="noopener noreferrer">
-            <Button className="bg-brand-red hover:bg-brand-red-hover text-white px-8 py-3 text-lg">
+            <Button className="bg-brand-red hover:bg-brand-red-hover text-white px-8 py-3 text-lg btn-artistic">
               Join Our Community
             </Button>
           </Link>
@@ -631,9 +639,9 @@ export default async function HomePage() {
       </section>
 
       {/* Creator CTA */}
-      <section className="py-8 md:py-12 bg-brand-cream">
+      <section className="py-8 md:py-12 bg-brand-cream watercolor-blob">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Are You An African Creator?</h2>
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 artistic-underline">Are You An African Creator?</h2>
         <p className="text-lg text-gray-600 mb-6">
           Join our platform to showcase and sell your work to a global audience.
         </p>

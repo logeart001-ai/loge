@@ -104,7 +104,10 @@ export function ArtworkCard({ artwork, isCreatorView = false }: ArtworkCardProps
                   'bg-gray-500 text-white text-xs'
                 }
               >
-                {(artwork.approval_status || artwork.status)?.charAt(0).toUpperCase() + (artwork.approval_status || artwork.status)?.slice(1)}
+                {(() => {
+                  const status = artwork.approval_status || artwork.status;
+                  return status ? status.charAt(0).toUpperCase() + status.slice(1) : 'Unknown';
+                })()}
               </Badge>
             )}
             {artwork.is_featured && (
