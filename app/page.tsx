@@ -447,11 +447,11 @@ export default async function HomePage() {
       <div className="divider-ornate"></div>
 
       {/* Upcoming Events */}
-      <section className="py-10 bg-gradient-to-r from-brand-red via-brand-red to-brand-red/90">
+      <section className="py-10 bg-brand-yellow">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-6">
-            <p className="accent-text text-white/80 text-base mb-1">Don't Miss Out</p>
-            <h2 className="section-title text-xl md:text-2xl font-bold text-white">Upcoming Events</h2>
+            <p className="accent-text text-brand-dark/70 text-base mb-1">Don't Miss Out</p>
+            <h2 className="section-title text-xl md:text-2xl font-bold text-brand-dark">Upcoming Events</h2>
           </div>
           {events.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
