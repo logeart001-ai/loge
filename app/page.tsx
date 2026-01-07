@@ -269,7 +269,8 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Reveal>
             <div className="text-center mb-8">
-              <h2 className="section-title text-2xl md:text-3xl font-bold text-gray-900 mb-3 brush-underline">
+              <p className="accent-text text-brand-red text-lg mb-2">Explore Our Collection</p>
+              <h2 className="section-title text-2xl md:text-3xl font-bold text-gray-900 mb-3">
                 Discover African Creativity
               </h2>
               <p className="text-gray-600 text-lg max-w-2xl mx-auto">
@@ -284,28 +285,29 @@ export default async function HomePage() {
       </section>
 
       {/* Artistic Separator */}
-      <div className="separator-artistic"></div>
+      <div className="divider-elegant"></div>
 
       {/* Featured Art Expression */}
-      <section className="py-12 md:py-16 bg-artistic-gradient">
+      <section className="py-16 md:py-24 bg-gallery-elegant">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-12">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 md:mb-16">
             <div>
-              <h2 className="section-title text-2xl md:text-3xl font-bold text-gray-900 mb-2 paint-accent">Featured Art Expressions</h2>
-              <p className="text-gray-600">Handpicked pieces from our most talented creators</p>
+              <p className="accent-text text-brand-red text-lg mb-2">Curated Selection</p>
+              <h2 className="section-title text-2xl md:text-4xl font-bold text-gray-900 mb-3">Featured Art Expressions</h2>
+              <p className="text-gray-600 text-lg">Handpicked pieces from our most talented creators</p>
             </div>
             <Link href="/art" className="mt-4 md:mt-0">
-              <Button variant="outline" className="flex items-center gap-2">
-                View All <ArrowRight className="w-4 h-4" />
+              <Button variant="outline" className="flex items-center gap-2 rounded-full px-6 hover:bg-brand-dark hover:text-white hover:border-brand-dark transition-all">
+                View Collection <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
           </div>
 
           {artworks.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
               {artworks.map((artwork: ArtworkLike & { id: string; price?: number; original_price?: number; category?: string; creator?: { full_name?: string; rating?: number } }, idx: number) => (
                 <Reveal key={artwork.id} delay={([0, 100, 200] as const)[idx % 3]}>
-                  <div className="card-artistic gallery-frame">
+                  <div className="card-elegant shimmer-elegant">
                     <ServerProductCard
                       id={artwork.id}
                       title={artwork.title || 'Untitled Artwork'}
@@ -348,12 +350,13 @@ export default async function HomePage() {
 
       {/* Creator Spotlight */}
       <LazySection>
-        <section className="py-8 md:py-12 bg-white texture-paper">
+        <section className="py-12 md:py-20 bg-warm-gradient">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-6 md:mb-8">
-              <h2 className="section-title text-xl md:text-2xl font-bold text-gray-900 mb-2 artistic-underline">Featured Creators</h2>
-              <p className="text-gray-600 text-sm max-w-xl mx-auto">
-                Meet the talented artists shaping African creativity
+            <div className="text-center mb-10 md:mb-14">
+              <p className="accent-text text-brand-red text-lg mb-2">Meet The Artists</p>
+              <h2 className="section-title text-xl md:text-3xl font-bold text-gray-900 mb-3">Featured Creators</h2>
+              <p className="text-gray-600 text-base max-w-xl mx-auto">
+                Discover the talented artists shaping contemporary African creativity
               </p>
             </div>
 
@@ -372,19 +375,20 @@ export default async function HomePage() {
                   artworks?: unknown[] 
                 }, idx: number) => (
                   <Reveal key={creator.id} delay={([0, 100, 200] as const)[idx % 3]}>
-                    <Card className="text-center hover:shadow-md transition-transform hover:-translate-y-1 card-artistic">
-                      <CardContent className="p-4 md:p-5">
-                        <div className="relative mb-4 w-16 h-16 md:w-18 md:h-18 mx-auto frame-artistic">
+                    <Card className="text-center card-elegant group">
+                      <CardContent className="p-6 md:p-8">
+                        <div className="relative mb-5 w-20 h-20 md:w-24 md:h-24 mx-auto">
+                          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-brand-red/20 to-brand-gold/20 blur-md group-hover:blur-lg transition-all"></div>
                           <OptimizedImage
                             src={getCreatorImageSrc(creator)}
                             alt={creator.full_name || 'Creator'}
                             fill
-                            className="rounded-full object-cover"
-                            sizes="(min-width: 768px) 72px, 64px"
+                            className="rounded-full object-cover ring-2 ring-white shadow-lg"
+                            sizes="(min-width: 768px) 96px, 80px"
                           />
                           {creator.is_verified && (
                             <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2">
-                              <Badge className="bg-brand-red text-white text-xs px-1 py-0 badge-creative">Verified</Badge>
+                              <Badge className="bg-brand-red text-white text-xs px-2 py-0.5 shadow-md">Verified</Badge>
                             </div>
                           )}
                         </div>
@@ -417,7 +421,7 @@ export default async function HomePage() {
                         </div>
 
                         <Link href={`/creators/${creator.id}`}>
-                          <Button variant="outline" size="sm" className="w-full text-brand-red border-brand-red hover:bg-red-50 text-xs hover-glow">
+                          <Button variant="outline" size="sm" className="w-full rounded-full text-brand-dark border-brand-dark/30 hover:bg-brand-dark hover:text-white text-xs transition-all">
                             View Profile
                           </Button>
                         </Link>
@@ -440,28 +444,30 @@ export default async function HomePage() {
       </LazySection>
 
       {/* Artistic Separator */}
-      <div className="separator-artistic"></div>
+      <div className="divider-ornate"></div>
 
       {/* Upcoming Events */}
-      <section className="py-6 bg-brand-red">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-4">
-            <h2 className="section-title text-lg md:text-xl font-bold text-white mb-1">Upcoming Events</h2>
+      <section className="py-10 bg-gradient-to-r from-brand-red via-brand-red to-brand-red/90">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-6">
+            <p className="accent-text text-white/80 text-base mb-1">Don't Miss Out</p>
+            <h2 className="section-title text-xl md:text-2xl font-bold text-white">Upcoming Events</h2>
           </div>
           {events.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {events.map((event, idx) => (
                 <Reveal key={event.id} delay={([0, 100, 200] as const)[idx % 3]}>
-                  <Card className="bg-white hover:shadow-md transition-transform hover:-translate-y-1 card-artistic hover-glow">
-                    <CardContent className="p-3">
-                      <h3 className="text-sm font-semibold text-gray-900 mb-2 line-clamp-2">
+                  <Card className="bg-white/95 backdrop-blur-sm hover:bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl rounded-2xl border-0">
+                    <CardContent className="p-4">
+                      <h3 className="text-sm font-semibold text-gray-900 mb-3 line-clamp-2">
                         {event.title}
                       </h3>
                       <div className="flex justify-between items-center text-xs">
-                        <span className="text-gray-600">
+                        <span className="text-gray-500 flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-brand-red"></span>
                           {new Date(event.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                         </span>
-                        <span className="font-semibold text-gray-900">
+                        <span className="font-bold text-brand-dark">
                           {event.is_free ? 'Free' : `₦${event.ticket_price?.toLocaleString()}`}
                         </span>
                       </div>
@@ -471,14 +477,14 @@ export default async function HomePage() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-4">
-              <p className="text-white text-sm">No upcoming events at the moment.</p>
+            <div className="text-center py-6">
+              <p className="text-white/80 text-sm">No upcoming events at the moment.</p>
             </div>
           )}
-          <div className="text-center mt-4">
+          <div className="text-center mt-6">
             <Link href="/events">
-              <Button variant="secondary" size="sm" className="bg-white text-brand-red hover:bg-red-50 text-xs px-3 py-1">
-                View All
+              <Button variant="secondary" size="sm" className="bg-white text-brand-red hover:bg-brand-dark hover:text-white rounded-full px-6 text-xs transition-all">
+                View All Events
               </Button>
             </Link>
           </div>
@@ -486,15 +492,16 @@ export default async function HomePage() {
       </section>
 
       {/* Blog/Journal Section */}
-      <section className="py-12 md:py-16 bg-canvas">
+      <section className="py-16 md:py-24 bg-gallery-elegant">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-12">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 md:mb-14">
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 brush-underline">Stories & Insights</h2>
-            <p className="text-gray-600">Behind-the-scenes stories and cultural deep-dives</p>
+            <p className="accent-text text-brand-red text-lg mb-2">From Our Journal</p>
+            <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-3">Stories & Insights</h2>
+            <p className="text-gray-600 text-lg">Behind-the-scenes stories and cultural deep-dives</p>
           </div>
           <Link href="/blog" className="mt-4 md:mt-0">
-            <Button variant="outline" className="flex items-center gap-2">
+            <Button variant="outline" className="flex items-center gap-2 rounded-full px-6 hover:bg-brand-dark hover:text-white hover:border-brand-dark transition-all">
               Read More <ArrowRight className="w-4 h-4" />
             </Button>
           </Link>
