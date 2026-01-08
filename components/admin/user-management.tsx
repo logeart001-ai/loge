@@ -330,11 +330,10 @@ export function UserManagement() {
     const roleConfig = {
       admin: { color: 'bg-red-100 text-red-800', label: 'Admin' },
       creator: { color: 'bg-blue-100 text-blue-800', label: 'Creator' },
-      collector: { color: 'bg-green-100 text-green-800', label: 'Collector' },
-      user: { color: 'bg-gray-100 text-gray-800', label: 'User' }
+      buyer: { color: 'bg-green-100 text-green-800', label: 'Collector' }
     }
 
-    const config = roleConfig[role as keyof typeof roleConfig] || roleConfig.user
+    const config = roleConfig[role as keyof typeof roleConfig] || roleConfig.buyer
     return <Badge className={config.color}>{config.label}</Badge>
   }
 
@@ -435,8 +434,7 @@ export function UserManagement() {
                 <SelectItem value="all">All Roles</SelectItem>
                 <SelectItem value="admin">Admin</SelectItem>
                 <SelectItem value="creator">Creator</SelectItem>
-                <SelectItem value="collector">Collector</SelectItem>
-                <SelectItem value="user">User</SelectItem>
+                <SelectItem value="buyer">Collector</SelectItem>
               </SelectContent>
             </Select>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
