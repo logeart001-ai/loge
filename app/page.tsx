@@ -478,12 +478,12 @@ export default async function HomePage() {
             </div>
           ) : (
             <div className="text-center py-6">
-              <p className="text-white/80 text-sm">No upcoming events at the moment.</p>
+              <p className="text-brand-dark/70 text-sm">No upcoming events at the moment.</p>
             </div>
           )}
           <div className="text-center mt-6">
             <Link href="/events">
-              <Button variant="secondary" size="sm" className="bg-white text-brand-red hover:bg-brand-dark hover:text-white rounded-full px-6 text-xs transition-all">
+              <Button variant="secondary" size="sm" className="bg-brand-dark text-white hover:bg-brand-red rounded-full px-6 text-xs transition-all">
                 View All Events
               </Button>
             </Link>

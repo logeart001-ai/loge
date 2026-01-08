@@ -522,8 +522,7 @@ export function UserManagement() {
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="user">User</SelectItem>
-                                <SelectItem value="collector">Collector</SelectItem>
+                                <SelectItem value="buyer">Collector</SelectItem>
                                 <SelectItem value="creator">Creator</SelectItem>
                                 <SelectItem value="admin">Admin</SelectItem>
                               </SelectContent>
