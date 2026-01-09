@@ -24,6 +24,42 @@ CREATE TABLE IF NOT EXISTS notifications (
   actor_id UUID REFERENCES auth.users(id) ON DELETE SET NULL
 );
 
+-- Add missing columns to notifications if table already exists
+DO $$
+BEGIN
+  -- Add read column if it doesn't exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'notifications' AND column_name = 'read'
+  ) THEN
+    ALTER TABLE notifications ADD COLUMN read BOOLEAN DEFAULT FALSE;
+  END IF;
+  
+  -- Add link column if it doesn't exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'notifications' AND column_name = 'link'
+  ) THEN
+    ALTER TABLE notifications ADD COLUMN link TEXT;
+  END IF;
+  
+  -- Add artwork_id column if it doesn't exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'notifications' AND column_name = 'artwork_id'
+  ) THEN
+    ALTER TABLE notifications ADD COLUMN artwork_id UUID REFERENCES artworks(id) ON DELETE CASCADE;
+  END IF;
+  
+  -- Add actor_id column if it doesn't exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'notifications' AND column_name = 'actor_id'
+  ) THEN
+    ALTER TABLE notifications ADD COLUMN actor_id UUID REFERENCES auth.users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
+
 -- Create indexes for notifications
 CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_read ON notifications(read);
