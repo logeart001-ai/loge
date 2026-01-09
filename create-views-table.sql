@@ -6,11 +6,30 @@ CREATE TABLE IF NOT EXISTS artwork_views (
   viewer_ip TEXT,
   user_agent TEXT,
   viewed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  session_id TEXT,
-  
-  -- Indexes for performance
-  CONSTRAINT unique_view_per_session UNIQUE (artwork_id, session_id, viewed_at)
+  session_id TEXT
 );
+
+-- Add session_id column if it doesn't exist (for existing tables)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'artwork_views' AND column_name = 'session_id'
+  ) THEN
+    ALTER TABLE artwork_views ADD COLUMN session_id TEXT;
+  END IF;
+END $$;
+
+-- Add unique constraint if it doesn't exist
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'unique_view_per_session'
+  ) THEN
+    ALTER TABLE artwork_views 
+    ADD CONSTRAINT unique_view_per_session UNIQUE (artwork_id, session_id, viewed_at);
+  END IF;
+END $$;
 
 -- Create indexes
 CREATE INDEX IF NOT EXISTS idx_artwork_views_artwork_id ON artwork_views(artwork_id);
