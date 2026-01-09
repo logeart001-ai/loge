@@ -180,7 +180,7 @@ export default async function HomePage() {
 
       {/* Hero Section with Video Background */}
       <ClientOnly>
-        <section className="relative bg-brand-cream overflow-hidden h-screen flex items-center watercolor-blob">
+        <section className="relative bg-brand-cream overflow-hidden h-screen flex items-center">
         {/* Background Video */}
         <div className="absolute inset-0 w-full h-full">
           <BackgroundVideo
@@ -265,7 +265,7 @@ export default async function HomePage() {
       </ClientOnly>
 
       {/* Search Section */}
-      <section className="py-12 md:py-16 bg-white border-b texture-paper">
+      <section className="py-12 md:py-16 bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Reveal>
             <div className="text-center mb-8">
@@ -594,9 +594,9 @@ export default async function HomePage() {
       </section>
 
       {/* Community Features */}
-      <section className="py-12 md:py-16 bg-white texture-paper">
+      <section className="py-12 md:py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 paint-accent">Join Our Growing Community</h2>
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Join Our Growing Community</h2>
         <p className="text-lg md:text-xl text-gray-600 mb-8 md:mb-12 max-w-3xl mx-auto">
           Connect with artists and art lovers across Africa and beyond. Share your passion,
           discover new talents, and be part of a vibrant creative ecosystem.
@@ -646,9 +646,9 @@ export default async function HomePage() {
       </section>
 
       {/* Creator CTA */}
-      <section className="py-8 md:py-12 bg-brand-cream watercolor-blob">
+      <section className="py-8 md:py-12 bg-brand-cream">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 artistic-underline">Are You An African Creator?</h2>
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Are You An African Creator?</h2>
         <p className="text-lg text-gray-600 mb-6">
           Join our platform to showcase and sell your work to a global audience.
         </p>
