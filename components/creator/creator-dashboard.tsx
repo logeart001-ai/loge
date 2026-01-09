@@ -81,12 +81,16 @@ export function CreatorDashboard() {
       if (submissionsData) {
         setSubmissions(submissionsData)
         
+        // Fetch view statistics for creator's artworks
+        const { data: viewStats } = await supabase
+          .rpc('get_creator_total_views', { creator_user_id: user.id })
+        
         // Calculate stats
         const stats = {
           total_submissions: submissionsData.length,
           approved_submissions: submissionsData.filter(s => s.status === 'approved' || s.status === 'published').length,
           pending_submissions: submissionsData.filter(s => s.status === 'submitted' || s.status === 'under_review').length,
-          total_views: 0, // TODO: Implement view tracking
+          total_views: viewStats || 0,
           total_earnings: submissionsData
             .filter(s => s.status === 'published')
             .reduce((sum, s) => sum + (s.price || 0), 0)
