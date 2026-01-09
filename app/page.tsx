@@ -180,7 +180,7 @@ export default async function HomePage() {
 
       {/* Hero Section with Video Background */}
       <ClientOnly>
-        <section className="relative bg-brand-cream overflow-hidden h-screen flex items-center">
+        <section className="relative bg-brand-cream overflow-hidden h-screen flex items-center watercolor-blob">
         {/* Background Video */}
         <div className="absolute inset-0 w-full h-full">
           <BackgroundVideo
