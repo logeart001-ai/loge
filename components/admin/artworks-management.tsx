@@ -114,27 +114,29 @@ export function ArtworksManagement() {
 
     setSubmitting(true)
     try {
-      const { error } = await supabase
-        .from('artworks')
-        .update({
-          approval_status: 'approved',
-          is_available: true,
-          is_featured: setAsFeatured,
-          approved_at: new Date().toISOString(),
-          review_notes: reviewNotes
+      const response = await fetch(`/api/admin/artworks/${selectedArtwork.id}/approve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          review_notes: reviewNotes,
+          set_as_featured: setAsFeatured
         })
-        .eq('id', selectedArtwork.id)
+      })
 
-      if (error) throw error
+      const data = await response.json()
 
-      alert(`Artwork approved successfully!${setAsFeatured ? ' It is now featured on the homepage.' : ''}`)
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to approve artwork')
+      }
+
+      alert(`✅ Artwork approved successfully!${setAsFeatured ? '\n🌟 It is now featured on the homepage.' : ''}\n\nThe artwork will appear on the website immediately.`)
       setSelectedArtwork(null)
       setReviewNotes('')
       setSetAsFeatured(false)
       fetchArtworks()
     } catch (error) {
       console.error('Error approving artwork:', error)
-      alert('Failed to approve artwork. Please try again.')
+      alert(`❌ Failed to approve artwork: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
       setSubmitting(false)
     }
@@ -143,31 +145,68 @@ export function ArtworksManagement() {
   const handleReject = async () => {
     if (!selectedArtwork) return
     if (!reviewNotes.trim()) {
-      alert('Please provide a reason for rejection')
+      alert('⚠️ Please provide a reason for rejection.\n\nThis helps creators understand what needs to be improved.')
       return
     }
 
     setSubmitting(true)
     try {
-      const { error } = await supabase
-        .from('artworks')
-        .update({
-          approval_status: 'rejected',
-          is_available: false,
-          is_featured: false,
+      const response = await fetch(`/api/admin/artworks/${selectedArtwork.id}/reject`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           review_notes: reviewNotes
         })
-        .eq('id', selectedArtwork.id)
+      })
 
-      if (error) throw error
+      const data = await response.json()
 
-      alert('Artwork rejected. Creator will be notified.')
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to reject artwork')
+      }
+
+      alert('❌ Artwork rejected.\n\n📧 Creator will be notified with your feedback.')
       setSelectedArtwork(null)
       setReviewNotes('')
       fetchArtworks()
     } catch (error) {
       console.error('Error rejecting artwork:', error)
-      alert('Failed to reject artwork. Please try again.')
+      alert(`❌ Failed to reject artwork: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const handleRequestRevision = async () => {
+    if (!selectedArtwork) return
+    if (!reviewNotes.trim()) {
+      alert('⚠️ Please provide revision notes.\n\nTell the creator what needs to be changed.')
+      return
+    }
+
+    setSubmitting(true)
+    try {
+      const response = await fetch(`/api/admin/artworks/${selectedArtwork.id}/request-revision`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          revision_notes: reviewNotes
+        })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to request revision')
+      }
+
+      alert('✏️ Revision requested.\n\n📧 Creator will be notified and can resubmit after making changes.')
+      setSelectedArtwork(null)
+      setReviewNotes('')
+      fetchArtworks()
+    } catch (error) {
+      console.error('Error requesting revision:', error)
+      alert(`❌ Failed to request revision: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
       setSubmitting(false)
     }
