@@ -493,6 +493,16 @@ export function ArtworksManagement() {
                       </Button>
                       
                       <Button
+                        onClick={handleRequestRevision}
+                        disabled={submitting}
+                        variant="outline"
+                        className="w-full border-orange-600 text-orange-600 hover:bg-orange-50"
+                      >
+                        <AlertCircle className="w-4 h-4 mr-2" />
+                        {submitting ? 'Requesting...' : 'Request Revision'}
+                      </Button>
+                      
+                      <Button
                         onClick={handleReject}
                         disabled={submitting}
                         variant="outline"
